@@ -1,0 +1,9 @@
+{
+  "diff": true,
+  "extension": ["ts"],
+  "package": "./package.json",
+  "slow": 1500,
+  "timeout": 20000,
+  "recursive": true,
+  "watch-files": ["test/**/*.ts"]
+}

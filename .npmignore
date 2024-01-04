@@ -1,0 +1,12 @@
+.git/
+.idea/
+dist/test/
+node_modules/
+src/
+.gitignore
+*.iml
+tsconfig.json
+tslint.json
+build.config.ts
+mocha.opts
+.DS_Store

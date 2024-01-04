@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "sourceMap": false,
+    "outDir": "./dist",
+    "strict": true,
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "./.idea",
+    "./node_modules",
+    "./*.iml",
+    "./.DS_Store"
+  ]
+}
