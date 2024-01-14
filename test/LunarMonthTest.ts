@@ -1,5 +1,5 @@
 import {suite, test} from '@testdeck/mocha';
-import {LunarMonth, SolarDay} from '../lib';
+import {LunarDay, LunarMonth, SolarDay} from '../lib';
 import {equal} from 'assert';
 
 @suite
@@ -235,5 +235,25 @@ class LunarMonthTest {
         const m = LunarMonth.fromYm(2023, 11);
         equal(m.toString(), '农历癸卯年十一月');
         equal(m.getSixtyCycle().toString(), '乙丑');
+    }
+
+    @test
+    test40() {
+        equal(LunarMonth.fromYm(2018, 6).getSixtyCycle().toString(), '己未');
+    }
+
+    @test
+    test41() {
+        equal(LunarMonth.fromYm(2017, 12).getSixtyCycle().toString(), '甲寅');
+    }
+
+    @test
+    test42() {
+        equal(LunarMonth.fromYm(2018, 1).getSixtyCycle().toString(), '甲寅');
+    }
+
+    @test
+    test43() {
+        equal(LunarDay.fromYmd(2018, 6, 26).getMonthSixtyCycle().toString(), '庚申');
     }
 }

@@ -1688,25 +1688,33 @@ export class LunarDay extends AbstractTyme {
     }
 
     getYearSixtyCycle(): SixtyCycle {
-        const solarYear = this.getSolarDay().getMonth().getYear().getYear();
-        const spring = SolarTerm.fromIndex(solarYear, 3);
+        const solarDay = this.getSolarDay();
+        const solarYear = solarDay.getMonth().getYear().getYear();
+        const springSolarDay = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarDay();
         const lunarYear = this.month.getYear();
-        let year = lunarYear.getSixtyCycle();
-        if (lunarYear.getYear() < solarYear) {
-            year = year.next(1);
+        const year = lunarYear.getYear();
+        let sixtyCycle = lunarYear.getSixtyCycle();
+        if (year === solarYear) {
+            if (solarDay.isBefore(springSolarDay)) {
+                sixtyCycle = sixtyCycle.next(-1);
+            }
+        } else if (year < solarYear) {
+            if (!solarDay.isBefore(springSolarDay)) {
+                sixtyCycle = sixtyCycle.next(1);
+            }
         }
-        if (this.getSolarDay().isBefore(spring.getJulianDay().getSolarDay())) {
-            year = year.next(-1);
-        }
-        return year;
+        return sixtyCycle;
     }
 
     getMonthSixtyCycle(): SixtyCycle {
-        let term = this.getSolarDay().getTerm();
-        if (term.isQi()) {
-            term = term.next(-1);
+        const solarDay = this.getSolarDay();
+        const year = solarDay.getMonth().getYear().getYear();
+        const term = solarDay.getTerm();
+        let index = term.getIndex() - 3;
+        if (index < 0 && term.getJulianDay().getSolarDay().isAfter(SolarTerm.fromIndex(year, 3).getJulianDay().getSolarDay())) {
+            index += 24;
         }
-        return term.getJulianDay().getSolarDay().getLunarDay().getMonth().getSixtyCycle();
+        return LunarMonth.fromYm(year, 1).getSixtyCycle().next(Math.floor(index / 2));
     }
 
     getSixtyCycle(): SixtyCycle {
@@ -1878,25 +1886,33 @@ export class LunarHour extends AbstractTyme {
     }
 
     getYearSixtyCycle(): SixtyCycle {
+        const solarTime = this.getSolarTime();
         const solarYear = this.day.getSolarDay().getMonth().getYear().getYear();
-        const spring = SolarTerm.fromIndex(solarYear, 3);
+        const springSolarTime = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarTime();
         const lunarYear = this.day.getMonth().getYear();
-        let year = lunarYear.getSixtyCycle();
-        if (lunarYear.getYear() < solarYear) {
-            year = year.next(1);
+        const year = lunarYear.getYear();
+        let sixtyCycle = lunarYear.getSixtyCycle();
+        if (year === solarYear) {
+            if (solarTime.isBefore(springSolarTime)) {
+                sixtyCycle = sixtyCycle.next(-1);
+            }
+        } else if (year < solarYear) {
+            if (!solarTime.isBefore(springSolarTime)) {
+                sixtyCycle = sixtyCycle.next(1);
+            }
         }
-        if (this.getSolarTime().isBefore(spring.getJulianDay().getSolarTime())) {
-            year = year.next(-1);
-        }
-        return year;
+        return sixtyCycle;
     }
 
     getMonthSixtyCycle(): SixtyCycle {
-        let term = this.getSolarTime().getTerm();
-        if (term.isQi()) {
-            term = term.next(-1);
+        const solarTime = this.getSolarTime();
+        const year = solarTime.getDay().getMonth().getYear().getYear();
+        const term = solarTime.getTerm();
+        let index = term.getIndex() - 3;
+        if (index < 0 && term.getJulianDay().getSolarTime().isAfter(SolarTerm.fromIndex(year, 3).getJulianDay().getSolarTime())) {
+            index += 24;
         }
-        return term.getJulianDay().getSolarTime().getLunarHour().getDay().getMonth().getSixtyCycle();
+        return LunarMonth.fromYm(year, 1).getSixtyCycle().next(Math.floor(index / 2));
     }
 
     getDaySixtyCycle(): SixtyCycle {

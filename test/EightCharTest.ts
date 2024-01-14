@@ -357,4 +357,9 @@ class EightCharTest {
         // 流年
         equal(fortune.getLunarYear().getSixtyCycle().getName(), '辛巳');
     }
+
+    @test
+    test15() {
+        equal(SolarTime.fromYmdHms(2018, 8, 8, 8, 8, 0).getLunarHour().getEightChar().toString(), "戊戌 庚申 壬申 甲辰");
+    }
 }
