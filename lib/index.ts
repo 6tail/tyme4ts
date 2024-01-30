@@ -3019,16 +3019,18 @@ export class SolarMonth extends AbstractTyme {
 
     getWeeks(start: number): SolarWeek[] {
         const l: SolarWeek[] = [];
+        const y = this.year.getYear();
         for (let i = 0; i < this.getWeekCount(start); i++) {
-            l.push(SolarWeek.fromYm(this.year.getYear(), this.month, i, start));
+            l.push(SolarWeek.fromYm(y, this.month, i, start));
         }
         return l;
     }
 
     getDays(): SolarDay[] {
         const l: SolarDay[] = [];
+        const y = this.year.getYear();
         for (let i = 0; i < this.getDayCount(); i++) {
-            l.push(SolarDay.fromYmd(this.year.getYear(), this.month, i + 1));
+            l.push(SolarDay.fromYmd(y, this.month, i + 1));
         }
         return l;
     }
@@ -3660,8 +3662,8 @@ export class SolarFestival extends AbstractTyme {
             return SolarFestival.fromYmd(year, m.getMonth(), this.day.getDay());
         }
         const size = SolarFestival.NAMES.length;
-        const offset = this.indexOf(this.index + n, size);
         let t = this.index + n;
+        const offset = this.indexOf(t, size);
         if (t < 0) {
             t -= size;
         }
@@ -3771,8 +3773,8 @@ export class LunarFestival extends AbstractTyme {
             return <LunarFestival>LunarFestival.fromYmd(year, m.getMonthWithLeap(), this.day.getDay());
         }
         const size = LunarFestival.NAMES.length;
-        const offset = this.indexOf(this.index + n, size);
         let t = this.index + n;
+        const offset = this.indexOf(t, size);
         if (t < 0) {
             t -= size;
         }
@@ -3819,17 +3821,17 @@ export class EightChar extends AbstractCulture {
     }
 
     getOwnSign(): SixtyCycle {
-        const monthEarthBranchIndex = this.month.getEarthBranch().next(-1).getIndex();
-        return SixtyCycle.fromIndex(this.month.getIndex() + (26 - monthEarthBranchIndex - this.hour.getEarthBranch().next(-1).getIndex()) % 12 - monthEarthBranchIndex);
+        let offset = this.month.getEarthBranch().next(-1).getIndex() + this.hour.getEarthBranch().next(-1).getIndex();
+        offset = (offset >= 14 ? 26 : 14) - offset;
+        offset -= 1;
+        return SixtyCycle.fromName(HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + offset).getName() + EarthBranch.fromIndex(2 + offset).getName());
     }
 
     getBodySign(): SixtyCycle {
-        const monthEarthBranchIndex = this.month.getEarthBranch().next(-1).getIndex();
-        let index = 2 + monthEarthBranchIndex + this.hour.getEarthBranch().next(-1).getIndex();
-        if (index > 12) {
-            index -= 12;
-        }
-        return SixtyCycle.fromIndex(this.month.getIndex() + index - monthEarthBranchIndex);
+        let offset = this.month.getEarthBranch().getIndex() + this.hour.getEarthBranch().getIndex();
+        offset %= 12;
+        offset -= 1;
+        return SixtyCycle.fromName(HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + offset).getName() + EarthBranch.fromIndex(2 + offset).getName());
     }
 
     getDuty(): Duty {
@@ -4034,8 +4036,8 @@ export class Fortune extends AbstractTyme {
     }
 
     getSixtyCycle(): SixtyCycle {
-        const index = this.getAge();
-        return this.childLimit.getEightChar().getHour().next(this.childLimit.isForward() ? index : -index);
+        const n = this.getAge();
+        return this.childLimit.getEightChar().getHour().next(this.childLimit.isForward() ? n : -n);
     }
 
     getName(): string {

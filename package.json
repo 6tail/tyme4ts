@@ -1,6 +1,6 @@
 {
   "name": "tyme4ts",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a calendar library",
   "main": "./dist/lib/index.cjs",
   "module": "./dist/lib/index.mjs",

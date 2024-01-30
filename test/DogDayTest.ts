@@ -60,14 +60,12 @@ class DogDayTest {
 
     @test
     test6() {
-        const d = SolarDay.fromYmd(2011, 7, 13).getDogDay();
-        ifError(d);
+        ifError(SolarDay.fromYmd(2011, 7, 13).getDogDay());
     }
 
     @test
     test7() {
-        const d = SolarDay.fromYmd(2011, 8, 23).getDogDay();
-        ifError(d);
+        ifError(SolarDay.fromYmd(2011, 8, 23).getDogDay());
     }
 
     @test

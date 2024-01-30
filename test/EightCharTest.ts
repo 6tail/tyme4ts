@@ -1,5 +1,5 @@
 import {suite, test} from '@testdeck/mocha';
-import {ChildLimit, EightChar, Gender, HeavenStem, SixtyCycle, SolarTime} from '../lib';
+import {ChildLimit, EightChar, Gender, HeavenStem, LunarHour, SixtyCycle, SolarTime} from '../lib';
 import {equal, ifError, ok} from 'assert';
 
 @suite
@@ -217,15 +217,6 @@ class EightCharTest {
         equal(eightChar.getHour().getName(), '戊子');
     }
 
-    @test
-    test10() {
-        const eightChar = SolarTime.fromYmdHms(1988, 2, 15, 23, 30, 0).getLunarHour().getEightChar();
-        equal(eightChar.getYear().getName(), '戊辰');
-        equal(eightChar.getMonth().getName(), '甲寅');
-        equal(eightChar.getDay().getName(), '辛丑');
-        equal(eightChar.getHour().getName(), '戊子');
-    }
-
     /**
      * 童限测试
      */
@@ -360,6 +351,142 @@ class EightCharTest {
 
     @test
     test15() {
-        equal(SolarTime.fromYmdHms(2018, 8, 8, 8, 8, 0).getLunarHour().getEightChar().toString(), "戊戌 庚申 壬申 甲辰");
+        equal(SolarTime.fromYmdHms(2018, 8, 8, 8, 8, 0).getLunarHour().getEightChar().toString(), '戊戌 庚申 壬申 甲辰');
+    }
+
+    @test
+    test16() {
+        // 童限
+        const childLimit = ChildLimit.fromSolarTime(SolarTime.fromYmdHms(1990, 3, 15, 10, 30, 0), Gender.MAN);
+        // 八字
+        equal(childLimit.getEightChar().toString(), '庚午 己卯 己卯 己巳');
+        // 童限年数
+        equal(childLimit.getYearCount(), 6);
+        // 童限月数
+        equal(childLimit.getMonthCount(), 11);
+        // 童限日数
+        equal(childLimit.getDayCount(), 23);
+        // 童限结束(即开始起运)的公历时刻
+        equal(childLimit.getEndTime().toString(), '1997年3月11日 00:22:00');
+
+        // 小运
+        const fortune = childLimit.getStartFortune();
+        // 年龄
+        equal(fortune.getAge(), 7);
+    }
+
+    @test
+    test17() {
+        const eightChar = new EightChar(
+            SixtyCycle.fromName('己丑'),
+            SixtyCycle.fromName('戊辰'),
+            SixtyCycle.fromName('戊辰'),
+            SixtyCycle.fromName('甲子')
+        );
+        equal(eightChar.getOwnSign().getName(), '丁丑');
+    }
+
+    @test
+    test18() {
+        const eightChar = new EightChar(
+            SixtyCycle.fromName('戊戌'),
+            SixtyCycle.fromName('庚申'),
+            SixtyCycle.fromName('丁亥'),
+            SixtyCycle.fromName('丙午')
+        );
+        equal(eightChar.getOwnSign().getName(), '乙卯');
+    }
+
+    @test
+    test19() {
+        const eightChar = new EightChar(
+            SixtyCycle.fromName('甲子'),
+            SixtyCycle.fromName('壬申'),
+            SixtyCycle.fromName('庚子'),
+            SixtyCycle.fromName('乙亥')
+        );
+        equal(eightChar.getOwnSign().getName(), '甲戌');
+    }
+
+    @test
+    test20() {
+        const eightChar = ChildLimit.fromSolarTime(SolarTime.fromYmdHms(2024, 1, 29, 9, 33, 0), Gender.MAN).getEightChar();
+        equal(eightChar.getOwnSign().getName(), '癸亥');
+        equal(eightChar.getBodySign().getName(), '己未');
+    }
+
+    @test
+    test21() {
+        const eightChar = new EightChar(
+            SixtyCycle.fromName('辛亥'),
+            SixtyCycle.fromName('乙未'),
+            SixtyCycle.fromName('庚子'),
+            SixtyCycle.fromName('甲辰')
+        );
+        equal(eightChar.getBodySign().getName(), '庚子');
+    }
+
+    @test
+    test22() {
+        equal(ChildLimit.fromSolarTime(SolarTime.fromYmdHms(1990, 1, 27, 0, 0, 0), Gender.MAN).getEightChar().getBodySign().getName(), '丙寅');
+    }
+
+    @test
+    test23() {
+        equal(ChildLimit.fromSolarTime(SolarTime.fromYmdHms(2019, 3, 7, 8, 0, 0), Gender.MAN).getEightChar().getOwnSign().getName(), '甲戌');
+    }
+
+    @test
+    test24() {
+        equal(ChildLimit.fromSolarTime(SolarTime.fromYmdHms(2019, 3, 27, 2, 0, 0), Gender.MAN).getEightChar().getOwnSign().getName(), '丁丑');
+    }
+
+    @test
+    test25() {
+        equal(LunarHour.fromYmdHms(1994, 5, 20, 18, 0, 0).getEightChar().getOwnSign().getName(), '丙寅');
+    }
+
+    @test
+    test26() {
+        equal(SolarTime.fromYmdHms(1986, 5, 29, 13, 37, 0).getLunarHour().getEightChar().getBodySign().getName(), '己丑');
+    }
+
+    @test
+    test27() {
+        equal(SolarTime.fromYmdHms(1994, 12, 6, 2, 0, 0).getLunarHour().getEightChar().getBodySign().getName(), '乙丑');
+    }
+
+    @test
+    test28() {
+        const eightChar = new EightChar(
+            SixtyCycle.fromName('辛亥'),
+            SixtyCycle.fromName('丁酉'),
+            SixtyCycle.fromName('丙午'),
+            SixtyCycle.fromName('癸巳')
+        );
+        equal(eightChar.getOwnSign().getName(), '辛卯');
+    }
+
+    @test
+    test29() {
+        const eightChar = new EightChar(
+            SixtyCycle.fromName('丙寅'),
+            SixtyCycle.fromName('庚寅'),
+            SixtyCycle.fromName('辛卯'),
+            SixtyCycle.fromName('壬辰')
+        );
+        equal(eightChar.getOwnSign().getName(), '己亥');
+        equal(eightChar.getBodySign().getName(), '乙未');
+    }
+
+    @test
+    test30() {
+        const eightChar = new EightChar(
+            SixtyCycle.fromName('壬子'),
+            SixtyCycle.fromName('辛亥'),
+            SixtyCycle.fromName('壬戌'),
+            SixtyCycle.fromName('乙巳')
+        );
+        equal(eightChar.getBodySign().getName(), '乙巳');
     }
 }
