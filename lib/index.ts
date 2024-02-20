@@ -41,7 +41,7 @@ export abstract class AbstractCulture implements Culture {
     }
 
     protected indexOf(index: number, size: number): number {
-        let i = index % size;
+        let i: number = index % size;
         if (i < 0) {
             i += size;
         }
@@ -94,7 +94,7 @@ export abstract class LoopTyme extends AbstractTyme {
         if (typeof indexOrName === 'number') {
             return this.indexOf(indexOrName, this.getSize());
         } else {
-            for (let i = 0, j = this.getSize(); i < j; i++) {
+            for (let i: number = 0, j: number = this.getSize(); i < j; i++) {
                 if (this.names[i] === indexOrName) {
                     return i;
                 }
@@ -667,10 +667,10 @@ export class HeavenStem extends LoopTyme {
     }
 
     getTenStar(target: HeavenStem): TenStar {
-        const hostElement = this.getElement();
-        const guestElement = target.getElement();
-        let index = 0;
-        const sameYinYang = this.getYinYang() == target.getYinYang();
+        const hostElement: Element = this.getElement();
+        const guestElement: Element = target.getElement();
+        let index: number = 0;
+        const sameYinYang: boolean = this.getYinYang() == target.getYinYang();
         if (hostElement.getReinforce().equals(guestElement)) {
             index = 1;
         } else if (hostElement.getRestrain().equals(guestElement)) {
@@ -712,7 +712,7 @@ export class HeavenStem extends LoopTyme {
     }
 
     getTerrain(earthBranch: EarthBranch): Terrain {
-        const earthBranchIndex = earthBranch.getIndex();
+        const earthBranchIndex: number = earthBranch.getIndex();
         return Terrain.fromIndex([1, 6, 10, 9, 10, 9, 7, 0, 4, 3][this.index] + (YinYang.YANG == this.getYinYang() ? earthBranchIndex : -earthBranchIndex));
     }
 }
@@ -884,7 +884,7 @@ export class DogDay extends AbstractCultureDay {
 export class FetusHeavenStem extends LoopTyme {
     static NAMES: string[] = ['门', '碓磨', '厨灶', '仓库', '房床'];
 
-    public constructor(index: number) {
+    constructor(index: number) {
         super(FetusHeavenStem.NAMES, index);
     }
 
@@ -896,7 +896,7 @@ export class FetusHeavenStem extends LoopTyme {
 export class FetusEarthBranch extends LoopTyme {
     static NAMES: string[] = ['碓', '厕', '炉', '门', '栖', '床'];
 
-    public constructor(index: number) {
+    constructor(index: number) {
         super(FetusEarthBranch.NAMES, index);
     }
 
@@ -1173,17 +1173,17 @@ export class LunarYear extends AbstractTyme {
     static {
         const chars: string = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_@';
         const months: string[] = '080b0r0j0j0j0C0j0j0C0j0j0j0C0j0C0j0C0F0j0V0V0V0u0j0j0C0j0j0j0j0V0C0j1v0u0C0V1v0C0b080u110u0C0j0C1v9K1v2z0j1vmZbl1veN3s1v0V0C2S1v0V0C2S2o0C0j1Z1c2S1v0j1c0j2z1v0j1c0j392H0b2_2S0C0V0j1c0j2z0C0C0j0j1c0j0N250j0C0j0b081n080b0C0C0C1c0j0N,0r1v1c1v0V0V0F0V0j0C0j0C0j0V0j0u1O0j0C0V0j0j0j0V0b080u0r0u080b0j0j0C0V0C0V0j0b080V0u080b0j0j0u0j1v0u080b1c0j080b0j0V0j0j0V0C0N1v0j1c0j0j1v2g1v420j1c0j2z1v0j1v5Q9z1v4l0j1vfn1v420j9z4l1v1v2S1c0j1v2S3s1v0V0C2S1v1v2S1c0j1v2S2_0b0j2_2z0j1c0j,0z0j0j0j0C0j0j0C0j0j0j0C0j0C0j0j0j0j0m0j0C0j0j0C0j0j0j0j0b0V0j0j0C0j0j0j0j0V0j0j0j0V0b0V0V0C0V0C0j0j0b080u110u0V0C0j0N0j0b080b080b0j0r0b0r0b0j0j0j0j0C0j0b0r0C0j0b0j0C0C0j0j0j0j0j0j0j0j0j0b110j0b0j0j0j0C0j0C0j0j0j0j0b080b080b0V080b080b0j0j0j0j0j0j0V0j0j0u1v0j0j0j0C0j0j0j0V0C0N1c0j0C0C0j0j0j1n080b0j0V0C0j0C0C2g0j1c0j0j1v2g1v0j0j1v7N0j1c0j3L0j0j1v5Q1Z5Q1v4lfn1v420j1v5Q1Z5Q1v4l1v2z1v,0H140r0N0r140r0u0r0V171c11140C0j0u110j0u0j1v0j0C0j0j0j0b080V0u080b0C1v0j0j0j0C0j0b080V0j0j0b080b0j0j0j0j0b080b0C080j0b080b0j0j0j0j0j0j0b080j0b080C0b080b080b080b0j0j0j0j080b0j0C0j0j0j0b0j0j080C0b0j0j0j0j0j0j0b08080b0j0C0j0j0j0b0j0j0K0b0j0C0j0j0j0b080b080j0C0b0j080b080b0j0j0j0j080b0j0b0r0j0j0j0b0j0C0r0b0j0j0j0j0j0j0j0b080j0b0r0C0j0b0j0j0j0r0b0j0C0j0j0j0u0r0b0C0j080b0j0j0j0j0j0j0j1c0j0b0j0j0j0C0j0j0j0j0j0j0j0b080j1c0u0j0j0j0C0j1c0j0u0j1c0j0j0j0j0j0j0j0j1c0j0u1v0j0j0V0j0j2g0j0j0j0C1v0C1G0j0j0V0C1Z1O0j0V0j0j2g1v0j0j0V0C2g5x1v4l1v421O7N0V0C4l1v2S1c0j1v2S2_,050b080C0j0j0j0C0j0j0C0j0j0j0C0j0C0j0C030j0j0j0j0j0j0j0j0j0C0j0b080u0V080b0j0j0V0j0j0j0j0j0j0j0j0j0V0N0j0C0C0j0j0j0j0j0j0j0j1c0j0u0j1v0j0j0j0j0j0b080b080j0j0j0b080b080b080b080b0j0j0j080b0j0b080j0j0j0j0b080b0j0j0r0b080b0b080j0j0j0j0b080b080j0b080j0b080b080b080b080b0j0j0r0b0j0b080j0j0j0j0b080b0j0j0C080b0b080j0j0j0j0j0j0j0b080u080j0j0b0j0j0j0C0j0b080j0j0j0j0b080b080b080b0C080b080b080b0j0j0j0j0j0j0b0C080j0j0b0j0j0j0C0j0b080j0j0C0b080b080j0b0j0j0C080b0j0j0j0j0j0j0b0j0j080C0b0j080b0j0j0j0j0j0j0j0C0j0j0j0b0j0j0C080b0j0j0j0j0j0j0b080b080b0K0b080b080b0j0j0j0j0j0j0j0C0j0j0u0j0j0V0j080b0j0C0j0j0j0b0j0r0C0b0j0j0j0j0j0j0j0j0j0C0j0b080b080b0j0C0C0j0C0j0j0j0u110u0j0j0j0j0j0j0j0j0C0j0j0u0j1c0j0j0j0j0j0j0j0j0V0C0u0j0C0C0V0C1Z0j0j0j0C0j0j0j1v0u0j1c0j0j0j0C0j0j2g0j1c1v0C1Z0V0j4l0j0V0j0j2g0j1v0j1v2S1c7N1v,0w0j1c0j0V0j0j0V0V0V0j0m0V0j0C1c140j0j0j0C0V0C0j1v0j0N0j0C0j0j0j0V0j0j1v0N0j0j0V0j0j0j0j0j0j080b0j0j0j0j0j0j0j080b0j0C0j0j0j0b0j0j080u080b0j0j0j0j0j0j0b080b080b080C0b0j080b080b0j0j0j0j080b0j0C0j0j0j0b0j0j080u080b0j0j0j0j0j0j0b080b080b080b0r0b0j080b080b0j0j0j0j080b0j0b0r0j0j0b080b0j0j080b0j080b0j080b080b0j0j0j0j0j0b080b0r0C0b080b0j0j0j0j080b0b080b080j0j0j0b080b080b080b0j0j0j0j080b0j0b080j0j0j0j0b080b0j0j0r0b080b0j0j0j0j0j0b080b080j0b0r0b080j0b080b0j0j0j0j080b0j0b080j0j0j0j0b080b0j080b0r0b0j080b080b0j0j0j0j0j0b080b0r0C0b080b0j0j0j0j0j0j0b080j0j0j0b080b080b080b0j0j0j0r0b0j0b080j0j0j0j0b080b0r0b0r0b0j080b080b0j0j0j0j0j0j0b0r0j0j0j0b0j0j0j0j080b0j0b080j0j0j0j0b080b080b0j0r0b0j080b0j0j0j0j0j0j0j0b0r0C0b0j0j0j0j0j0j0j080b0j0C0j0j0j0b0j0C0r0b0j0j0j0j0j0j0b080b080u0r0b0j080b0j0j0j0j0j0j0j0b0r0C0u0j0j0j0C0j080b0j0C0j0j0j0u110b0j0j0j0j0j0j0j0j0j0C0j0b080b0j0j0C0C0j0C0j0j0j0b0j1c0j080b0j0j0j0j0j0j0V0j0j0u0j1c0j0j0j0C0j0j2g0j0j0j0C0j0j0V0j0b080b1c0C0V0j0j2g0j0j0V0j0j1c0j1Z0j0j0C0C0j1v,160j0j0V0j1c0j0C0j0C0j1f0j0V0C0j0j0C0j0j0j1G080b080u0V080b0j0j0V0j1v0j0u0j1c0j0j0j0C0j0j0j0C0C0j1D0b0j080b0j0j0j0j0C0j0b0r0C0j0b0j0C0C0j0j0j0j0j0j0j0j0j0b0r0b0r0j0b0j0j0j0C0j0b0r0j0j0j0b080b080j0b0C0j080b080b0j0j0j0j0j0j0b0C080j0j0b0j0j0j0C0j0b080j0j0j0j0b080b080j0b0C0r0j0b0j0j0j0j0j0j0b0C080j0j0b0j0j0j0C0j0j0j0j0C0j0j0b080b0j0j0C080b0j0j0j0j0j0j0b080b080b080C0b080b080b080b0j0j0j0j0j0b080C0j0j0b080b0j0j0C080b0j0j0j0j0j0j0b080j0b0C080j0j0b0j0j0j0j0j0j0b080j0b080C0b080b080b080b0j0j0j0j080b0j0C0j0j0b080b0j0j0C080b0j0j0j0j0j0j0b080j0b080u080j0j0b0j0j0j0j0j0j0b080C0j0j0b080b0j0j0C0j0j080b0j0j0j0j0j0b080b0C0r0b080b0j0j0j0j0j0j0b080j0b080u080b080b080b0j0j0j0C0j0b080j0j0j0j0b0j0j0j0C0j0j080b0j0j0j0j0j0b080b0C0r0b080b0j0j0j0j0j0j0b080j0b0r0b080b080b080b0j0j0j0r0b0j0b0r0j0j0j0b0j0j0j0r0b0j080b0j0j0j0j0j0j0j0b0r0C0b0j0j0j0j0j0j0j0b080j0C0u080b080b0j0j0j0r0b0j0C0C0j0b0j110b0j080b0j0j0j0j0j0j0u0r0C0b0j0j0j0j0j0j0j0j0j0C0j0j0j0b0j1c0j0C0j0j0j0b0j0814080b080b0j0j0j0j0j0j1c0j0u0j0j0V0j0j0j0j0j0j0j0u110u0j0j0j,020b0r0C0j0j0j0C0j0j0V0j0j0j0j0j0C0j1f0j0C0j0V1G0j0j0j0j0V0C0j0C1v0u0j0j0j0V0j0j0C0j0j0j1v0N0C0V0j0j0j0K0C250b0C0V0j0j0V0j0j2g0C0V0j0j0C0j0j0b081v0N0j0j0V0V0j0j0u0j1c0j080b0j0j0j0j0j0j0V0j0j0u0j0j0V0j0j0j0C0j0b080b080V0b0j080b0j0j0j0j0j0j0j0b0r0C0j0b0j0j0j0C0j080b0j0j0j0j0j0j0u0r0C0u0j0j0j0j0j0j0b080j0C0j0b080b080b0j0C0j080b0j0j0j0j0j0j0b080b110b0j0j0j0j0j0j0j0j0j0b0r0j0j0j0b0j0j0j0r0b0j0b080j0j0j0j0b080b080b080b0r0b0j080b080b0j0j0j0j0j0j0b0r0C0b080b0j0j0j0j080b0j0b080j0j0j0j0b080b080b0j0j0j0r0b0j0j0j0j0j0j0b080b0j080C0b0j080b080b0j0j0j0j080b0j0b0r0C0b080b0j0j0j0j080b0j0j0j0j0j0b080b080b080b0j0j080b0r0b0j0j0j0j0j0j0b0j0j080C0b0j080b080b0j0j0j0j0j0b080C0j0j0b080b0j0j0C0j0b080j0j0j0j0b080b080b080b0C0C080b0j0j0j0j0j0j0b0C0C080b080b080b0j0j0j0j0j0j0b0C080j0j0b0j0j0j0C0j0b080j0b080j0j0b080b080b080b0C0r0b0j0j0j0j0j0j0b080b0r0b0r0b0j080b080b0j0j0j0j0j0j0b0r0C0j0b0j0j0j0j0j0j0b080j0C0j0b080j0b0j0j0K0b0j0C0j0j0j0b080b0j0K0b0j080b0j0j0j0j0j0j0V0j0j0b0j0j0j0C0j0j0j0j,0l0C0K0N0r0N0j0r1G0V0m0j0V1c0C0j0j0j0j1O0N110u0j0j0j0C0j0j0V0C0j0u110u0j0j0j0C0j0j0j0C0C0j250j1c2S1v1v0j5x2g0j1c0j0j1c2z0j1c0j0j1c0j0N1v0V0C1v0C0b0C0V0j0j0C0j0C1v0u0j0C0C0j0j0j0C0j0j0j0u110u0j0j0j0C0j0C0C0C0b080b0j0C0j080b0j0C0j0j0j0u110u0j0j0j0C0j0j0j0C0j0j0j0u0C0r0u0j0j0j0j0j0j0b0r0b0V080b080b0j0C0j0j0j0V0j0j0b0j0j0j0C0j0j0j0j0j0j0j0b080j0b0C0r0j0b0j0j0j0C0j0b0r0b0r0j0b080b080b0j0C0j0j0j0j0j0j0j0j0b0j0C0r0b0j0j0j0j0j0j0b080b080j0b0r0b0r0j0b0j0j0j0j080b0j0b0r0j0j0j0b080b080b0j0j0j0j080b0j0j0j0j0j0j0b0j0j0j0r0b0j0j0j0j0j0j0b080b080b080b0r0C0b080b0j0j0j0j0j0b080b0r0C0b080b080b080b0j0j0j0j080b0j0C0j0j0j0b0j0j0C080b0j0j0j0j0j0j0b080j0b0C080j0j0b0j0j0j0j0j0j0b0r0b080j0j0b080b080b0j0j0j0j0j0j0b080j0j0j0j0b0j0j0j0r0b0j0b080j0j0j0j0j0b080b080b0C0r0b0j0j0j0j0j0j0b080b080j0C0b0j080b080b0j0j0j0j0j0j,0a0j0j0j0j0C0j0j0C0j0C0C0j0j0j0j0j0j0j0m0C0j0j0j0j0u080j0j0j1n0j0j0j0j0C0j0j0j0V0j0j0j1c0u0j0C0V0j0j0V0j0j1v0N0C0V2o1v1O2S2o141v0j1v4l0j1c0j1v2S2o0C0u1v0j0C0C2S1v0j1c0j0j1v0N251c0j1v0b1c1v1n1v0j0j0V0j0j1v0N1v0C0V0j0j1v0b0C0j0j0V1c0j0u0j1c0j0j0j0j0j0j0j0j1c0j0u0j0j0V0j0j0j0j0j0j0b080u110u0j0j0j0j0j0j1c0j0b0j080b0j0C0j0j0j0V0j0j0u0C0V0j0j0j0C0j0b080j1c0j0b0j0j0j0C0j0C0j0j0j0b080b080b0j0C0j080b0j0j0j0j0j0j0j0b0C0r0u0j0j0j0j0j0j0b080j0b0r0C0j0b0j0j0j0r0b0j0b0r0j0j0j0b080b080b0j0r0b0j080b0j0j0j0j0j0j0b0j0r0C0b0j0j0j0j0j0j0b080j0j0C0j0j0b080b0j0j0j0j0j0j0j0j0j0j0b080b080b080b0C0j0j080b0j0j0j0j0j0j0b0j0j0C080b0j0j0j0j0j0j0j0j0b0C080j0j0b0j0j0j0j0j,0n0Q0j1c14010q0V1c171k0u0r140V0j0j1c0C0N1O0j0V0j0j0j1c0j0u110u0C0j0C0V0C0j0j0b671v0j1v5Q1O2S2o2S1v4l1v0j1v2S2o0C1Z0j0C0C1O141v0j1c0j2z1O0j0V0j0j1v0b2H390j1c0j0V0C2z0j1c0j1v2g0C0V0j1O0b0j0j0V0C1c0j0u0j1c0j0j0j0j0j0j0j0j1c0N0j0j0V0j0j0C0j0j0b081v0u0j0j0j0C0j1c0N0j0j0C0j0j0j0C0j0j0j0u0C0r0u0j0j0j0C0j0b080j1c0j0b0j0C0C0j0C0C0j0b080b080u0C0j080b0j0C0j0j0j0u110u0j0j0j0j0j0j0j0j0C0C0j0b0j0j0j0C0j0C0C0j0b080b080b0j0C0j080b0j0C0j0j0j0b0j110b0j0j0j0j0j,0B0j0V0j0j0C0j0j0j0C0j0C0j0j0C0j0m0j0j0j0j0C0j0C0j0j0u0j1c0j0j0C0C0j0j0j0j0j0j0j0j0u110N0j0j0V0C0V0j0b081n080b0CrU1O5e2SbX2_1Z0V2o141v0j0C0C0j2z1v0j1c0j7N1O420j1c0j1v2S1c0j1v2S2_0b0j0V0j0j1v0N1v0j0j1c0j1v140j0V0j0j0C0C0b080u1v0C0V0u110u0j0j0j0C0j0j0j0C0C0N0C0V0j0j0C0j0j0b080u110u0C0j0C0u0r0C0u080b0j0j0C0j0j0j'.split(',', -1);
-        for (let i = 0; i < 12; i++) {
-            let n = 0;
-            const m = months[i];
-            const size = ~~(m.length / 2);
+        for (let i: number = 0; i < 12; i++) {
+            let n: number = 0;
+            const m: string = months[i];
+            const size: number = ~~(m.length / 2);
             const l: number[] = [];
-            for (let y = 0; y < size; y++) {
-                const z = y * 2;
-                const s = m.substring(z, z + 2);
-                let t = 0;
-                let c = 1;
-                for (let x = 1; x > -1; x--) {
+            for (let y: number = 0; y < size; y++) {
+                const z: number = y * 2;
+                const s: string = m.substring(z, z + 2);
+                let t: number = 0;
+                let c: number = 1;
+                for (let x: number = 1; x > -1; x--) {
                     t += c * chars.indexOf(s.charAt(x));
                     c *= 64;
                 }
@@ -1212,9 +1212,9 @@ export class LunarYear extends AbstractTyme {
 
     getDayCount(): number {
         let n: number = 0;
-        this.getMonths().forEach(m => {
+        this.getMonths().forEach((m: LunarMonth): void => {
             n += m.getDayCount();
-        })
+        });
         return n;
     }
 
@@ -1318,33 +1318,33 @@ export class LunarMonth extends AbstractTyme {
 
     protected constructor(year: number, month: number) {
         super();
-        const currentYear = LunarYear.fromYear(year);
-        const currentLeapMonth = currentYear.getLeapMonth();
+        const currentYear: LunarYear = LunarYear.fromYear(year);
+        const currentLeapMonth: number = currentYear.getLeapMonth();
         if (month === 0 || month > 12 || month < -12) {
             throw new Error(`illegal lunar month: ${month}`);
         }
-        const leap = month < 0;
-        const m = Math.abs(month);
+        const leap: boolean = month < 0;
+        const m: number = Math.abs(month);
         if (leap && m != currentLeapMonth) {
             throw new Error(`illegal leap month ${m} in lunar year ${year}`);
         }
 
         // 冬至
-        const dongZhi = SolarTerm.fromIndex(year, 0);
-        const dongZhiJd = dongZhi.getCursoryJulianDay();
+        const dongZhi: SolarTerm = SolarTerm.fromIndex(year, 0);
+        const dongZhiJd: number = dongZhi.getCursoryJulianDay();
 
         // 冬至前的初一，今年首朔的日月黄经差
-        let w = ShouXingUtil.calcShuo(dongZhiJd);
+        let w: number = ShouXingUtil.calcShuo(dongZhiJd);
         if (w > dongZhiJd) {
             w -= 29.53;
         }
 
         // 计算正月初一的偏移
-        const prevYear = LunarYear.fromYear(year - 1);
-        const prevLeapMonth = prevYear.getLeapMonth();
+        const prevYear: LunarYear = LunarYear.fromYear(year - 1);
+        const prevLeapMonth: number = prevYear.getLeapMonth();
 
         // 正常情况正月初一为第3个朔日，但有些特殊的
-        let offset = 2;
+        let offset: number = 2;
         if (year > 8 && year < 24) {
             offset = 1;
         } else if (prevLeapMonth > 10 && year != 239 && year != 240) {
@@ -1352,7 +1352,7 @@ export class LunarMonth extends AbstractTyme {
         }
 
         // 位于当年的索引
-        let index = m - 1;
+        let index: number = m - 1;
         if (leap || (currentLeapMonth > 0 && m > currentLeapMonth)) {
             index += 1;
         }
@@ -1360,7 +1360,7 @@ export class LunarMonth extends AbstractTyme {
 
         // 本月初一
         w += 29.5306 * (offset + index);
-        const firstDay = ShouXingUtil.calcShuo(w);
+        const firstDay: number = ShouXingUtil.calcShuo(w);
         this.firstJulianDay = JulianDay.fromJulianDay(JulianDay.J2000 + firstDay);
         // 本月天数 = 下月初一 - 本月初一
         this.dayCount = ~~(ShouXingUtil.calcShuo(w + 29.5306) - firstDay);
@@ -1421,12 +1421,12 @@ export class LunarMonth extends AbstractTyme {
         if (n === 0) {
             return LunarMonth.fromYm(this.year.getYear(), this.getMonthWithLeap());
         }
-        let m = this.indexInYear + 1 + n;
-        let y = this.year;
-        let leapMonth = y.getLeapMonth();
-        let monthSize = 12 + (leapMonth > 0 ? 1 : 0);
-        const forward = n > 0;
-        const add = forward ? 1 : -1;
+        let m: number = this.indexInYear + 1 + n;
+        let y: LunarYear = this.year;
+        let leapMonth: number = y.getLeapMonth();
+        let monthSize: number = 12 + (leapMonth > 0 ? 1 : 0);
+        const forward: boolean = n > 0;
+        const add: number = forward ? 1 : -1;
         while (forward ? (m > monthSize) : (m <= 0)) {
             if (forward) {
                 m -= monthSize;
@@ -1438,7 +1438,7 @@ export class LunarMonth extends AbstractTyme {
                 m += monthSize;
             }
         }
-        let leap = false;
+        let leap: boolean = false;
         if (leapMonth > 0) {
             if (m === leapMonth + 1) {
                 leap = true;
@@ -1451,20 +1451,20 @@ export class LunarMonth extends AbstractTyme {
     }
 
     getDays(): LunarDay[] {
-        const y = this.year.getYear();
-        const m = this.getMonthWithLeap();
+        const y: number = this.year.getYear();
+        const m: number = this.getMonthWithLeap();
         const l: LunarDay[] = [];
-        for (let i = 0, j = this.getDayCount(); i < j; i++) {
+        for (let i: number = 0, j: number = this.getDayCount(); i < j; i++) {
             l.push(LunarDay.fromYmd(y, m, i + 1));
         }
         return l;
     }
 
     getWeeks(start: number): LunarWeek[] {
-        const y = this.year.getYear();
-        const m = this.getMonthWithLeap();
+        const y: number = this.year.getYear();
+        const m: number = this.getMonthWithLeap();
         const l: LunarWeek[] = [];
-        for (let i = 0, j = this.getWeekCount(start); i < j; i++) {
+        for (let i: number = 0, j: number = this.getWeekCount(start); i < j; i++) {
             l.push(LunarWeek.fromYm(y, m, i, start));
         }
         return l;
@@ -1480,7 +1480,7 @@ export class LunarMonth extends AbstractTyme {
 
     getJupiterDirection(): Direction {
         const sixtyCycle: SixtyCycle = this.getSixtyCycle();
-        const n = [7, -1, 1, 3][sixtyCycle.getEarthBranch().next(-2).getIndex() % 4];
+        const n: number = [7, -1, 1, 3][sixtyCycle.getEarthBranch().next(-2).getIndex() % 4];
         return n === -1 ? sixtyCycle.getHeavenStem().getDirection() : Direction.fromIndex(n);
     }
 
@@ -1507,7 +1507,7 @@ export class LunarWeek extends AbstractTyme {
         if (start < 0 || start > 6) {
             throw new Error(`illegal lunar week start: ${start}`);
         }
-        const m = LunarMonth.fromYm(year, month);
+        const m: LunarMonth = LunarMonth.fromYm(year, month);
         if (index >= m.getWeekCount(start)) {
             throw new Error(`illegal lunar week index: ${index} in month: ${m.toString()}`);
         }
@@ -1541,15 +1541,15 @@ export class LunarWeek extends AbstractTyme {
     }
 
     next(n: number): LunarWeek {
-        const startIndex = this.start.getIndex();
+        const startIndex: number = this.start.getIndex();
         if (n === 0) {
             return LunarWeek.fromYm(this.month.getYear().getYear(), this.month.getMonthWithLeap(), this.index, startIndex);
         }
-        let d = this.index + n;
-        let m = this.month;
-        let weeksInMonth = m.getWeekCount(startIndex);
-        const forward = n > 0;
-        const add = forward ? 1 : -1;
+        let d: number = this.index + n;
+        let m: LunarMonth = this.month;
+        let weeksInMonth: number = m.getWeekCount(startIndex);
+        const forward: boolean = n > 0;
+        const add: number = forward ? 1 : -1;
         while (forward ? (d >= weeksInMonth) : (d < 0)) {
             if (forward) {
                 d -= weeksInMonth;
@@ -1574,16 +1574,16 @@ export class LunarWeek extends AbstractTyme {
     }
 
     getFirstDay(): LunarDay {
-        const m = this.getMonth();
-        const firstDay = LunarDay.fromYmd(m.getYear().getYear(), m.getMonthWithLeap(), 1);
+        const m: LunarMonth = this.getMonth();
+        const firstDay: LunarDay = LunarDay.fromYmd(m.getYear().getYear(), m.getMonthWithLeap(), 1);
         return firstDay.next(this.index * 7 - this.indexOf(firstDay.getWeek().getIndex() - this.start.getIndex(), 7));
     }
 
     getDays(): LunarDay[] {
         const l: LunarDay[] = [];
-        const d = this.getFirstDay();
+        const d: LunarDay = this.getFirstDay();
         l.push(d);
-        for (let i = 1; i < 7; i++) {
+        for (let i: number = 1; i < 7; i++) {
             l.push(d.next(i));
         }
         return l;
@@ -1597,7 +1597,7 @@ export class LunarDay extends AbstractTyme {
 
     protected constructor(year: number, month: number, day: number) {
         super();
-        const m = LunarMonth.fromYm(year, month);
+        const m: LunarMonth = LunarMonth.fromYm(year, month);
         if (day < 1 || day > m.getDayCount()) {
             throw new Error(`illegal day ${day} in ${m.toString()}`);
         }
@@ -1629,11 +1629,11 @@ export class LunarDay extends AbstractTyme {
         if (n === 0) {
             return LunarDay.fromYmd(this.month.getYear().getYear(), this.month.getMonthWithLeap(), this.day);
         }
-        let d = this.day + n;
-        let lm = this.month;
-        let daysInMonth = lm.getDayCount();
-        const forward = n > 0;
-        const add = forward ? 1 : -1;
+        let d: number = this.day + n;
+        let lm: LunarMonth = this.month;
+        let daysInMonth: number = lm.getDayCount();
+        const forward: boolean = n > 0;
+        const add: number = forward ? 1 : -1;
         while (forward ? (d > daysInMonth) : (d <= 0)) {
             if (forward) {
                 d -= daysInMonth;
@@ -1648,12 +1648,12 @@ export class LunarDay extends AbstractTyme {
     }
 
     isBefore(target: LunarDay): boolean {
-        const aYear = this.month.getYear().getYear();
-        const targetMonth = target.getMonth();
-        const bYear = targetMonth.getYear().getYear();
+        const aYear: number = this.month.getYear().getYear();
+        const targetMonth: LunarMonth = target.getMonth();
+        const bYear: number = targetMonth.getYear().getYear();
         if (aYear === bYear) {
-            const aMonth = this.month.getMonth();
-            const bMonth = targetMonth.getMonth();
+            const aMonth: number = this.month.getMonth();
+            const bMonth: number = targetMonth.getMonth();
             if (aMonth === bMonth) {
                 if (this.month.isLeap() && !targetMonth.isLeap()) {
                     return false;
@@ -1666,12 +1666,12 @@ export class LunarDay extends AbstractTyme {
     }
 
     isAfter(target: LunarDay): boolean {
-        const aYear = this.month.getYear().getYear();
-        const targetMonth = target.getMonth();
-        const bYear = targetMonth.getYear().getYear();
+        const aYear: number = this.month.getYear().getYear();
+        const targetMonth: LunarMonth = target.getMonth();
+        const bYear: number = targetMonth.getYear().getYear();
         if (aYear === bYear) {
-            const aMonth = this.month.getMonth();
-            const bMonth = targetMonth.getMonth();
+            const aMonth: number = this.month.getMonth();
+            const bMonth: number = targetMonth.getMonth();
             if (aMonth === bMonth) {
                 if (this.month.isLeap() && !targetMonth.isLeap()) {
                     return true;
@@ -1688,12 +1688,12 @@ export class LunarDay extends AbstractTyme {
     }
 
     getYearSixtyCycle(): SixtyCycle {
-        const solarDay = this.getSolarDay();
-        const solarYear = solarDay.getMonth().getYear().getYear();
-        const springSolarDay = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarDay();
-        const lunarYear = this.month.getYear();
-        const year = lunarYear.getYear();
-        let sixtyCycle = lunarYear.getSixtyCycle();
+        const solarDay: SolarDay = this.getSolarDay();
+        const solarYear: number = solarDay.getMonth().getYear().getYear();
+        const springSolarDay: SolarDay = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarDay();
+        const lunarYear: LunarYear = this.month.getYear();
+        const year: number = lunarYear.getYear();
+        let sixtyCycle: SixtyCycle = lunarYear.getSixtyCycle();
         if (year === solarYear) {
             if (solarDay.isBefore(springSolarDay)) {
                 sixtyCycle = sixtyCycle.next(-1);
@@ -1707,10 +1707,10 @@ export class LunarDay extends AbstractTyme {
     }
 
     getMonthSixtyCycle(): SixtyCycle {
-        const solarDay = this.getSolarDay();
-        const year = solarDay.getMonth().getYear().getYear();
-        const term = solarDay.getTerm();
-        let index = term.getIndex() - 3;
+        const solarDay: SolarDay = this.getSolarDay();
+        const year: number = solarDay.getMonth().getYear().getYear();
+        const term: SolarTerm = solarDay.getTerm();
+        let index: number = term.getIndex() - 3;
         if (index < 0 && term.getJulianDay().getSolarDay().isAfter(SolarTerm.fromIndex(year, 3).getJulianDay().getSolarDay())) {
             index += 24;
         }
@@ -1718,7 +1718,7 @@ export class LunarDay extends AbstractTyme {
     }
 
     getSixtyCycle(): SixtyCycle {
-        const offset = ~~(this.month.getFirstJulianDay().next(this.day - 12).getDay());
+        const offset: number = ~~(this.month.getFirstJulianDay().next(this.day - 12).getDay());
         return SixtyCycle.fromName(HeavenStem.fromIndex(offset).getName() + EarthBranch.fromIndex(offset).getName());
     }
 
@@ -1731,20 +1731,20 @@ export class LunarDay extends AbstractTyme {
     }
 
     getNineStar(): NineStar {
-        const solar = this.getSolarDay();
-        const dongZhi = SolarTerm.fromIndex(solar.getMonth().getYear().getYear(), 0);
-        const xiaZhi = dongZhi.next(12);
-        const dongZhi2 = dongZhi.next(24);
-        const dongZhiSolar = dongZhi.getJulianDay().getSolarDay();
-        const xiaZhiSolar = xiaZhi.getJulianDay().getSolarDay();
-        const dongZhiSolar2 = dongZhi2.getJulianDay().getSolarDay();
-        const dongZhiIndex = dongZhiSolar.getLunarDay().getSixtyCycle().getIndex();
-        const xiaZhiIndex = xiaZhiSolar.getLunarDay().getSixtyCycle().getIndex();
-        const dongZhiIndex2 = dongZhiSolar2.getLunarDay().getSixtyCycle().getIndex();
-        const solarShunBai = dongZhiSolar.next(dongZhiIndex > 29 ? 60 - dongZhiIndex : -dongZhiIndex);
-        const solarShunBai2 = dongZhiSolar2.next(dongZhiIndex2 > 29 ? 60 - dongZhiIndex2 : -dongZhiIndex2);
-        const solarNiZi = xiaZhiSolar.next(xiaZhiIndex > 29 ? 60 - xiaZhiIndex : -xiaZhiIndex);
-        let offset = 0;
+        const solar: SolarDay = this.getSolarDay();
+        const dongZhi: SolarTerm = SolarTerm.fromIndex(solar.getMonth().getYear().getYear(), 0);
+        const xiaZhi: SolarTerm = dongZhi.next(12);
+        const dongZhi2: SolarTerm = dongZhi.next(24);
+        const dongZhiSolar: SolarDay = dongZhi.getJulianDay().getSolarDay();
+        const xiaZhiSolar: SolarDay = xiaZhi.getJulianDay().getSolarDay();
+        const dongZhiSolar2: SolarDay = dongZhi2.getJulianDay().getSolarDay();
+        const dongZhiIndex: number = dongZhiSolar.getLunarDay().getSixtyCycle().getIndex();
+        const xiaZhiIndex: number = xiaZhiSolar.getLunarDay().getSixtyCycle().getIndex();
+        const dongZhiIndex2: number = dongZhiSolar2.getLunarDay().getSixtyCycle().getIndex();
+        const solarShunBai: SolarDay = dongZhiSolar.next(dongZhiIndex > 29 ? 60 - dongZhiIndex : -dongZhiIndex);
+        const solarShunBai2: SolarDay = dongZhiSolar2.next(dongZhiIndex2 > 29 ? 60 - dongZhiIndex2 : -dongZhiIndex2);
+        const solarNiZi: SolarDay = xiaZhiSolar.next(xiaZhiIndex > 29 ? 60 - xiaZhiIndex : -xiaZhiIndex);
+        let offset: number = 0;
         if (!solar.isBefore(solarShunBai) && solar.isBefore(solarNiZi)) {
             offset = solar.subtract(solarShunBai);
         } else if (!solar.isBefore(solarNiZi) && solar.isBefore(solarShunBai2)) {
@@ -1758,7 +1758,7 @@ export class LunarDay extends AbstractTyme {
     }
 
     getJupiterDirection(): Direction {
-        const index = this.getSixtyCycle().getIndex();
+        const index: number = this.getSixtyCycle().getIndex();
         if (index % 12 < 6) {
             return Direction.fromIndex([2, 8, 4, 6, 0][~~(index / 12)]);
         }
@@ -1782,7 +1782,7 @@ export class LunarDay extends AbstractTyme {
     }
 
     getFestival(): LunarFestival | null {
-        const m = this.getMonth();
+        const m: LunarMonth = this.getMonth();
         return LunarFestival.fromYmd(m.getYear().getYear(), m.getMonthWithLeap(), this.day);
     }
 
@@ -1847,17 +1847,17 @@ export class LunarHour extends AbstractTyme {
     }
 
     next(n: number): LunarHour {
-        const h = this.hour + n * 2;
-        const diff = h < 0 ? -1 : 1;
-        let hour = Math.abs(h);
-        let days = ~~(hour / 24) * diff;
+        const h: number = this.hour + n * 2;
+        const diff: number = h < 0 ? -1 : 1;
+        let hour: number = Math.abs(h);
+        let days: number = ~~(hour / 24) * diff;
         hour = (hour % 24) * diff;
         if (hour < 0) {
             hour += 24;
             days--;
         }
-        const d = this.day.next(days);
-        const month = d.getMonth();
+        const d: LunarDay = this.day.next(days);
+        const month: LunarMonth = d.getMonth();
         return LunarHour.fromYmdHms(month.getYear().getYear(), month.getMonthWithLeap(), d.getDay(), hour, this.minute, this.second);
     }
 
@@ -1865,9 +1865,9 @@ export class LunarHour extends AbstractTyme {
         if (!this.day.equals(target.getDay())) {
             return this.day.isBefore(target.getDay());
         }
-        const bHour = target.getHour();
+        const bHour: number = target.getHour();
         if (this.hour === bHour) {
-            const bMinute = target.getMinute();
+            const bMinute: number = target.getMinute();
             return this.minute === bMinute ? this.second < target.getSecond() : this.minute < bMinute;
         }
         return this.hour < bHour;
@@ -1877,21 +1877,21 @@ export class LunarHour extends AbstractTyme {
         if (!this.day.equals(target.getDay())) {
             return this.day.isAfter(target.getDay());
         }
-        const bHour = target.getHour();
+        const bHour: number = target.getHour();
         if (this.hour === bHour) {
-            const bMinute = target.getMinute();
+            const bMinute: number = target.getMinute();
             return this.minute === bMinute ? this.second > target.getSecond() : this.minute > bMinute;
         }
         return this.hour > bHour;
     }
 
     getYearSixtyCycle(): SixtyCycle {
-        const solarTime = this.getSolarTime();
-        const solarYear = this.day.getSolarDay().getMonth().getYear().getYear();
-        const springSolarTime = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarTime();
-        const lunarYear = this.day.getMonth().getYear();
-        const year = lunarYear.getYear();
-        let sixtyCycle = lunarYear.getSixtyCycle();
+        const solarTime: SolarTime = this.getSolarTime();
+        const solarYear: number = this.day.getSolarDay().getMonth().getYear().getYear();
+        const springSolarTime: SolarTime = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarTime();
+        const lunarYear: LunarYear = this.day.getMonth().getYear();
+        const year: number = lunarYear.getYear();
+        let sixtyCycle: SixtyCycle = lunarYear.getSixtyCycle();
         if (year === solarYear) {
             if (solarTime.isBefore(springSolarTime)) {
                 sixtyCycle = sixtyCycle.next(-1);
@@ -1905,10 +1905,10 @@ export class LunarHour extends AbstractTyme {
     }
 
     getMonthSixtyCycle(): SixtyCycle {
-        const solarTime = this.getSolarTime();
-        const year = solarTime.getDay().getMonth().getYear().getYear();
-        const term = solarTime.getTerm();
-        let index = term.getIndex() - 3;
+        const solarTime: SolarTime = this.getSolarTime();
+        const year: number = solarTime.getDay().getMonth().getYear().getYear();
+        const term: SolarTerm = solarTime.getTerm();
+        let index: number = term.getIndex() - 3;
         if (index < 0 && term.getJulianDay().getSolarTime().isAfter(SolarTerm.fromIndex(year, 3).getJulianDay().getSolarTime())) {
             index += 24;
         }
@@ -1916,32 +1916,32 @@ export class LunarHour extends AbstractTyme {
     }
 
     getDaySixtyCycle(): SixtyCycle {
-        const day = this.day.getSixtyCycle();
+        const day: SixtyCycle = this.day.getSixtyCycle();
         return this.hour > 22 ? day.next(1) : day;
     }
 
     getSixtyCycle(): SixtyCycle {
-        const earthBranchIndex = this.getIndexInDay() % 12;
-        const heavenStemIndex = this.getDaySixtyCycle().getHeavenStem().getIndex() % 5 * 2 + earthBranchIndex;
+        const earthBranchIndex: number = this.getIndexInDay() % 12;
+        const heavenStemIndex: number = this.getDaySixtyCycle().getHeavenStem().getIndex() % 5 * 2 + earthBranchIndex;
         return SixtyCycle.fromName(HeavenStem.fromIndex(heavenStemIndex).getName() + EarthBranch.fromIndex(earthBranchIndex).getName());
     }
 
     getNineStar(): NineStar {
-        const solar = this.day.getSolarDay();
-        const dongZhi = SolarTerm.fromIndex(solar.getMonth().getYear().getYear(), 0);
-        const xiaZhi = dongZhi.next(12);
-        const asc = !solar.isBefore(dongZhi.getJulianDay().getSolarDay()) && solar.isBefore(xiaZhi.getJulianDay().getSolarDay());
-        let start = [8, 5, 2][this.day.getSixtyCycle().getEarthBranch().getIndex() % 3];
+        const solar: SolarDay = this.day.getSolarDay();
+        const dongZhi: SolarTerm = SolarTerm.fromIndex(solar.getMonth().getYear().getYear(), 0);
+        const xiaZhi: SolarTerm = dongZhi.next(12);
+        const asc: boolean = !solar.isBefore(dongZhi.getJulianDay().getSolarDay()) && solar.isBefore(xiaZhi.getJulianDay().getSolarDay());
+        let start: number = [8, 5, 2][this.day.getSixtyCycle().getEarthBranch().getIndex() % 3];
         if (asc) {
             start = 8 - start;
         }
-        const earthBranchIndex = this.getIndexInDay() % 12;
+        const earthBranchIndex: number = this.getIndexInDay() % 12;
         return NineStar.fromIndex(start + (asc ? earthBranchIndex : -earthBranchIndex));
     }
 
     getSolarTime(): SolarTime {
-        const d = this.day.getSolarDay();
-        const m = d.getMonth();
+        const d: SolarDay = this.day.getSolarDay();
+        const m: SolarMonth = d.getMonth();
         return SolarTime.fromYmdHms(m.getYear().getYear(), m.getMonth(), d.getDay(), this.hour, this.minute, this.second);
     }
 
@@ -1969,9 +1969,9 @@ export class JulianDay extends AbstractTyme {
     }
 
     static fromYmdHms(year: number, month: number, day: number, hour: number, minute: number, second: number): JulianDay {
-        const d = day + ((second / 60 + minute) / 60 + hour) / 24;
-        let n = 0;
-        const g = year * 372 + month * 31 + ~~(d) >= 588829;
+        const d: number = day + ((second / 60 + minute) / 60 + hour) / 24;
+        let n: number = 0;
+        const g: boolean = year * 372 + month * 31 + ~~(d) >= 588829;
         if (month <= 2) {
             month += 12;
             year--;
@@ -1996,8 +1996,8 @@ export class JulianDay extends AbstractTyme {
     }
 
     getSolarDay(): SolarDay {
-        let d = ~~(this.day + 0.5);
-        let f = this.day + 0.5 - d;
+        let d: number = ~~(this.day + 0.5);
+        let f: number = this.day + 0.5 - d;
         let c;
 
         if (d >= 2299161) {
@@ -2005,11 +2005,11 @@ export class JulianDay extends AbstractTyme {
             d += 1 + c - ~~(c / 4);
         }
         d += 1524;
-        let year = ~~((d - 122.1) / 365.25);
+        let year: number = ~~((d - 122.1) / 365.25);
         d -= ~~(365.25 * year);
-        let month = ~~(d / 30.601);
+        let month: number = ~~(d / 30.601);
         d -= ~~(30.601 * month);
-        let day = d;
+        let day: number = d;
         if (month > 13) {
             month -= 13;
             year -= 4715;
@@ -2018,15 +2018,15 @@ export class JulianDay extends AbstractTyme {
             year -= 4716;
         }
         f *= 24;
-        let hour = ~~(f);
+        let hour: number = ~~(f);
 
         f -= hour;
         f *= 60;
-        let minute = ~~(f);
+        let minute: number = ~~(f);
 
         f -= minute;
         f *= 60;
-        const second = Math.round(f);
+        const second: number = Math.round(f);
         if (second > 59) {
             minute++;
         }
@@ -2040,8 +2040,8 @@ export class JulianDay extends AbstractTyme {
     }
 
     getSolarTime(): SolarTime {
-        let d = ~~(this.day + 0.5);
-        let f = this.day + 0.5 - d;
+        let d: number = ~~(this.day + 0.5);
+        let f: number = this.day + 0.5 - d;
         let c;
 
         if (d >= 2299161) {
@@ -2049,11 +2049,11 @@ export class JulianDay extends AbstractTyme {
             d += 1 + c - ~~(c / 4);
         }
         d += 1524;
-        let year = ~~((d - 122.1) / 365.25);
+        let year: number = ~~((d - 122.1) / 365.25);
         d -= ~~(365.25 * year);
-        let month = ~~(d / 30.601);
+        let month: number = ~~(d / 30.601);
         d -= ~~(30.601 * month);
-        let day = d;
+        let day: number = d;
         if (month > 13) {
             month -= 13;
             year -= 4715;
@@ -2062,15 +2062,15 @@ export class JulianDay extends AbstractTyme {
             year -= 4716;
         }
         f *= 24;
-        let hour = ~~(f);
+        let hour: number = ~~(f);
 
         f -= hour;
         f *= 60;
-        let minute = ~~(f);
+        let minute: number = ~~(f);
 
         f -= minute;
         f *= 60;
-        let second = Math.round(f);
+        let second: number = Math.round(f);
         if (second > 59) {
             second -= 60;
             minute++;
@@ -2371,9 +2371,9 @@ export class ShouXingUtil {
     private static SHUO_KB: number[] = [1457698.231017, 29.53067166, 1546082.512234, 29.53085106, 1640640.735300, 29.53060000, 1642472.151543, 29.53085439, 1683430.509300, 29.53086148, 1752148.041079, 29.53085097, 1807665.420323, 29.53059851, 1883618.114100, 29.53060000, 1907360.704700, 29.53060000, 1936596.224900, 29.53060000, 1939135.675300, 29.53060000, 1947168.00];
     private static SB: string = ShouXingUtil.decode('EqoFscDcrFpmEsF2DfFideFelFpFfFfFiaipqti1ksttikptikqckstekqttgkqttgkqteksttikptikq2fjstgjqttjkqttgkqtekstfkptikq2tijstgjiFkirFsAeACoFsiDaDiADc1AFbBfgdfikijFifegF1FhaikgFag1E2btaieeibggiffdeigFfqDfaiBkF1kEaikhkigeidhhdiegcFfakF1ggkidbiaedksaFffckekidhhdhdikcikiakicjF1deedFhFccgicdekgiFbiaikcfi1kbFibefgEgFdcFkFeFkdcfkF1kfkcickEiFkDacFiEfbiaejcFfffkhkdgkaiei1ehigikhdFikfckF1dhhdikcfgjikhfjicjicgiehdikcikggcifgiejF1jkieFhegikggcikFegiegkfjebhigikggcikdgkaFkijcfkcikfkcifikiggkaeeigefkcdfcfkhkdgkegieidhijcFfakhfgeidieidiegikhfkfckfcjbdehdikggikgkfkicjicjF1dbidikFiggcifgiejkiegkigcdiegfggcikdbgfgefjF1kfegikggcikdgFkeeijcfkcikfkekcikdgkabhkFikaffcfkhkdgkegbiaekfkiakicjhfgqdq2fkiakgkfkhfkfcjiekgFebicggbedF1jikejbbbiakgbgkacgiejkijjgigfiakggfggcibFifjefjF1kfekdgjcibFeFkijcfkfhkfkeaieigekgbhkfikidfcjeaibgekgdkiffiffkiakF1jhbakgdki1dj1ikfkicjicjieeFkgdkicggkighdF1jfgkgfgbdkicggfggkidFkiekgijkeigfiskiggfaidheigF1jekijcikickiggkidhhdbgcfkFikikhkigeidieFikggikhkffaffijhidhhakgdkhkijF1kiakF1kfheakgdkifiggkigicjiejkieedikgdfcggkigieeiejfgkgkigbgikicggkiaideeijkefjeijikhkiggkiaidheigcikaikffikijgkiahi1hhdikgjfifaakekighie1hiaikggikhkffakicjhiahaikggikhkijF1kfejfeFhidikggiffiggkigicjiekgieeigikggiffiggkidheigkgfjkeigiegikifiggkidhedeijcfkFikikhkiggkidhh1ehigcikaffkhkiggkidhh1hhigikekfiFkFikcidhh1hitcikggikhkfkicjicghiediaikggikhkijbjfejfeFhaikggifikiggkigiejkikgkgieeigikggiffiggkigieeigekijcijikggifikiggkideedeijkefkfckikhkiggkidhh1ehijcikaffkhkiggkidhh1hhigikhkikFikfckcidhh1hiaikgjikhfjicjicgiehdikcikggifikigiejfejkieFhegikggifikiggfghigkfjeijkhigikggifikiggkigieeijcijcikfksikifikiggkidehdeijcfdckikhkiggkhghh1ehijikifffffkhsFngErD1pAfBoDd1BlEtFqA2AqoEpDqElAEsEeB2BmADlDkqBtC1FnEpDqnEmFsFsAFnllBbFmDsDiCtDmAB2BmtCgpEplCpAEiBiEoFqFtEqsDcCnFtADnFlEgdkEgmEtEsCtDmADqFtAFrAtEcCqAE1BoFqC1F1DrFtBmFtAC2ACnFaoCgADcADcCcFfoFtDlAFgmFqBq2bpEoAEmkqnEeCtAE1bAEqgDfFfCrgEcBrACfAAABqAAB1AAClEnFeCtCgAADqDoBmtAAACbFiAAADsEtBqAB2FsDqpFqEmFsCeDtFlCeDtoEpClEqAAFrAFoCgFmFsFqEnAEcCqFeCtFtEnAEeFtAAEkFnErAABbFkADnAAeCtFeAfBoAEpFtAABtFqAApDcCGJ');
 
-    private static decode(s: string) {
-        const o = '0000000000';
-        const o2 = o + o;
+    private static decode(s: string): string {
+        const o: string = '0000000000';
+        const o2: string = o + o;
         s = s.replace(/J/g, '00');
         s = s.replace(/I/g, '000');
         s = s.replace(/H/g, '0000');
@@ -2408,8 +2408,8 @@ export class ShouXingUtil {
     }
 
     static nutationLon2(t: number): number {
-        let a = -1.742 * t, t2 = t * t, dl = 0;
-        for (let i = 0, j = ShouXingUtil.NUT_B.length; i < j; i += 5) {
+        let a: number = -1.742 * t, t2: number = t * t, dl: number = 0;
+        for (let i: number = 0, j: number = ShouXingUtil.NUT_B.length; i < j; i += 5) {
             dl += (ShouXingUtil.NUT_B[i + 3] + a) * Math.sin(ShouXingUtil.NUT_B[i] + ShouXingUtil.NUT_B[i + 1] * t + ShouXingUtil.NUT_B[i + 2] * t2);
             a = 0;
         }
@@ -2418,13 +2418,13 @@ export class ShouXingUtil {
 
     static eLon(t: number, n: number): number {
         t /= 10;
-        let v = 0, tn = 1;
+        let v: number = 0, tn: number = 1;
         let n1, n2;
         let m;
         let c;
-        let pn = 1;
-        let n0, m0 = ShouXingUtil.XL0[pn + 1] - ShouXingUtil.XL0[pn];
-        for (let i = 0; i < 6; i++, tn *= t) {
+        let pn: number = 1;
+        let n0, m0: number = ShouXingUtil.XL0[pn + 1] - ShouXingUtil.XL0[pn];
+        for (let i: number = 0; i < 6; i++, tn *= t) {
             n1 = ~~(ShouXingUtil.XL0[pn + i]);
             n2 = ~~(ShouXingUtil.XL0[pn + 1 + i]);
             n0 = n2 - n1;
@@ -2443,29 +2443,29 @@ export class ShouXingUtil {
                 }
             }
             c = 0;
-            for (let j = n1; j < m; j += 3) {
+            for (let j: number = n1; j < m; j += 3) {
                 c += ShouXingUtil.XL0[j] * Math.cos(ShouXingUtil.XL0[j + 1] + t * ShouXingUtil.XL0[j + 2]);
             }
             v += c * tn;
         }
         v /= ShouXingUtil.XL0[0];
-        let t2 = t * t;
+        let t2: number = t * t;
         v += (-0.0728 - 2.7702 * t - 1.1019 * t2 - 0.0996 * t2 * t) / ShouXingUtil.SECOND_PER_RAD;
         return v;
     }
 
     static mLon(t: number, n: number): number {
-        let ob = ShouXingUtil.XL1;
-        let obl = ob[0].length;
-        let tn = 1;
-        let v = 0;
+        let ob: number[][] = ShouXingUtil.XL1;
+        let obl: number = ob[0].length;
+        let tn: number = 1;
+        let v: number = 0;
         let j;
         let c;
-        let t2 = t * t,
-            t3 = t2 * t,
-            t4 = t3 * t,
-            t5 = t4 * t,
-            tx = t - 10;
+        let t2: number = t * t,
+            t3: number = t2 * t,
+            t4: number = t3 * t,
+            t5: number = t4 * t,
+            tx: number = t - 10;
         v += (3.81034409 + 8399.684730072 * t - 3.319e-05 * t2 + 3.11e-08 * t3 - 2.033e-10 * t4) * ShouXingUtil.SECOND_PER_RAD;
         v += 5028.792262 * t + 1.1124406 * t2 + 0.00007699 * t3 - 0.000023479 * t4 - 0.0000000178 * t5;
         if (tx > 0) {
@@ -2479,10 +2479,10 @@ export class ShouXingUtil {
         if (n < 0) {
             n = obl;
         }
-        for (let i = 0, x = ob.length; i < x; i++, tn *= t) {
-            let f = ob[i];
-            let l = f.length;
-            let m = ~~((n * l / obl + 0.5));
+        for (let i: number = 0, x: number = ob.length; i < x; i++, tn *= t) {
+            let f: number[] = ob[i];
+            let l: number = f.length;
+            let m: number = ~~((n * l / obl + 0.5));
             if (i > 0) {
                 m += 6;
             }
@@ -2499,14 +2499,14 @@ export class ShouXingUtil {
     }
 
     static gxcSunLon(t: number): number {
-        let t2 = t * t;
-        let v = -0.043126 + 628.301955 * t - 0.000002732 * t2;
-        let e = 0.016708634 - 0.000042037 * t - 0.0000001267 * t2;
+        let t2: number = t * t;
+        let v: number = -0.043126 + 628.301955 * t - 0.000002732 * t2;
+        let e: number = 0.016708634 - 0.000042037 * t - 0.0000001267 * t2;
         return -20.49552 * (1 + e * Math.cos(v)) / ShouXingUtil.SECOND_PER_RAD;
     }
 
     static ev(t: number): number {
-        let f = 628.307585 * t;
+        let f: number = 628.307585 * t;
         return 628.332 + 21 * Math.sin(1.527 + f) + 0.44 * Math.sin(1.48 + f * 2) + 0.129 * Math.sin(5.82 + f) * t + 0.00055 * Math.sin(4.21 + f) * t * t;
     }
 
@@ -2515,16 +2515,16 @@ export class ShouXingUtil {
     }
 
     static dtExt(y: number, jsd: number): number {
-        let dy = (y - 1820) / 100;
+        let dy: number = (y - 1820) / 100;
         return -20 + jsd * dy * dy;
     }
 
     static dtCalc(y: number): number {
-        let size = ShouXingUtil.DT_AT.length;
-        let y0 = ShouXingUtil.DT_AT[size - 2];
-        let t0 = ShouXingUtil.DT_AT[size - 1];
+        const size: number = ShouXingUtil.DT_AT.length;
+        let y0: number = ShouXingUtil.DT_AT[size - 2];
+        let t0: number = ShouXingUtil.DT_AT[size - 1];
         if (y >= y0) {
-            let jsd = 31;
+            let jsd: number = 31;
             if (y > y0 + 100) {
                 return ShouXingUtil.dtExt(y, jsd);
             }
@@ -2536,8 +2536,9 @@ export class ShouXingUtil {
                 break;
             }
         }
-        let t1 = (y - ShouXingUtil.DT_AT[i]) / (ShouXingUtil.DT_AT[i + 5] - ShouXingUtil.DT_AT[i]) * 10, t2 = t1 * t1,
-            t3 = t2 * t1;
+        let t1: number = (y - ShouXingUtil.DT_AT[i]) / (ShouXingUtil.DT_AT[i + 5] - ShouXingUtil.DT_AT[i]) * 10,
+            t2 = t1 * t1,
+            t3: number = t2 * t1;
         return ShouXingUtil.DT_AT[i + 1] + ShouXingUtil.DT_AT[i + 2] * t1 + ShouXingUtil.DT_AT[i + 3] * t2 + ShouXingUtil.DT_AT[i + 4] * t3;
     }
 
@@ -2546,13 +2547,13 @@ export class ShouXingUtil {
     }
 
     static mv(t: number): number {
-        let v = 8399.71 - 914 * Math.sin(0.7848 + 8328.691425 * t + 0.0001523 * t * t);
+        let v: number = 8399.71 - 914 * Math.sin(0.7848 + 8328.691425 * t + 0.0001523 * t * t);
         v -= 179 * Math.sin(2.543 + 15542.7543 * t) + 160 * Math.sin(0.1874 + 7214.0629 * t) + 62 * Math.sin(3.14 + 16657.3828 * t) + 34 * Math.sin(4.827 + 16866.9323 * t) + 22 * Math.sin(4.9 + 23871.4457 * t) + 12 * Math.sin(2.59 + 14914.4523 * t) + 7 * Math.sin(0.23 + 6585.7609 * t) + 5 * Math.sin(0.9 + 25195.624 * t) + 5 * Math.sin(2.32 - 7700.3895 * t) + 5 * Math.sin(3.88 + 8956.9934 * t) + 5 * Math.sin(0.49 + 7771.3771 * t);
         return v;
     }
 
     static saLonT(w: number): number {
-        let t, v = 628.3319653318;
+        let t, v: number = 628.3319653318;
         t = (w - 1.75347 - Math.PI) / v;
         v = ShouXingUtil.ev(t);
         t += (w - ShouXingUtil.saLon(t, 10)) / v;
@@ -2566,7 +2567,7 @@ export class ShouXingUtil {
     }
 
     static msaLonT(w: number): number {
-        let t, v = 7771.37714500204;
+        let t, v: number = 7771.37714500204;
         t = (w + 1.08472) / v;
         t += (w - ShouXingUtil.msaLon(t, 3, 3)) / v;
         v = ShouXingUtil.mv(t) - ShouXingUtil.ev(t);
@@ -2576,17 +2577,17 @@ export class ShouXingUtil {
     }
 
     static saLonT2(w: number): number {
-        const v = 628.3319653318;
-        let t = (w - 1.75347 - Math.PI) / v;
+        const v: number = 628.3319653318;
+        let t: number = (w - 1.75347 - Math.PI) / v;
         t -= (0.000005297 * t * t + 0.0334166 * Math.cos(4.669257 + 628.307585 * t) + 0.0002061 * Math.cos(2.67823 + 628.307585 * t) * t) / v;
         t += (w - ShouXingUtil.eLon(t, 8) - Math.PI + (20.5 + 17.2 * Math.sin(2.1824 - 33.75705 * t)) / ShouXingUtil.SECOND_PER_RAD) / v;
         return t;
     }
 
     static msaLonT2(w: number): number {
-        let t, v = 7771.37714500204;
+        let t, v: number = 7771.37714500204;
         t = (w + 1.08472) / v;
-        let l, t2 = t * t;
+        let l, t2: number = t * t;
         t -= (-0.00003309 * t2 + 0.10976 * Math.cos(0.784758 + 8328.6914246 * t + 0.000152292 * t2) + 0.02224 * Math.cos(0.18740 + 7214.0628654 * t - 0.00021848 * t2) - 0.03342 * Math.cos(4.669257 + 628.307585 * t)) / v;
         t2 = t * t;
         l = ShouXingUtil.mLon(t, 20) - (4.8950632 + 628.3319653318 * t + 0.000005297 * t2 + 0.0334166 * Math.cos(4.669257 + 628.307585 * t) + 0.0002061 * Math.cos(2.67823 + 628.307585 * t) * t + 0.000349 * Math.cos(4.6261 + 1256.61517 * t) - 20.5 / ShouXingUtil.SECOND_PER_RAD);
@@ -2596,9 +2597,9 @@ export class ShouXingUtil {
     }
 
     static qiHigh(w: number): number {
-        let t = ShouXingUtil.saLonT2(w) * 36525;
+        let t: number = ShouXingUtil.saLonT2(w) * 36525;
         t = t - ShouXingUtil.dtT(t) + ShouXingUtil.ONE_THIRD;
-        const v = ((t + 0.5) % 1) * ShouXingUtil.SECOND_PER_DAY;
+        const v: number = ((t + 0.5) % 1) * ShouXingUtil.SECOND_PER_DAY;
         if (v < 1200 || v > ShouXingUtil.SECOND_PER_DAY - 1200) {
             t = ShouXingUtil.saLonT(w) * 36525 - ShouXingUtil.dtT(t) + ShouXingUtil.ONE_THIRD;
         }
@@ -2606,9 +2607,9 @@ export class ShouXingUtil {
     }
 
     static shuoHigh(w: number): number {
-        let t = ShouXingUtil.msaLonT2(w) * 36525;
+        let t: number = ShouXingUtil.msaLonT2(w) * 36525;
         t = t - ShouXingUtil.dtT(t) + ShouXingUtil.ONE_THIRD;
-        let v = ((t + 0.5) % 1) * ShouXingUtil.SECOND_PER_DAY;
+        let v: number = ((t + 0.5) % 1) * ShouXingUtil.SECOND_PER_DAY;
         if (v < 1800 || v > ShouXingUtil.SECOND_PER_DAY - 1800) {
             t = ShouXingUtil.msaLonT(w) * 36525 - ShouXingUtil.dtT(t) + ShouXingUtil.ONE_THIRD;
         }
@@ -2616,27 +2617,27 @@ export class ShouXingUtil {
     }
 
     static qiLow(w: number): number {
-        const v = 628.3319653318;
-        let t = (w - 4.895062166) / v;
+        const v: number = 628.3319653318;
+        let t: number = (w - 4.895062166) / v;
         t -= (53 * t * t + 334116 * Math.cos(4.67 + 628.307585 * t) + 2061 * Math.cos(2.678 + 628.3076 * t) * t) / v / 10000000;
-        const n = 48950621.66 + 6283319653.318 * t + 53 * t * t + 334166 * Math.cos(4.669257 + 628.307585 * t) + 3489 * Math.cos(4.6261 + 1256.61517 * t) + 2060.6 * Math.cos(2.67823 + 628.307585 * t) * t - 994 - 834 * Math.sin(2.1824 - 33.75705 * t);
+        const n: number = 48950621.66 + 6283319653.318 * t + 53 * t * t + 334166 * Math.cos(4.669257 + 628.307585 * t) + 3489 * Math.cos(4.6261 + 1256.61517 * t) + 2060.6 * Math.cos(2.67823 + 628.307585 * t) * t - 994 - 834 * Math.sin(2.1824 - 33.75705 * t);
         t -= (n / 10000000 - w) / 628.332 + (32 * (t + 1.8) * (t + 1.8) - 20) / ShouXingUtil.SECOND_PER_DAY / 36525;
         return t * 36525 + ShouXingUtil.ONE_THIRD;
     }
 
     static shuoLow(w: number): number {
-        let v = 7771.37714500204;
-        let t = (w + 1.08472) / v;
+        let v: number = 7771.37714500204;
+        let t: number = (w + 1.08472) / v;
         t -= (-0.0000331 * t * t + 0.10976 * Math.cos(0.785 + 8328.6914 * t) + 0.02224 * Math.cos(0.187 + 7214.0629 * t) - 0.03342 * Math.cos(4.669 + 628.3076 * t)) / v + (32 * (t + 1.8) * (t + 1.8) - 20) / ShouXingUtil.SECOND_PER_DAY / 36525;
         return t * 36525 + ShouXingUtil.ONE_THIRD;
     }
 
     static calcShuo(jd: number): number {
-        let size = ShouXingUtil.SHUO_KB.length;
-        let d = 0;
-        let pc = 14, i;
+        let size: number = ShouXingUtil.SHUO_KB.length;
+        let d: number = 0;
+        let pc: number = 14, i;
         jd += 2451545;
-        let f1 = ShouXingUtil.SHUO_KB[0] - pc, f2 = ShouXingUtil.SHUO_KB[size - 1] - pc, f3 = 2436935;
+        let f1: number = ShouXingUtil.SHUO_KB[0] - pc, f2 = ShouXingUtil.SHUO_KB[size - 1] - pc, f3 = 2436935;
         if (jd < f1 || jd >= f3) {
             d = Math.floor(ShouXingUtil.shuoHigh(Math.floor((jd + pc - 2451551) / 29.5306) * ShouXingUtil.PI_2) + 0.5);
         } else if (jd >= f1 && jd < f2) {
@@ -2653,8 +2654,8 @@ export class ShouXingUtil {
             d -= 2451545;
         } else if (jd >= f2 && jd < f3) {
             d = Math.floor(ShouXingUtil.shuoLow(Math.floor((jd + pc - 2451551) / 29.5306) * ShouXingUtil.PI_2) + 0.5);
-            let from = Math.floor((jd - f2) / 29.5306);
-            let n = ShouXingUtil.SB.substring(from, from + 1);
+            let from: number = Math.floor((jd - f2) / 29.5306);
+            let n: string = ShouXingUtil.SB.substring(from, from + 1);
             if ('1' === n) {
                 d += 1;
             } else if ('2' === n) {
@@ -2665,11 +2666,11 @@ export class ShouXingUtil {
     }
 
     static calcQi(jd: number): number {
-        let size = ShouXingUtil.QI_KB.length;
-        let d = 0;
-        let pc = 7, i;
+        let size: number = ShouXingUtil.QI_KB.length;
+        let d: number = 0;
+        let pc: number = 7, i;
         jd += 2451545;
-        let f1 = ShouXingUtil.QI_KB[0] - pc, f2 = ShouXingUtil.QI_KB[size - 1] - pc, f3 = 2436935;
+        let f1: number = ShouXingUtil.QI_KB[0] - pc, f2 = ShouXingUtil.QI_KB[size - 1] - pc, f3 = 2436935;
         if (jd < f1 || jd >= f3) {
             d = Math.floor(ShouXingUtil.qiHigh(Math.floor((jd + pc - 2451259) / 365.2422 * 24) * Math.PI / 12) + 0.5);
         } else if (jd >= f1 && jd < f2) {
@@ -2686,8 +2687,8 @@ export class ShouXingUtil {
             d -= 2451545;
         } else if (jd >= f2 && jd < f3) {
             d = Math.floor(ShouXingUtil.qiLow(Math.floor((jd + pc - 2451259) / 365.2422 * 24) * Math.PI / 12) + 0.5);
-            let from = Math.floor((jd - f2) / 365.2422 * 24);
-            let n = ShouXingUtil.QB.substring(from, from + 1);
+            let from: number = Math.floor((jd - f2) / 365.2422 * 24);
+            let n: string = ShouXingUtil.QB.substring(from, from + 1);
             if ('1' === n) {
                 d += 1;
             } else if ('2' === n) {
@@ -2698,14 +2699,14 @@ export class ShouXingUtil {
     }
 
     static qiAccurate(w: number): number {
-        const t = ShouXingUtil.saLonT(w) * 36525;
+        const t: number = ShouXingUtil.saLonT(w) * 36525;
         return t - ShouXingUtil.dtT(t) + ShouXingUtil.ONE_THIRD;
     }
 
     static qiAccurate2(jd: number): number {
-        const d = Math.PI / 12;
-        const w = Math.floor((jd + 293) / 365.2422 * 24) * d;
-        const a = ShouXingUtil.qiAccurate(w);
+        const d: number = Math.PI / 12;
+        const w: number = Math.floor((jd + 293) / 365.2422 * 24) * d;
+        const a: number = ShouXingUtil.qiAccurate(w);
         if (a - jd > 5) {
             return ShouXingUtil.qiAccurate(w - d);
         }
@@ -2733,9 +2734,9 @@ export class SolarTerm extends LoopTyme {
     }
 
     protected initByYear(year: number, offset: number) {
-        const jd = Math.floor((year - 2000) * 365.2422 + 180);
+        const jd: number = Math.floor((year - 2000) * 365.2422 + 180);
         // 355是2000.12冬至，得到较靠近jd的冬至估计值
-        let w = Math.floor((jd - 355 + 183) / 365.2422) * 365.2422 + 355;
+        let w: number = Math.floor((jd - 355 + 183) / 365.2422) * 365.2422 + 355;
         if (ShouXingUtil.calcQi(w) > jd) {
             w -= 365.2422;
         }
@@ -2814,7 +2815,7 @@ export class SolarYear extends AbstractTyme {
 
     getMonths(): SolarMonth[] {
         const l: SolarMonth[] = [];
-        for (let i = 0; i < 12; i++) {
+        for (let i: number = 0; i < 12; i++) {
             l.push(SolarMonth.fromYm(this.year, i + 1));
         }
         return l;
@@ -2822,7 +2823,7 @@ export class SolarYear extends AbstractTyme {
 
     getSeasons(): SolarSeason[] {
         const l: SolarSeason[] = [];
-        for (let i = 0; i < 4; i++) {
+        for (let i: number = 0; i < 4; i++) {
             l.push(SolarSeason.fromIndex(this.year, i));
         }
         return l;
@@ -2830,7 +2831,7 @@ export class SolarYear extends AbstractTyme {
 
     getHalfYears(): SolarHalfYear[] {
         const l: SolarHalfYear[] = [];
-        for (let i = 0; i < 2; i++) {
+        for (let i: number = 0; i < 2; i++) {
             l.push(SolarHalfYear.fromIndex(this.year, i));
         }
         return l;
@@ -2872,14 +2873,14 @@ export class SolarHalfYear extends AbstractTyme {
     }
 
     next(n: number): SolarHalfYear {
-        const m = this.index + n;
+        const m: number = this.index + n;
         return SolarHalfYear.fromIndex(this.year.getYear() + ~~(m / 2), Math.abs(m % 2));
     }
 
     getMonths(): SolarMonth[] {
         const l: SolarMonth[] = [];
-        const y = this.year.getYear();
-        for (let i = 0; i < 6; i++) {
+        const y: number = this.year.getYear();
+        for (let i: number = 0; i < 6; i++) {
             l.push(SolarMonth.fromYm(y, this.index * 6 + i + 1));
         }
         return l;
@@ -2887,8 +2888,8 @@ export class SolarHalfYear extends AbstractTyme {
 
     getSeasons(): SolarSeason[] {
         const l: SolarSeason[] = [];
-        const y = this.year.getYear();
-        for (let i = 0; i < 2; i++) {
+        const y: number = this.year.getYear();
+        for (let i: number = 0; i < 2; i++) {
             l.push(SolarSeason.fromIndex(y, this.index * 2 + i));
         }
         return l;
@@ -2930,14 +2931,14 @@ export class SolarSeason extends AbstractTyme {
     }
 
     next(n: number): SolarSeason {
-        const m = this.index + n;
+        const m: number = this.index + n;
         return SolarSeason.fromIndex(this.year.getYear() + ~~(m / 4), Math.abs(m % 4));
     }
 
     getMonths(): SolarMonth[] {
         const l: SolarMonth[] = [];
-        const y = this.year.getYear();
-        for (let i = 0; i < 3; i++) {
+        const y: number = this.year.getYear();
+        for (let i: number = 0; i < 3; i++) {
             l.push(SolarMonth.fromYm(y, this.index * 3 + i + 1));
         }
         return l;
@@ -2975,7 +2976,7 @@ export class SolarMonth extends AbstractTyme {
         if (1582 === this.year.getYear() && 10 === this.month) {
             return 21;
         }
-        let d = SolarMonth.DAYS[this.getIndexInYear()];
+        let d: number = SolarMonth.DAYS[this.getIndexInYear()];
         //公历闰年2月多一天
         if (2 === this.month && this.year.isLeap()) {
             d++;
@@ -3007,8 +3008,8 @@ export class SolarMonth extends AbstractTyme {
         if (n == 0) {
             return SolarMonth.fromYm(this.year.getYear(), this.month);
         }
-        let m = this.month + n;
-        let y = this.year.getYear() + ~~(m / 12);
+        let m: number = this.month + n;
+        let y: number = this.year.getYear() + ~~(m / 12);
         m %= 12;
         if (m < 1) {
             m += 12;
@@ -3019,8 +3020,8 @@ export class SolarMonth extends AbstractTyme {
 
     getWeeks(start: number): SolarWeek[] {
         const l: SolarWeek[] = [];
-        const y = this.year.getYear();
-        for (let i = 0; i < this.getWeekCount(start); i++) {
+        const y: number = this.year.getYear();
+        for (let i: number = 0; i < this.getWeekCount(start); i++) {
             l.push(SolarWeek.fromYm(y, this.month, i, start));
         }
         return l;
@@ -3028,8 +3029,8 @@ export class SolarMonth extends AbstractTyme {
 
     getDays(): SolarDay[] {
         const l: SolarDay[] = [];
-        const y = this.year.getYear();
-        for (let i = 0; i < this.getDayCount(); i++) {
+        const y: number = this.year.getYear();
+        for (let i: number = 0; i < this.getDayCount(); i++) {
             l.push(SolarDay.fromYmd(y, this.month, i + 1));
         }
         return l;
@@ -3050,7 +3051,7 @@ export class SolarWeek extends AbstractTyme {
         if (start < 0 || start > 6) {
             throw new Error(`illegal solar week start: ${start}`);
         }
-        const m = SolarMonth.fromYm(year, month)
+        const m: SolarMonth = SolarMonth.fromYm(year, month)
         if (index >= m.getWeekCount(start)) {
             throw new Error(`illegal solar week index: ${index} in month: ${m.toString()}`);
         }
@@ -3084,15 +3085,15 @@ export class SolarWeek extends AbstractTyme {
     }
 
     next(n: number): SolarWeek {
-        const startIndex = this.start.getIndex();
+        const startIndex: number = this.start.getIndex();
         if (n === 0) {
             return SolarWeek.fromYm(this.month.getYear().getYear(), this.month.getMonth(), this.index, startIndex);
         }
-        let d = this.index + n;
-        let m = this.month;
-        let weeksInMonth = m.getWeekCount(startIndex);
-        const forward = n > 0;
-        const add = forward ? 1 : -1;
+        let d: number = this.index + n;
+        let m: SolarMonth = this.month;
+        let weeksInMonth: number = m.getWeekCount(startIndex);
+        const forward: boolean = n > 0;
+        const add: number = forward ? 1 : -1;
         while (forward ? (d >= weeksInMonth) : (d < 0)) {
             if (forward) {
                 d -= weeksInMonth;
@@ -3117,16 +3118,16 @@ export class SolarWeek extends AbstractTyme {
     }
 
     getFirstDay(): SolarDay {
-        const m = this.getMonth();
-        const firstDay = SolarDay.fromYmd(m.getYear().getYear(), m.getMonth(), 1);
+        const m: SolarMonth = this.getMonth();
+        const firstDay: SolarDay = SolarDay.fromYmd(m.getYear().getYear(), m.getMonth(), 1);
         return firstDay.next(this.index * 7 - this.indexOf(firstDay.getWeek().getIndex() - this.start.getIndex(), 7));
     }
 
     getDays(): SolarDay[] {
         const l: SolarDay[] = [];
-        const d = this.getFirstDay();
+        const d: SolarDay = this.getFirstDay();
         l.push(d);
-        for (let i = 1; i < 7; i++) {
+        for (let i: number = 1; i < 7; i++) {
             l.push(d.next(i));
         }
         return l;
@@ -3173,8 +3174,8 @@ export class SolarDay extends AbstractTyme {
     }
 
     getConstellation(): Constellation {
-        let index = 11;
-        const y = this.month.getMonth() * 100 + this.day;
+        let index: number = 11;
+        const y: number = this.month.getMonth() * 100 + this.day;
         if (y >= 321 && y <= 419) {
             index = 0;
         } else if (y >= 420 && y <= 520) {
@@ -3214,31 +3215,31 @@ export class SolarDay extends AbstractTyme {
     }
 
     isBefore(target: SolarDay): boolean {
-        const aYear = this.month.getYear().getYear();
-        const targetMonth = target.getMonth();
-        const bYear = targetMonth.getYear().getYear();
+        const aYear: number = this.month.getYear().getYear();
+        const targetMonth: SolarMonth = target.getMonth();
+        const bYear: number = targetMonth.getYear().getYear();
         if (aYear === bYear) {
-            const aMonth = this.month.getMonth();
-            const bMonth = targetMonth.getMonth();
+            const aMonth: number = this.month.getMonth();
+            const bMonth: number = targetMonth.getMonth();
             return aMonth === bMonth ? this.day < target.getDay() : aMonth < bMonth;
         }
         return aYear < bYear;
     }
 
     isAfter(target: SolarDay): boolean {
-        const aYear = this.month.getYear().getYear();
-        const targetMonth = target.getMonth();
-        const bYear = targetMonth.getYear().getYear();
+        const aYear: number = this.month.getYear().getYear();
+        const targetMonth: SolarMonth = target.getMonth();
+        const bYear: number = targetMonth.getYear().getYear();
         if (aYear === bYear) {
-            const aMonth = this.month.getMonth();
-            const bMonth = targetMonth.getMonth();
+            const aMonth: number = this.month.getMonth();
+            const bMonth: number = targetMonth.getMonth();
             return aMonth === bMonth ? this.day > target.getDay() : aMonth > bMonth;
         }
         return aYear > bYear;
     }
 
     getTerm(): SolarTerm {
-        let term = SolarTerm.fromIndex(this.month.getYear().getYear() + 1, 0);
+        let term: SolarTerm = SolarTerm.fromIndex(this.month.getYear().getYear() + 1, 0);
         while (this.isBefore(term.getJulianDay().getSolarDay())) {
             term = term.next(-1);
         }
@@ -3246,9 +3247,9 @@ export class SolarDay extends AbstractTyme {
     }
 
     getPhenologyDay(): PhenologyDay {
-        const term = this.getTerm();
-        let dayIndex = this.subtract(term.getJulianDay().getSolarDay());
-        let index = ~~(dayIndex / 5);
+        const term: SolarTerm = this.getTerm();
+        let dayIndex: number = this.subtract(term.getJulianDay().getSolarDay());
+        let index: number = ~~(dayIndex / 5);
         if (index > 2) {
             index = 2;
         }
@@ -3257,17 +3258,17 @@ export class SolarDay extends AbstractTyme {
     }
 
     getDogDay(): DogDay | null {
-        const xiaZhi = SolarTerm.fromIndex(this.month.getYear().getYear(), 12);
+        const xiaZhi: SolarTerm = SolarTerm.fromIndex(this.month.getYear().getYear(), 12);
         // 第1个庚日
-        let start = xiaZhi.getJulianDay().getSolarDay();
-        let add = 6 - start.getLunarDay().getSixtyCycle().getHeavenStem().getIndex();
+        let start: SolarDay = xiaZhi.getJulianDay().getSolarDay();
+        let add: number = 6 - start.getLunarDay().getSixtyCycle().getHeavenStem().getIndex();
         if (add < 0) {
             add += 10;
         }
         // 第3个庚日，即初伏第1天
         add += 20;
         start = start.next(add);
-        let days = this.subtract(start);
+        let days: number = this.subtract(start);
         // 初伏以前
         if (days < 0) {
             return null;
@@ -3299,27 +3300,27 @@ export class SolarDay extends AbstractTyme {
     }
 
     getNineDay(): NineDay | null {
-        const year = this.month.getYear().getYear();
-        let start = SolarTerm.fromIndex(year + 1, 0).getJulianDay().getSolarDay();
+        const year: number = this.month.getYear().getYear();
+        let start: SolarDay = SolarTerm.fromIndex(year + 1, 0).getJulianDay().getSolarDay();
         if (this.isBefore(start)) {
             start = SolarTerm.fromIndex(year, 0).getJulianDay().getSolarDay();
         }
-        const end = start.next(81);
+        const end: SolarDay = start.next(81);
         if (this.isBefore(start) || !this.isBefore(end)) {
             return null;
         }
-        const days = this.subtract(start);
+        const days: number = this.subtract(start);
         return new NineDay(Nine.fromIndex(~~(days / 9)), days % 9);
     }
 
     getIndexInYear(): number {
-        const m = this.month.getMonth();
-        const y = this.month.getYear().getYear();
-        let days = 0;
-        for (let i = 1; i < m; i++) {
+        const m: number = this.month.getMonth();
+        const y: number = this.month.getYear().getYear();
+        let days: number = 0;
+        for (let i: number = 1; i < m; i++) {
             days += SolarMonth.fromYm(y, i).getDayCount();
         }
-        let d = this.day;
+        let d: number = this.day;
         if (1582 === y && 10 === m) {
             if (d >= 15) {
                 d -= 10;
@@ -3337,8 +3338,8 @@ export class SolarDay extends AbstractTyme {
     }
 
     getLunarDay(): LunarDay {
-        let m = LunarMonth.fromYm(this.month.getYear().getYear(), this.month.getMonth()).next(-3);
-        let days = this.subtract(m.getFirstJulianDay().getSolarDay());
+        let m: LunarMonth = LunarMonth.fromYm(this.month.getYear().getYear(), this.month.getMonth()).next(-3);
+        let days: number = this.subtract(m.getFirstJulianDay().getSolarDay());
         while (days >= m.getDayCount()) {
             m = m.next(1);
             days = this.subtract(m.getFirstJulianDay().getSolarDay());
@@ -3347,12 +3348,12 @@ export class SolarDay extends AbstractTyme {
     }
 
     getLegalHoliday(): LegalHoliday | null {
-        const m = this.getMonth();
+        const m: SolarMonth = this.getMonth();
         return LegalHoliday.fromYmd(m.getYear().getYear(), m.getMonth(), this.day);
     }
 
     getFestival(): SolarFestival | null {
-        const m = this.getMonth();
+        const m: SolarMonth = this.getMonth();
         return SolarFestival.fromYmd(m.getYear().getYear(), m.getMonth(), this.day);
     }
 }
@@ -3401,9 +3402,9 @@ export class SolarTime extends AbstractTyme {
     }
 
     getName(): string {
-        const h = (this.hour < 10 ? '0' : '') + this.hour;
-        const m = (this.minute < 10 ? '0' : '') + this.minute;
-        const s = (this.second < 10 ? '0' : '') + this.second;
+        const h: string = (this.hour < 10 ? '0' : '') + this.hour;
+        const m: string = (this.minute < 10 ? '0' : '') + this.minute;
+        const s: string = (this.second < 10 ? '0' : '') + this.second;
         return `${h}:${m}:${s}`;
     }
 
@@ -3412,11 +3413,11 @@ export class SolarTime extends AbstractTyme {
     }
 
     next(n: number): SolarTime {
-        const ts = this.second + n;
-        const tm = this.minute + ~~(ts / 60);
-        const th = this.hour + ~~(tm / 60);
-        const d = this.day.next(~~(th / 24));
-        const month = d.getMonth();
+        const ts: number = this.second + n;
+        const tm: number = this.minute + ~~(ts / 60);
+        const th: number = this.hour + ~~(tm / 60);
+        const d: SolarDay = this.day.next(~~(th / 24));
+        const month: SolarMonth = d.getMonth();
         return SolarTime.fromYmdHms(month.getYear().getYear(), month.getMonth(), d.getDay(), th % 24, tm % 60, ts % 60);
     }
 
@@ -3424,9 +3425,9 @@ export class SolarTime extends AbstractTyme {
         if (!this.day.equals(target.getDay())) {
             return this.day.isBefore(target.getDay());
         }
-        const bHour = target.getHour();
+        const bHour: number = target.getHour();
         if (this.hour === bHour) {
-            const bMinute = target.getMinute();
+            const bMinute: number = target.getMinute();
             return this.minute === bMinute ? this.second < target.getSecond() : this.minute < bMinute;
         }
         return this.hour < bHour;
@@ -3436,16 +3437,16 @@ export class SolarTime extends AbstractTyme {
         if (!this.day.equals(target.getDay())) {
             return this.day.isAfter(target.getDay());
         }
-        const bHour = target.getHour();
+        const bHour: number = target.getHour();
         if (this.hour === bHour) {
-            const bMinute = target.getMinute();
+            const bMinute: number = target.getMinute();
             return this.minute === bMinute ? this.second > target.getSecond() : this.minute > bMinute;
         }
         return this.hour > bHour;
     }
 
     getTerm(): SolarTerm {
-        let term = SolarTerm.fromIndex(this.day.getMonth().getYear().getYear() + 1, 0);
+        let term: SolarTerm = SolarTerm.fromIndex(this.day.getMonth().getYear().getYear() + 1, 0);
         while (this.isBefore(term.getJulianDay().getSolarTime())) {
             term = term.next(-1);
         }
@@ -3453,15 +3454,15 @@ export class SolarTime extends AbstractTyme {
     }
 
     getJulianDay(): JulianDay {
-        const month = this.day.getMonth();
+        const month: SolarMonth = this.day.getMonth();
         return JulianDay.fromYmdHms(month.getYear().getYear(), month.getMonth(), this.day.getDay(), this.hour, this.minute, this.second);
     }
 
     subtract(target: SolarTime): number {
-        let days = this.day.subtract(target.getDay());
-        const cs = this.hour * 3600 + this.minute * 60 + this.second;
-        const ts = target.getHour() * 3600 + target.getMinute() * 60 + target.getSecond();
-        let seconds = cs - ts;
+        let days: number = this.day.subtract(target.getDay());
+        const cs: number = this.hour * 3600 + this.minute * 60 + this.second;
+        const ts: number = target.getHour() * 3600 + target.getMinute() * 60 + target.getSecond();
+        let seconds: number = cs - ts;
         if (seconds < 0) {
             seconds += 86400;
             days--;
@@ -3471,8 +3472,8 @@ export class SolarTime extends AbstractTyme {
     }
 
     getLunarHour(): LunarHour {
-        const d = this.day.getLunarDay();
-        const m = d.getMonth();
+        const d: LunarDay = this.day.getLunarDay();
+        const m: LunarMonth = d.getMonth();
         return LunarHour.fromYmdHms(m.getYear().getYear(), m.getMonthWithLeap(), d.getDay(), this.hour, this.minute, this.second);
     }
 
@@ -3493,10 +3494,10 @@ export class LegalHoliday extends AbstractTyme {
     }
 
     static fromYmd(year: number, month: number, day: number): LegalHoliday | null {
-        const y = (Array(4).join('0') + year).slice(-4);
-        const m = (month < 10 ? '0' : '') + month;
-        const d = (day < 10 ? '0' : '') + day;
-        const matcher = new RegExp(`${y}${m}${d}[0-1][0-8][+|-]\\d{2}`, 'g').exec(LegalHoliday.DATA);
+        const y: string = (Array(4).join('0') + year).slice(-4);
+        const m: string = (month < 10 ? '0' : '') + month;
+        const d: string = (day < 10 ? '0' : '') + day;
+        const matcher: RegExpExecArray | null = new RegExp(`${y}${m}${d}[0-1][0-8][+|-]\\d{2}`, 'g').exec(LegalHoliday.DATA);
         if (!matcher) {
             return null;
         }
@@ -3520,28 +3521,28 @@ export class LegalHoliday extends AbstractTyme {
     }
 
     next(n: number): LegalHoliday | null {
-        const m = this.day.getMonth();
-        const year = m.getYear().getYear();
-        const month = m.getMonth();
-        const day = this.day.getDay();
+        const m: SolarMonth = this.day.getMonth();
+        const year: number = m.getYear().getYear();
+        const month: number = m.getMonth();
+        const day: number = this.day.getDay();
         if (n === 0) {
             return LegalHoliday.fromYmd(year, month, day);
         }
-        let ys = (Array(4).join('0') + year).slice(-4);
-        const ms = (month < 10 ? '0' : '') + month;
-        const ds = (day < 10 ? '0' : '') + day;
+        let ys: string = (Array(4).join('0') + year).slice(-4);
+        const ms: string = (month < 10 ? '0' : '') + month;
+        const ds: string = (day < 10 ? '0' : '') + day;
 
         const data: string[] = [];
-        const today = `${ys}${ms}${ds}`;
-        let reg = new RegExp(`${ys}\\d{4}[0-1][0-8][+|-]\\d{2}`, 'g');
-        let matcher = reg.exec(LegalHoliday.DATA);
+        const today: string = `${ys}${ms}${ds}`;
+        let reg: RegExp = new RegExp(`${ys}\\d{4}[0-1][0-8][+|-]\\d{2}`, 'g');
+        let matcher: RegExpExecArray | null = reg.exec(LegalHoliday.DATA);
         while (matcher) {
             data.push(matcher[0]);
             matcher = reg.exec(LegalHoliday.DATA);
         }
-        let index = -1;
-        let size = data.length;
-        for (let i = 0; i < size; i++) {
+        let index: number = -1;
+        let size: number = data.length;
+        for (let i: number = 0; i < size; i++) {
             if (data[i].indexOf(today) === 0) {
                 index = i;
                 break;
@@ -3551,9 +3552,9 @@ export class LegalHoliday extends AbstractTyme {
             return null;
         }
         index += n;
-        let y = year;
-        const forward = n > 0;
-        const add = forward ? 1 : -1;
+        let y: number = year;
+        const forward: boolean = n > 0;
+        const add: number = forward ? 1 : -1;
         while (forward ? (index >= size) : (index < 0)) {
             if (forward) {
                 index -= size;
@@ -3575,7 +3576,7 @@ export class LegalHoliday extends AbstractTyme {
                 index += size;
             }
         }
-        let d = data[index];
+        let d: string = data[index];
         return new LegalHoliday(parseInt(d.substring(0, 4), 10), parseInt(d.substring(4, 6), 10), parseInt(d.substring(6, 8), 10), d);
     }
 }
@@ -3602,13 +3603,13 @@ export class SolarFestival extends AbstractTyme {
         if (index < 0 || index >= SolarFestival.NAMES.length) {
             throw new Error(`illegal index: ${index}`);
         }
-        const is = (index < 10 ? '0' : '') + index;
-        const matcher = new RegExp(`@${is}\\d+`, 'g').exec(SolarFestival.DATA);
+        const is: string = (index < 10 ? '0' : '') + index;
+        const matcher: RegExpExecArray | null = new RegExp(`@${is}\\d+`, 'g').exec(SolarFestival.DATA);
         if (matcher) {
-            const data = matcher[0];
-            const type = data.charCodeAt(3) - 48;
+            const data: string = matcher[0];
+            const type: number = data.charCodeAt(3) - 48;
             if (type === 0) {
-                const startYear = parseInt(data.substring(8), 10);
+                const startYear: number = parseInt(data.substring(8), 10);
                 if (year >= startYear) {
                     return new SolarFestival(FestivalType.DAY, SolarDay.fromYmd(year, parseInt(data.substring(4, 6), 10), parseInt(data.substring(6, 8), 10)), startYear, data);
                 }
@@ -3618,12 +3619,12 @@ export class SolarFestival extends AbstractTyme {
     }
 
     static fromYmd(year: number, month: number, day: number): SolarFestival | null {
-        const m = (month < 10 ? '0' : '') + month;
-        const d = (day < 10 ? '0' : '') + day;
-        const matcher = new RegExp(`@\\d{2}0${m}${d}\\d+`, 'g').exec(SolarFestival.DATA);
+        const m: string = (month < 10 ? '0' : '') + month;
+        const d: string = (day < 10 ? '0' : '') + day;
+        const matcher: RegExpExecArray | null = new RegExp(`@\\d{2}0${m}${d}\\d+`, 'g').exec(SolarFestival.DATA);
         if (matcher) {
-            const data = matcher[0];
-            const startYear = parseInt(data.substring(8), 10);
+            const data: string = matcher[0];
+            const startYear: number = parseInt(data.substring(8), 10);
             if (year >= startYear) {
                 return new SolarFestival(FestivalType.DAY, SolarDay.fromYmd(year, month, day), startYear, data);
             }
@@ -3656,14 +3657,14 @@ export class SolarFestival extends AbstractTyme {
     }
 
     next(n: number): SolarFestival | null {
-        const m = this.day.getMonth();
-        const year = m.getYear().getYear();
+        const m: SolarMonth = this.day.getMonth();
+        const year: number = m.getYear().getYear();
         if (n === 0) {
             return SolarFestival.fromYmd(year, m.getMonth(), this.day.getDay());
         }
-        const size = SolarFestival.NAMES.length;
-        let t = this.index + n;
-        const offset = this.indexOf(t, size);
+        const size: number = SolarFestival.NAMES.length;
+        let t: number = this.index + n;
+        const offset: number = this.indexOf(t, size);
         if (t < 0) {
             t -= size;
         }
@@ -3693,16 +3694,16 @@ export class LunarFestival extends AbstractTyme {
         if (index < 0 || index >= LunarFestival.NAMES.length) {
             throw new Error(`illegal index: ${index}`);
         }
-        const is = (index < 10 ? '0' : '') + index;
-        const matcher = new RegExp(`@${is}\\d+`, 'g').exec(LunarFestival.DATA);
+        const is: string = (index < 10 ? '0' : '') + index;
+        const matcher: RegExpExecArray | null = new RegExp(`@${is}\\d+`, 'g').exec(LunarFestival.DATA);
         if (matcher) {
-            const data = matcher[0];
-            const type = data.charCodeAt(3) - 48;
+            const data: string = matcher[0];
+            const type: number = data.charCodeAt(3) - 48;
             switch (type) {
                 case 0:
                     return new LunarFestival(FestivalType.DAY, LunarDay.fromYmd(year, parseInt(data.substring(4, 6), 10), parseInt(data.substring(6), 10)), null, data);
                 case 1:
-                    const solarTerm = SolarTerm.fromIndex(year, parseInt(data.substring(4), 10));
+                    const solarTerm: SolarTerm = SolarTerm.fromIndex(year, parseInt(data.substring(4), 10));
                     return new LunarFestival(FestivalType.TERM, solarTerm.getJulianDay().getSolarDay().getLunarDay(), solarTerm, data);
                 case 2:
                     return new LunarFestival(FestivalType.EVE, LunarDay.fromYmd(year + 1, 1, 1).next(-1), null, data);
@@ -3713,19 +3714,19 @@ export class LunarFestival extends AbstractTyme {
     }
 
     static fromYmd(year: number, month: number, day: number): LunarFestival | null {
-        const m = (month < 10 ? '0' : '') + month;
-        const d = (day < 10 ? '0' : '') + day;
-        let matcher = new RegExp(`@\\d{2}0${m}${d}`, 'g').exec(LunarFestival.DATA);
+        const m: string = (month < 10 ? '0' : '') + month;
+        const d: string = (day < 10 ? '0' : '') + day;
+        let matcher: RegExpExecArray | null = new RegExp(`@\\d{2}0${m}${d}`, 'g').exec(LunarFestival.DATA);
         if (matcher) {
             return new LunarFestival(FestivalType.DAY, LunarDay.fromYmd(year, month, day), null, matcher[0]);
         }
-        const reg = new RegExp(`@\\d{2}1\\d{2}`, 'g');
+        const reg: RegExp = new RegExp(`@\\d{2}1\\d{2}`, 'g');
         matcher = reg.exec(LunarFestival.DATA);
         while (matcher) {
-            const data = matcher[0];
-            const solarTerm = SolarTerm.fromIndex(year, parseInt(data.substring(4), 10));
-            const lunarDay = solarTerm.getJulianDay().getSolarDay().getLunarDay();
-            const lunarMonth = lunarDay.getMonth();
+            const data: string = matcher[0];
+            const solarTerm: SolarTerm = SolarTerm.fromIndex(year, parseInt(data.substring(4), 10));
+            const lunarDay: LunarDay = solarTerm.getJulianDay().getSolarDay().getLunarDay();
+            const lunarMonth: LunarMonth = lunarDay.getMonth();
             if (lunarMonth.getYear().getYear() === year && lunarMonth.getMonth() === month && lunarDay.getDay() === day) {
                 return new LunarFestival(FestivalType.TERM, lunarDay, solarTerm, data);
             }
@@ -3733,8 +3734,8 @@ export class LunarFestival extends AbstractTyme {
         }
         matcher = new RegExp(`@\\d{2}2`, 'g').exec(LunarFestival.DATA);
         if (matcher) {
-            const lunarDay = LunarDay.fromYmd(year, month, day);
-            const nextDay = lunarDay.next(1);
+            const lunarDay: LunarDay = LunarDay.fromYmd(year, month, day);
+            const nextDay: LunarDay = lunarDay.next(1);
             if (nextDay.getMonth().getMonth() === 1 && nextDay.getDay() === 1) {
                 return new LunarFestival(FestivalType.EVE, lunarDay, null, matcher[0]);
             }
@@ -3767,14 +3768,14 @@ export class LunarFestival extends AbstractTyme {
     }
 
     next(n: number): LunarFestival {
-        const m = this.day.getMonth();
-        const year = m.getYear().getYear();
+        const m: LunarMonth = this.day.getMonth();
+        const year: number = m.getYear().getYear();
         if (n === 0) {
             return <LunarFestival>LunarFestival.fromYmd(year, m.getMonthWithLeap(), this.day.getDay());
         }
-        const size = LunarFestival.NAMES.length;
-        let t = this.index + n;
-        const offset = this.indexOf(t, size);
+        const size: number = LunarFestival.NAMES.length;
+        let t: number = this.index + n;
+        const offset: number = this.indexOf(t, size);
         if (t < 0) {
             t -= size;
         }
@@ -3788,12 +3789,12 @@ export class EightChar extends AbstractCulture {
     protected day: SixtyCycle;
     protected hour: SixtyCycle;
 
-    constructor(year: SixtyCycle, month: SixtyCycle, day: SixtyCycle, hour: SixtyCycle) {
+    constructor(year: SixtyCycle | string, month: SixtyCycle | string, day: SixtyCycle | string, hour: SixtyCycle | string) {
         super();
-        this.year = year;
-        this.month = month;
-        this.day = day;
-        this.hour = hour;
+        this.year = year instanceof SixtyCycle ? year : SixtyCycle.fromName(year);
+        this.month = month instanceof SixtyCycle ? month : SixtyCycle.fromName(month);
+        this.day = day instanceof SixtyCycle ? day : SixtyCycle.fromName(day);
+        this.hour = hour instanceof SixtyCycle ? hour : SixtyCycle.fromName(hour);
     }
 
     getYear(): SixtyCycle {
@@ -3821,14 +3822,14 @@ export class EightChar extends AbstractCulture {
     }
 
     getOwnSign(): SixtyCycle {
-        let offset = this.month.getEarthBranch().next(-1).getIndex() + this.hour.getEarthBranch().next(-1).getIndex();
+        let offset: number = this.month.getEarthBranch().next(-1).getIndex() + this.hour.getEarthBranch().next(-1).getIndex();
         offset = (offset >= 14 ? 26 : 14) - offset;
         offset -= 1;
         return SixtyCycle.fromName(HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + offset).getName() + EarthBranch.fromIndex(2 + offset).getName());
     }
 
     getBodySign(): SixtyCycle {
-        let offset = this.month.getEarthBranch().getIndex() + this.hour.getEarthBranch().getIndex();
+        let offset: number = this.month.getEarthBranch().getIndex() + this.hour.getEarthBranch().getIndex();
         offset %= 12;
         offset -= 1;
         return SixtyCycle.fromName(HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + offset).getName() + EarthBranch.fromIndex(2 + offset).getName());
@@ -3841,88 +3842,84 @@ export class EightChar extends AbstractCulture {
     getName(): string {
         return `${this.year.toString()} ${this.month.toString()} ${this.day.toString()} ${this.hour.toString()}`;
     }
+
+    getSolarTimes(startYear: number, endYear: number): SolarTime[] {
+        const l: SolarTime[] = [];
+        // 月地支距寅月的偏移值
+        let m: number = this.month.getEarthBranch().next(-2).getIndex();
+        // 月天干要一致
+        if (!HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + m).equals(this.month.getHeavenStem())) {
+            return l;
+        }
+        // 1年的立春是辛酉，序号57
+        let y: number = this.year.next(-57).getIndex() + 1;
+        // 节令偏移值
+        m *= 2;
+        // 时辰地支转时刻，子时按零点算
+        const h: number = this.hour.getEarthBranch().getIndex() * 2;
+        const baseYear: number = startYear - 1;
+        while (y <= endYear) {
+            if (y >= baseYear) {
+                // 立春为寅月的开始
+                let term: SolarTerm = SolarTerm.fromIndex(y, 3);
+                // 节令推移，年干支和月干支就都匹配上了
+                if (m > 0) {
+                    term = term.next(m);
+                }
+                let solarTime: SolarTime = term.getJulianDay().getSolarTime();
+                if (solarTime.getDay().getMonth().getYear().getYear() >= startYear) {
+                    let mi: number = 0;
+                    let s: number = 0;
+                    // 日干支和节令干支的偏移值
+                    let solarDay: SolarDay = solarTime.getDay();
+                    const d: number = this.day.next(-solarDay.getLunarDay().getSixtyCycle().getIndex()).getIndex();
+                    if (d > 0) {
+                        // 从节令推移天数
+                        solarDay = solarDay.next(d);
+                    } else if (h == solarTime.getHour()) {
+                        // 如果正好是节令当天，且小时和节令的小时数相等的极端情况，把分钟和秒钟带上
+                        mi = solarTime.getMinute();
+                        s = solarTime.getSecond();
+                    }
+                    const solarMonth: SolarMonth = solarDay.getMonth();
+                    const time: SolarTime = SolarTime.fromYmdHms(solarMonth.getYear().getYear(), solarMonth.getMonth(), solarDay.getDay(), h, mi, s);
+                    // 验证一下
+                    if (time.getLunarHour().getEightChar().equals(this)) {
+                        l.push(time);
+                    }
+                }
+            }
+            y += 60;
+        }
+        return l;
+    }
 }
 
-export class ChildLimit {
+export class ChildLimitInfo {
     protected startTime: SolarTime;
     protected endTime: SolarTime;
-    protected eightChar: EightChar;
-    protected gender: Gender;
     protected yearCount: number;
     protected monthCount: number;
     protected dayCount: number;
     protected hourCount: number;
     protected minuteCount: number;
-    protected forward: boolean;
 
-    protected constructor(birthTime: SolarTime, gender: Gender) {
-        this.startTime = birthTime;
-        this.gender = gender;
-        this.eightChar = birthTime.getLunarHour().getEightChar();
-        // 阳男阴女顺推，阴男阳女逆推
-        const yang = YinYang.YANG == this.eightChar.getYear().getHeavenStem().getYinYang();
-        const man = Gender.MAN == gender;
-        this.forward = (yang && man) || (!yang && !man);
-        let term = birthTime.getTerm();
-        if (!term.isJie()) {
-            term = term.next(-1);
-        }
-        const start = this.forward ? birthTime : term.getJulianDay().getSolarTime();
-        const end = this.forward ? term.next(2).getJulianDay().getSolarTime() : birthTime;
-
-        let seconds = end.subtract(start);
-        // 3天 = 1年，3天=60*60*24*3秒=259200秒 = 1年
-        let year = ~~(seconds / 259200);
-        seconds %= 259200;
-        // 1天 = 4月，1天=60*60*24秒=86400秒 = 4月，85400秒/4=21600秒 = 1月
-        let month = ~~(seconds / 21600);
-        seconds %= 21600;
-        // 1时 = 5天，1时=60*60秒=3600秒 = 5天，3600秒/5=720秒 = 1天
-        let day = ~~(seconds / 720);
-        seconds %= 720;
-        // 1分 = 2时，60秒 = 2时，60秒/2=30秒 = 1时
-        let hour = ~~(seconds / 30);
-        seconds %= 30;
-        // 1秒 = 2分，1秒/2=0.5秒 = 1分
-        let minute = seconds * 2;
-
-        this.yearCount = year;
-        this.monthCount = month;
-        this.dayCount = day;
-        this.hourCount = hour;
-        this.minuteCount = minute;
-
-        const birthday = birthTime.getDay();
-        const birthMonth = birthday.getMonth();
-
-        let d = birthday.getDay() + day;
-        let h = birthTime.getHour() + hour;
-        let mi = birthTime.getMinute() + minute;
-        h += ~~(mi / 60);
-        mi %= 60;
-        d += ~~(h / 24);
-        h %= 24;
-
-        let sm = SolarMonth.fromYm(birthMonth.getYear().getYear() + year, birthMonth.getMonth()).next(month);
-
-        const dc = sm.getDayCount();
-        if (d > dc) {
-            d -= dc;
-            sm = sm.next(1);
-        }
-        this.endTime = SolarTime.fromYmdHms(sm.getYear().getYear(), sm.getMonth(), d, h, mi, birthTime.getSecond());
+    constructor(startTime: SolarTime, endTime: SolarTime, yearCount: number, monthCount: number, dayCount: number, hourCount: number, minuteCount: number) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.yearCount = yearCount;
+        this.monthCount = monthCount;
+        this.dayCount = dayCount;
+        this.hourCount = hourCount;
+        this.minuteCount = minuteCount;
     }
 
-    static fromSolarTime(birthTime: SolarTime, gender: Gender): ChildLimit {
-        return new ChildLimit(birthTime, gender);
+    getStartTime(): SolarTime {
+        return this.startTime;
     }
 
-    getEightChar(): EightChar {
-        return this.eightChar;
-    }
-
-    getGender(): Gender {
-        return this.gender;
+    getEndTime(): SolarTime {
+        return this.endTime;
     }
 
     getYearCount(): number {
@@ -3944,13 +3941,139 @@ export class ChildLimit {
     getMinuteCount(): number {
         return this.minuteCount;
     }
+}
+
+export interface ChildLimitProvider {
+    getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo;
+}
+
+export class DefaultChildLimitProvider implements ChildLimitProvider {
+    getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo {
+        let seconds: number = Math.abs(term.getJulianDay().getSolarTime().subtract(birthTime));
+        // 3天 = 1年，3天=60*60*24*3秒=259200秒 = 1年
+        const year: number = ~~(seconds / 259200);
+        seconds %= 259200;
+        // 1天 = 4月，1天=60*60*24秒=86400秒 = 4月，85400秒/4=21600秒 = 1月
+        const month: number = ~~(seconds / 21600);
+        seconds %= 21600;
+        // 1时 = 5天，1时=60*60秒=3600秒 = 5天，3600秒/5=720秒 = 1天
+        const day: number = ~~(seconds / 720);
+        seconds %= 720;
+        // 1分 = 2时，60秒 = 2时，60秒/2=30秒 = 1时
+        const hour: number = ~~(seconds / 30);
+        seconds %= 30;
+        // 1秒 = 2分，1秒/2=0.5秒 = 1分
+        const minute: number = seconds * 2;
+
+        const birthday: SolarDay = birthTime.getDay();
+        const birthMonth: SolarMonth = birthday.getMonth();
+
+        let d: number = birthday.getDay() + day;
+        let h: number = birthTime.getHour() + hour;
+        let mi: number = birthTime.getMinute() + minute;
+        h += ~~(mi / 60);
+        mi %= 60;
+        d += ~~(h / 24);
+        h %= 24;
+
+        let sm: SolarMonth = SolarMonth.fromYm(birthMonth.getYear().getYear() + year, birthMonth.getMonth()).next(month);
+
+        const dc: number = sm.getDayCount();
+        if (d > dc) {
+            d -= dc;
+            sm = sm.next(1);
+        }
+        return new ChildLimitInfo(birthTime, SolarTime.fromYmdHms(sm.getYear().getYear(), sm.getMonth(), d, h, mi, birthTime.getSecond()), year, month, day, hour, minute);
+    }
+}
+
+export class China95ChildLimitProvider implements ChildLimitProvider {
+    getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo {
+        // 出生时刻和节令时刻相差的分钟数
+        let minutes: number = ~~(Math.abs(term.getJulianDay().getSolarTime().subtract(birthTime)) / 60);
+        const year: number = ~~(minutes / 4320);
+        minutes %= 4320;
+        const month: number = ~~(minutes / 360);
+        minutes %= 360;
+        const day: number = ~~(minutes / 12);
+
+        const birthday: SolarDay = birthTime.getDay();
+        const birthMonth: SolarMonth = birthday.getMonth();
+        let sm: SolarMonth = SolarMonth.fromYm(birthMonth.getYear().getYear() + year, birthMonth.getMonth()).next(month);
+
+        let d: number = birthday.getDay() + day;
+        const dc: number = sm.getDayCount();
+        if (d > dc) {
+            d -= dc;
+            sm = sm.next(1);
+        }
+
+        return new ChildLimitInfo(birthTime, SolarTime.fromYmdHms(sm.getYear().getYear(), sm.getMonth(), d, birthTime.getHour(), birthTime.getMinute(), birthTime.getSecond()), year, month, day, 0, 0);
+    }
+}
+
+export class ChildLimit {
+    static provider: ChildLimitProvider = new DefaultChildLimitProvider();
+    protected eightChar: EightChar;
+    protected gender: Gender;
+    protected forward: boolean;
+    protected info: ChildLimitInfo;
+
+    protected constructor(birthTime: SolarTime, gender: Gender) {
+        this.gender = gender;
+        this.eightChar = birthTime.getLunarHour().getEightChar();
+        // 阳男阴女顺推，阴男阳女逆推
+        const yang: boolean = YinYang.YANG == this.eightChar.getYear().getHeavenStem().getYinYang();
+        const man: boolean = Gender.MAN == gender;
+        this.forward = (yang && man) || (!yang && !man);
+        let term: SolarTerm = birthTime.getTerm();
+        if (!term.isJie()) {
+            term = term.next(-1);
+        }
+        if (this.forward) {
+            term = term.next(2);
+        }
+        this.info = ChildLimit.provider.getInfo(birthTime, term);
+    }
+
+    static fromSolarTime(birthTime: SolarTime, gender: Gender): ChildLimit {
+        return new ChildLimit(birthTime, gender);
+    }
+
+    getEightChar(): EightChar {
+        return this.eightChar;
+    }
+
+    getGender(): Gender {
+        return this.gender;
+    }
+
+    getYearCount(): number {
+        return this.info.getYearCount();
+    }
+
+    getMonthCount(): number {
+        return this.info.getMonthCount();
+    }
+
+    getDayCount(): number {
+        return this.info.getDayCount();
+    }
+
+    getHourCount(): number {
+        return this.info.getHourCount();
+    }
+
+    getMinuteCount(): number {
+        return this.info.getMinuteCount();
+    }
 
     getStartTime(): SolarTime {
-        return this.startTime;
+        return this.info.getStartTime();
     }
 
     getEndTime(): SolarTime {
-        return this.endTime;
+        return this.info.getEndTime();
     }
 
     isForward(): boolean {
@@ -4036,7 +4159,7 @@ export class Fortune extends AbstractTyme {
     }
 
     getSixtyCycle(): SixtyCycle {
-        const n = this.getAge();
+        const n: number = this.getAge();
         return this.childLimit.getEightChar().getHour().next(this.childLimit.isForward() ? n : -n);
     }
 

@@ -1,7 +1,7 @@
 {
   "name": "tyme4ts",
-  "version": "1.0.3",
-  "description": "a calendar library",
+  "version": "1.0.4",
+  "description": "Tyme是一个非常强大的日历工具库，可以看作 Lunar 的升级版，拥有更优的设计和扩展性，支持公历和农历、星座、干支、生肖、节气、法定假日等。",
   "main": "./dist/lib/index.cjs",
   "module": "./dist/lib/index.mjs",
   "types": "./dist/lib/index.d.ts",
@@ -17,21 +17,18 @@
     "test": "mocha -r ts-node/register --config=.mocharc.json",
     "release": "npm run test && npm publish"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/6tail/tyme4ts.git"
-  },
+  "homepage": "https://github.com/6tail/tyme4ts",
+  "repository": "https://github.com/6tail/tyme4ts.git",
   "keywords": [
     "公历",
     "农历",
     "儒略日"
   ],
-  "author": "6tail",
+  "author": "6tail <6tail@6tail.cn> (https://6tail.cn)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/6tail/tyme4ts/issues"
   },
-  "homepage": "https://github.com/6tail/tyme4ts",
   "devDependencies": {
     "@testdeck/mocha": "^0.3.3",
     "@types/mocha": "^10.0.6",

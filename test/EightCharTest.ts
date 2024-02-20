@@ -1,5 +1,14 @@
 import {suite, test} from '@testdeck/mocha';
-import {ChildLimit, EightChar, Gender, HeavenStem, LunarHour, SixtyCycle, SolarTime} from '../lib';
+import {
+    ChildLimit, China95ChildLimitProvider,
+    DefaultChildLimitProvider,
+    EightChar,
+    Gender,
+    HeavenStem,
+    LunarHour,
+    SixtyCycle,
+    SolarTime
+} from '../lib';
 import {equal, ifError, ok} from 'assert';
 
 @suite
@@ -481,12 +490,29 @@ class EightCharTest {
 
     @test
     test30() {
-        const eightChar = new EightChar(
-            SixtyCycle.fromName('壬子'),
-            SixtyCycle.fromName('辛亥'),
-            SixtyCycle.fromName('壬戌'),
-            SixtyCycle.fromName('乙巳')
-        );
-        equal(eightChar.getBodySign().getName(), '乙巳');
+        equal(new EightChar('壬子', '辛亥', '壬戌', '乙巳').getBodySign().getName(), '乙巳');
+    }
+
+    @test
+    test31() {
+        // 采用元亨利贞的起运算法
+        ChildLimit.provider = new China95ChildLimitProvider();
+        // 童限
+        const childLimit: ChildLimit = ChildLimit.fromSolarTime(SolarTime.fromYmdHms(1986, 5, 29, 13, 37, 0), Gender.MAN);
+        // 童限年数
+        equal(childLimit.getYearCount(), 2);
+        // 童限月数
+        equal(childLimit.getMonthCount(), 7);
+        // 童限日数
+        equal(childLimit.getDayCount(), 0);
+        // 童限时数
+        equal(childLimit.getHourCount(), 0);
+        // 童限分数
+        equal(childLimit.getMinuteCount(), 0);
+        // 童限结束(即开始起运)的公历时刻
+        equal(childLimit.getEndTime().toString(), '1988年12月29日 13:37:00');
+
+        // 为了不影响其他测试用例，恢复默认起运算法
+        ChildLimit.provider = new DefaultChildLimitProvider();
     }
 }
