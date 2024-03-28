@@ -1998,10 +1998,9 @@ export class JulianDay extends AbstractTyme {
     getSolarDay(): SolarDay {
         let d: number = ~~(this.day + 0.5);
         let f: number = this.day + 0.5 - d;
-        let c;
 
         if (d >= 2299161) {
-            c = ~~((d - 1867216.25) / 36524.25);
+            const c: number = ~~((d - 1867216.25) / 36524.25);
             d += 1 + c - ~~(c / 4);
         }
         d += 1524;
@@ -2042,10 +2041,9 @@ export class JulianDay extends AbstractTyme {
     getSolarTime(): SolarTime {
         let d: number = ~~(this.day + 0.5);
         let f: number = this.day + 0.5 - d;
-        let c;
 
         if (d >= 2299161) {
-            c = ~~((d - 1867216.25) / 36524.25);
+            const c: number = ~~((d - 1867216.25) / 36524.25);
             d += 1 + c - ~~(c / 4);
         }
         d += 1524;
@@ -2873,8 +2871,17 @@ export class SolarHalfYear extends AbstractTyme {
     }
 
     next(n: number): SolarHalfYear {
-        const m: number = this.index + n;
-        return SolarHalfYear.fromIndex(this.year.getYear() + ~~(m / 2), Math.abs(m % 2));
+        if (n == 0) {
+            return SolarHalfYear.fromIndex(this.year.getYear(), this.index);
+        }
+        let i: number = this.index + n;
+        let y: number = this.year.getYear() + ~~(i / 2);
+        i %= 2;
+        if (i < 0) {
+            i += 2;
+            y -= 1;
+        }
+        return SolarHalfYear.fromIndex(y, i);
     }
 
     getMonths(): SolarMonth[] {
@@ -2931,8 +2938,17 @@ export class SolarSeason extends AbstractTyme {
     }
 
     next(n: number): SolarSeason {
-        const m: number = this.index + n;
-        return SolarSeason.fromIndex(this.year.getYear() + ~~(m / 4), Math.abs(m % 4));
+        if (n == 0) {
+            return SolarSeason.fromIndex(this.year.getYear(), this.index);
+        }
+        let i: number = this.index + n;
+        let y: number = this.year.getYear() + ~~(i / 4);
+        i %= 4;
+        if (i < 0) {
+            i += 4;
+            y -= 1;
+        }
+        return SolarSeason.fromIndex(y, i);
     }
 
     getMonths(): SolarMonth[] {
@@ -3072,6 +3088,17 @@ export class SolarWeek extends AbstractTyme {
         return this.index;
     }
 
+    getIndexInYear(): number {
+        let i: number = 0;
+        // 今年第1周
+        let w: SolarWeek = SolarWeek.fromYm(this.month.getYear().getYear(), 1, 0, this.start.getIndex());
+        while (!w.equals(this)) {
+            w = w.next(1);
+            i++;
+        }
+        return i;
+    }
+
     getStart(): Week {
         return this.start;
     }
@@ -3141,19 +3168,18 @@ export class SolarDay extends AbstractTyme {
 
     protected constructor(year: number, month: number, day: number) {
         super();
-        this.month = SolarMonth.fromYm(year, month);
         if (day < 1) {
             throw new Error(`illegal solar day: ${year}-${month}-${day}`);
         }
+        const m: SolarMonth = SolarMonth.fromYm(year, month);
         if (1582 === year && 10 === month) {
-            if (day > 4 && day < 15) {
-                throw new Error(`illegal solar day: ${year}-${month}-${day}`);
-            } else if (day > 31) {
+            if ((day > 4 && day < 15) || day > 31) {
                 throw new Error(`illegal solar day: ${year}-${month}-${day}`);
             }
-        } else if (day > SolarMonth.fromYm(year, month).getDayCount()) {
+        } else if (day > m.getDayCount()) {
             throw new Error(`illegal solar day: ${year}-${month}-${day}`);
         }
+        this.month = m;
         this.day = day;
     }
 
@@ -3244,6 +3270,12 @@ export class SolarDay extends AbstractTyme {
             term = term.next(-1);
         }
         return term;
+    }
+
+    getSolarWeek(start: number): SolarWeek {
+        const y: number = this.month.getYear().getYear();
+        const m: number = this.month.getMonth();
+        return SolarWeek.fromYm(y, m, Math.ceil((this.day + SolarDay.fromYmd(y, m, 1).getWeek().next(-start).getIndex()) / 7.0) - 1, start);
     }
 
     getPhenologyDay(): PhenologyDay {
@@ -3413,12 +3445,33 @@ export class SolarTime extends AbstractTyme {
     }
 
     next(n: number): SolarTime {
-        const ts: number = this.second + n;
-        const tm: number = this.minute + ~~(ts / 60);
-        const th: number = this.hour + ~~(tm / 60);
-        const d: SolarDay = this.day.next(~~(th / 24));
-        const month: SolarMonth = d.getMonth();
-        return SolarTime.fromYmdHms(month.getYear().getYear(), month.getMonth(), d.getDay(), th % 24, tm % 60, ts % 60);
+        if (n == 0) {
+            const month: SolarMonth = this.day.getMonth();
+            return SolarTime.fromYmdHms(month.getYear().getYear(), month.getMonth(), this.day.getDay(), this.hour, this.minute, this.second);
+        }
+        let ts: number = this.second + n;
+        let tm: number = this.minute + ~~(ts / 60);
+        ts %= 60;
+        if (ts < 0) {
+            ts += 60;
+            tm -= 1;
+        }
+        let th: number = this.hour + ~~(tm / 60);
+        tm %= 60;
+        if (tm < 0) {
+            tm += 60;
+            th -= 1;
+        }
+        let td: number = ~~(th / 24);
+        th %= 24;
+        if (th < 0) {
+            th += 24;
+            td -= 1;
+        }
+
+        const d: SolarDay = this.day.next(td);
+        const m: SolarMonth = d.getMonth();
+        return SolarTime.fromYmdHms(m.getYear().getYear(), m.getMonth(), d.getDay(), th, tm, ts);
     }
 
     isBefore(target: SolarTime): boolean {

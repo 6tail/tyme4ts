@@ -119,4 +119,24 @@ class WeekTest {
     test20() {
         equal(SolarDay.fromYmd(9865, 7, 26).getWeek().getIndex(), 3);
     }
+
+    @test
+    test21() {
+        const start = 0;
+        let week: SolarWeek = SolarWeek.fromYm(2024, 2, 2, start);
+        equal(week.toString(), '2024年2月第三周');
+        equal(week.getIndexInYear(), 6);
+
+        week = SolarDay.fromYmd(2024, 2, 11).getSolarWeek(start);
+        equal(week.toString(), '2024年2月第三周');
+
+        week = SolarDay.fromYmd(2024, 2, 17).getSolarWeek(start);
+        equal(week.toString(), '2024年2月第三周');
+
+        week = SolarDay.fromYmd(2024, 2, 10).getSolarWeek(start);
+        equal(week.toString(), '2024年2月第二周');
+
+        week = SolarDay.fromYmd(2024, 2, 18).getSolarWeek(start);
+        equal(week.toString(), '2024年2月第四周');
+    }
 }

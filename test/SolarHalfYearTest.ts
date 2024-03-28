@@ -33,4 +33,10 @@ class SolarHalfYearTest {
         equal(SolarHalfYear.fromIndex(2023, 0).next(-2).getName(), '上半年');
         equal(SolarHalfYear.fromIndex(2023, 0).next(-2).toString(), '2022年上半年');
     }
+
+    @test
+    test5() {
+        equal(SolarHalfYear.fromIndex(2023, 0).next(-4).toString(), '2021年上半年');
+        equal(SolarHalfYear.fromIndex(2023, 0).next(-3).toString(), '2021年下半年');
+    }
 }
