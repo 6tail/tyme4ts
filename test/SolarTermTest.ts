@@ -59,4 +59,15 @@ class SolarTermTest {
     test3() {
         equal(SolarDay.fromYmd(2023, 10, 10).getTerm().getName(), '寒露');
     }
+
+    @test
+    test4() {
+        equal(SolarDay.fromYmd(2023, 12, 7).getTermDay().toString(), '大雪第1天');
+        equal(SolarDay.fromYmd(2023, 12, 7).getTermDay().getDayIndex(), 0);
+
+        equal(SolarDay.fromYmd(2023, 12, 8).getTermDay().toString(), '大雪第2天');
+        equal(SolarDay.fromYmd(2023, 12, 21).getTermDay().toString(), '大雪第15天');
+
+        equal(SolarDay.fromYmd(2023, 12, 22).getTermDay().toString(), '冬至第1天');
+    }
 }
