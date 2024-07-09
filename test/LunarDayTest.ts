@@ -111,12 +111,12 @@ class LunarDayTest {
 
     @test
     test22() {
-        equal(LunarDay.fromYmd(2024, 1, 1).getMonth().getYear().getSixtyCycle().getName(), '甲辰');
+        equal(LunarDay.fromYmd(2024, 1, 1).getLunarMonth().getLunarYear().getSixtyCycle().getName(), '甲辰');
     }
 
     @test
     test23() {
-        equal(LunarDay.fromYmd(2023, 12, 30).getMonth().getYear().getSixtyCycle().getName(), '癸卯');
+        equal(LunarDay.fromYmd(2023, 12, 30).getLunarMonth().getLunarYear().getSixtyCycle().getName(), '癸卯');
     }
 
     /**
@@ -152,8 +152,8 @@ class LunarDayTest {
 
     @test
     test26() {
-        const lunar = LunarDay.fromYmd(2005, 11, 23);
-        equal(lunar.getMonth().getSixtyCycle().getName(), '戊子');
+        const lunar: LunarDay = LunarDay.fromYmd(2005, 11, 23);
+        equal(lunar.getLunarMonth().getSixtyCycle().getName(), '戊子');
         equal(lunar.getMonthSixtyCycle().getName(), '戊子');
     }
 }

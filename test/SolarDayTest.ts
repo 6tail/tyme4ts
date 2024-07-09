@@ -77,11 +77,11 @@ class SolarDayTest {
 
     @test
     test22() {
-        equal('甲辰', SolarDay.fromYmd(2024, 2, 10).getLunarDay().getMonth().getYear().getSixtyCycle().getName());
+        equal('甲辰', SolarDay.fromYmd(2024, 2, 10).getLunarDay().getLunarMonth().getLunarYear().getSixtyCycle().getName());
     }
 
     @test
     test23() {
-        equal('癸卯', SolarDay.fromYmd(2024, 2, 9).getLunarDay().getMonth().getYear().getSixtyCycle().getName());
+        equal('癸卯', SolarDay.fromYmd(2024, 2, 9).getLunarDay().getLunarMonth().getLunarYear().getSixtyCycle().getName());
     }
 }

@@ -272,9 +272,9 @@ class EightCharTest {
         // 童限结束(即开始起运)的公历时刻
         equal(childLimit.getEndTime().toString(), '1989年5月4日 18:24:00');
         // 童限开始(即出生)的农历年干支
-        equal(childLimit.getStartTime().getLunarHour().getDay().getMonth().getYear().getSixtyCycle().getName(), '癸亥');
+        equal(childLimit.getStartTime().getLunarHour().getLunarDay().getLunarMonth().getLunarYear().getSixtyCycle().getName(), '癸亥');
         // 童限结束(即开始起运)的农历年干支
-        equal(childLimit.getEndTime().getLunarHour().getDay().getMonth().getYear().getSixtyCycle().getName(), '己巳');
+        equal(childLimit.getEndTime().getLunarHour().getLunarDay().getLunarMonth().getLunarYear().getSixtyCycle().getName(), '己巳');
 
         // 第1轮大运
         const decadeFortune = childLimit.getStartDecadeFortune();
@@ -323,9 +323,9 @@ class EightCharTest {
         // 童限结束(即开始起运)的公历时刻
         equal(childLimit.getEndTime().toString(), '2001年2月11日 18:58:00');
         // 童限开始(即出生)的农历年干支
-        equal(childLimit.getStartTime().getLunarHour().getDay().getMonth().getYear().getSixtyCycle().getName(), '辛未');
+        equal(childLimit.getStartTime().getLunarHour().getLunarDay().getLunarMonth().getLunarYear().getSixtyCycle().getName(), '辛未');
         // 童限结束(即开始起运)的农历年干支
-        equal(childLimit.getEndTime().getLunarHour().getDay().getMonth().getYear().getSixtyCycle().getName(), '辛巳');
+        equal(childLimit.getEndTime().getLunarHour().getLunarDay().getLunarMonth().getLunarYear().getSixtyCycle().getName(), '辛巳');
 
         // 第1轮大运
         const decadeFortune = childLimit.getStartDecadeFortune();
