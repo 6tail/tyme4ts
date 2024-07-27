@@ -156,4 +156,10 @@ class LunarDayTest {
         equal(lunar.getLunarMonth().getSixtyCycle().getName(), '戊子');
         equal(lunar.getMonthSixtyCycle().getName(), '戊子');
     }
+
+    @test
+    test27() {
+        const lunar: LunarDay = LunarDay.fromYmd(2024, 1, 1);
+        equal(lunar.next(31).toString(), '农历甲辰年二月初三');
+    }
 }

@@ -14,26 +14,26 @@ class PlumRainDayTest {
     test1() {
         const d = SolarDay.fromYmd(2024, 6, 11).getPlumRainDay();
         ok(d);
-        equal("入梅", d.getName());
-        equal("入梅", d.getPlumRain().toString());
-        equal("入梅第1天", d.toString());
+        equal(d.getName(), '入梅');
+        equal(d.getPlumRain().toString(), '入梅');
+        equal(d.toString(), '入梅第1天');
     }
 
     @test
     test2() {
         const d = SolarDay.fromYmd(2024, 7, 6).getPlumRainDay();
         ok(d);
-        equal("出梅", d.getName());
-        equal("出梅", d.getPlumRain().toString());
-        equal("出梅", d.toString());
+        equal(d.getName(), '出梅');
+        equal(d.getPlumRain().toString(), '出梅');
+        equal(d.toString(), '出梅');
     }
 
     @test
     test3() {
         const d = SolarDay.fromYmd(2024, 7, 5).getPlumRainDay();
         ok(d);
-        equal("入梅", d.getName());
-        equal("入梅", d.getPlumRain().toString());
-        equal("入梅第25天", d.toString());
+        equal(d.getName(), '入梅');
+        equal(d.getPlumRain().toString(), '入梅');
+        equal(d.toString(), '入梅第25天');
     }
 }
