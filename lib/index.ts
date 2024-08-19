@@ -827,20 +827,12 @@ export class HeavenStem extends LoopTyme {
     }
 
     getTenStar(target: HeavenStem): TenStar {
-        const host: Element = this.getElement();
-        const guest: Element = target.getElement();
-        let index: number = 0;
-        const sameYinYang: boolean = this.getYinYang() == target.getYinYang();
-        if (host.getReinforce().equals(guest)) {
-            index = 1;
-        } else if (host.getRestrain().equals(guest)) {
-            index = 2;
-        } else if (host.getRestrained().equals(guest)) {
-            index = 3;
-        } else if (host.getReinforced().equals(guest)) {
-            index = 4;
+        const targetIndex: number = target.getIndex();
+        let offset: number = targetIndex - this.index;
+        if (this.index % 2 !== 0 && targetIndex % 2 === 0) {
+            offset += 2;
         }
-        return TenStar.fromIndex(index * 2 + (sameYinYang ? 0 : 1));
+        return TenStar.fromIndex(offset);
     }
 
     getDirection(): Direction {
@@ -4369,10 +4361,11 @@ export class DefaultChildLimitProvider implements ChildLimitProvider {
 
         let sm: SolarMonth = SolarMonth.fromYm(birthTime.getYear() + year, birthTime.getMonth()).next(month);
 
-        const dc: number = sm.getDayCount();
-        if (d > dc) {
+        let dc: number = sm.getDayCount();
+        while (d > dc) {
             d -= dc;
             sm = sm.next(1);
+            dc = sm.getDayCount();
         }
         return new ChildLimitInfo(birthTime, SolarTime.fromYmdHms(sm.getYear(), sm.getMonth(), d, h, mi, birthTime.getSecond()), year, month, day, hour, minute);
     }
@@ -4391,10 +4384,11 @@ export class China95ChildLimitProvider implements ChildLimitProvider {
         let sm: SolarMonth = SolarMonth.fromYm(birthTime.getYear() + year, birthTime.getMonth()).next(month);
 
         let d: number = birthTime.getDay() + day;
-        const dc: number = sm.getDayCount();
-        if (d > dc) {
+        let dc: number = sm.getDayCount();
+        while (d > dc) {
             d -= dc;
             sm = sm.next(1);
+            dc = sm.getDayCount();
         }
 
         return new ChildLimitInfo(birthTime, SolarTime.fromYmdHms(sm.getYear(), sm.getMonth(), d, birthTime.getHour(), birthTime.getMinute(), birthTime.getSecond()), year, month, day, 0, 0);
