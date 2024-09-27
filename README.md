@@ -13,7 +13,7 @@ Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail
     // test.ts
     import {SolarDay} from 'tyme4ts';
      
-    const solar = SolarDay.fromYmd(1986, 5, 29);
+    const solar: SolarDay = SolarDay.fromYmd(1986, 5, 29);
      
     // 1986年5月29日
     console.log(solar.toString());
