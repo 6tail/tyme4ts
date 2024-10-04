@@ -2026,7 +2026,24 @@ export class LunarDay extends AbstractTyme {
     }
 }
 
+export interface EightCharProvider {
+    getEightChar(hour: LunarHour): EightChar;
+}
+
+export class DefaultEightCharProvider implements EightCharProvider {
+    getEightChar(hour: LunarHour): EightChar {
+        return new EightChar(hour.getYearSixtyCycle(), hour.getMonthSixtyCycle(), hour.getDaySixtyCycle(), hour.getSixtyCycle());
+    }
+}
+
+export class LunarSect2EightCharProvider implements EightCharProvider {
+    getEightChar(hour: LunarHour): EightChar {
+        return new EightChar(hour.getYearSixtyCycle(), hour.getMonthSixtyCycle(), hour.getLunarDay().getSixtyCycle(), hour.getSixtyCycle());
+    }
+}
+
 export class LunarHour extends AbstractTyme {
+    static provider: EightCharProvider = new DefaultEightCharProvider();
     protected day: LunarDay;
     protected hour: number;
     protected minute: number;
@@ -2194,7 +2211,7 @@ export class LunarHour extends AbstractTyme {
     }
 
     getEightChar(): EightChar {
-        return new EightChar(this.getYearSixtyCycle(), this.getMonthSixtyCycle(), this.getDaySixtyCycle(), this.getSixtyCycle());
+        return LunarHour.provider.getEightChar(this);
     }
 
     getRecommends(): Taboo[] {
@@ -4292,7 +4309,35 @@ export interface ChildLimitProvider {
     getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo;
 }
 
-export class DefaultChildLimitProvider implements ChildLimitProvider {
+export abstract class AbstractChildLimitProvider implements ChildLimitProvider {
+    next(birthTime: SolarTime, addYear: number, addMonth: number, addDay: number, addHour: number, addMinute: number, addSecond: number): ChildLimitInfo {
+        let d: number = birthTime.getDay() + addDay;
+        let h: number = birthTime.getHour() + addHour;
+        let mi: number = birthTime.getMinute() + addMinute;
+        let s: number = birthTime.getSecond() + addSecond;
+        mi += ~~(s / 60);
+        s %= 60;
+        h += ~~(mi / 60);
+        mi %= 60;
+        d += ~~(h / 24);
+        h %= 24;
+
+        let sm: SolarMonth = SolarMonth.fromYm(birthTime.getYear() + addYear, birthTime.getMonth()).next(addMonth);
+
+        let dc: number = sm.getDayCount();
+        while (d > dc) {
+            d -= dc;
+            sm = sm.next(1);
+            dc = sm.getDayCount();
+        }
+
+        return new ChildLimitInfo(birthTime, SolarTime.fromYmdHms(sm.getYear(), sm.getMonth(), d, h, mi, s), addYear, addMonth, addDay, addHour, addMinute);
+    }
+
+    abstract getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo;
+}
+
+export class DefaultChildLimitProvider extends AbstractChildLimitProvider {
     getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo {
         let seconds: number = Math.abs(term.getJulianDay().getSolarTime().subtract(birthTime));
         // 3天 = 1年，3天=60*60*24*3秒=259200秒 = 1年
@@ -4310,27 +4355,11 @@ export class DefaultChildLimitProvider implements ChildLimitProvider {
         // 1秒 = 2分，1秒/2=0.5秒 = 1分
         const minute: number = seconds * 2;
 
-        let d: number = birthTime.getDay() + day;
-        let h: number = birthTime.getHour() + hour;
-        let mi: number = birthTime.getMinute() + minute;
-        h += ~~(mi / 60);
-        mi %= 60;
-        d += ~~(h / 24);
-        h %= 24;
-
-        let sm: SolarMonth = SolarMonth.fromYm(birthTime.getYear() + year, birthTime.getMonth()).next(month);
-
-        let dc: number = sm.getDayCount();
-        while (d > dc) {
-            d -= dc;
-            sm = sm.next(1);
-            dc = sm.getDayCount();
-        }
-        return new ChildLimitInfo(birthTime, SolarTime.fromYmdHms(sm.getYear(), sm.getMonth(), d, h, mi, birthTime.getSecond()), year, month, day, hour, minute);
+        return this.next(birthTime, year, month, day, hour, minute, 0);
     }
 }
 
-export class China95ChildLimitProvider implements ChildLimitProvider {
+export class China95ChildLimitProvider extends AbstractChildLimitProvider {
     getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo {
         // 出生时刻和节令时刻相差的分钟数
         let minutes: number = ~~(Math.abs(term.getJulianDay().getSolarTime().subtract(birthTime)) / 60);
@@ -4339,18 +4368,50 @@ export class China95ChildLimitProvider implements ChildLimitProvider {
         const month: number = ~~(minutes / 360);
         minutes %= 360;
         const day: number = ~~(minutes / 12);
+        return this.next(birthTime, year, month, day, 0, 0, 0);
+    }
+}
 
-        let sm: SolarMonth = SolarMonth.fromYm(birthTime.getYear() + year, birthTime.getMonth()).next(month);
-
-        let d: number = birthTime.getDay() + day;
-        let dc: number = sm.getDayCount();
-        while (d > dc) {
-            d -= dc;
-            sm = sm.next(1);
-            dc = sm.getDayCount();
+export class LunarSect1ChildLimitProvider extends AbstractChildLimitProvider {
+    getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo {
+        const termTime: SolarTime = term.getJulianDay().getSolarTime();
+        let end: SolarTime = termTime;
+        let start: SolarTime = birthTime;
+        if (birthTime.isAfter(termTime)) {
+            end = birthTime;
+            start = termTime;
         }
+        const endTimeZhiIndex: number = (end.getHour() == 23) ? 11 : end.getLunarHour().getIndexInDay();
+        const startTimeZhiIndex: number = (start.getHour() == 23) ? 11 : start.getLunarHour().getIndexInDay();
+        // 时辰差
+        let hourDiff: number = endTimeZhiIndex - startTimeZhiIndex;
+        // 天数差
+        let dayDiff: number = end.getSolarDay().subtract(start.getSolarDay());
+        if (hourDiff < 0) {
+            hourDiff += 12;
+            dayDiff--;
+        }
+        const monthDiff: number = ~~(hourDiff * 10 / 30);
+        let month: number = dayDiff * 4 + monthDiff;
+        const day: number = hourDiff * 10 - monthDiff * 30;
+        const year: number = ~~(month / 12);
+        month = month - year * 12;
+        return this.next(birthTime, year, month, day, 0, 0, 0);
+    }
+}
 
-        return new ChildLimitInfo(birthTime, SolarTime.fromYmdHms(sm.getYear(), sm.getMonth(), d, birthTime.getHour(), birthTime.getMinute(), birthTime.getSecond()), year, month, day, 0, 0);
+export class LunarSect2ChildLimitProvider extends AbstractChildLimitProvider {
+    getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo {
+        // 出生时刻和节令时刻相差的分钟数
+        let minutes: number = ~~(Math.abs(term.getJulianDay().getSolarTime().subtract(birthTime)) / 60);
+        const year: number = ~~(minutes / 4320);
+        minutes %= 4320;
+        const month: number = ~~(minutes / 360);
+        minutes %= 360;
+        const day: number = ~~(minutes / 12);
+        minutes %= 12;
+        const hour: number = minutes * 2;
+        return this.next(birthTime, year, month, day, hour, 0, 0);
     }
 }
 
