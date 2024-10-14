@@ -1,6 +1,6 @@
 {
   "name": "tyme4ts",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Tyme是一个非常强大的日历工具库，可以看作 Lunar 的升级版，拥有更优的设计和扩展性，支持公历和农历、星座、干支、生肖、节气、法定假日等。",
   "main": "./dist/lib/index.cjs",
   "module": "./dist/lib/index.mjs",

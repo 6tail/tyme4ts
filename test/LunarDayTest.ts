@@ -162,4 +162,10 @@ class LunarDayTest {
         const lunar: LunarDay = LunarDay.fromYmd(2024, 1, 1);
         equal(lunar.next(31).toString(), '农历甲辰年二月初三');
     }
+
+    @test
+    test28() {
+        const lunar: LunarDay = LunarDay.fromYmd(2024, 3, 5);
+        equal(lunar.getMinorRen().getName(), '大安');
+    }
 }
