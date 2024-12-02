@@ -1076,7 +1076,7 @@ export class DogDay extends AbstractCultureDay {
     }
 
     getDog(): Dog {
-        return <Dog>this.culture;
+        return this.culture as Dog;
     }
 }
 
@@ -1106,7 +1106,7 @@ export class PlumRainDay extends AbstractCultureDay {
     }
 
     getPlumRain(): PlumRain {
-        return <PlumRain>this.culture;
+        return this.culture as PlumRain;
     }
 
     toString(): string {
@@ -1229,7 +1229,7 @@ export class NineDay extends AbstractCultureDay {
     }
 
     getNine(): Nine {
-        return <Nine>this.culture;
+        return this.culture as Nine;
     }
 }
 
@@ -1307,7 +1307,7 @@ export class PhenologyDay extends AbstractCultureDay {
     }
 
     getPhenology(): Phenology {
-        return <Phenology>this.culture;
+        return this.culture as Phenology;
     }
 }
 
@@ -3047,7 +3047,7 @@ export class SolarTermDay extends AbstractCultureDay {
     }
 
     getSolarTerm(): SolarTerm {
-        return <SolarTerm>this.culture;
+        return this.culture as SolarTerm;
     }
 }
 
