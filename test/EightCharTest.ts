@@ -381,7 +381,7 @@ class EightCharTest {
         // 小运
         const fortune: Fortune = childLimit.getStartFortune();
         // 年龄
-        equal(fortune.getAge(), 7);
+        equal(fortune.getAge(), 8);
     }
 
     @test

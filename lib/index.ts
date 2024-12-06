@@ -19,6 +19,12 @@ export enum FestivalType {
     EVE = 2
 }
 
+export enum HideHeavenStemType {
+    RESIDUAL = 0,
+    MIDDLE = 1,
+    MAIN = 2
+}
+
 export interface Culture {
     getName(): string;
 
@@ -756,6 +762,20 @@ export class EarthBranch extends LoopTyme {
         return n === -1 ? null : HeavenStem.fromIndex(n);
     }
 
+    getHideHeavenStems(): HideHeavenStem[] {
+        const l: HideHeavenStem[] = [];
+        l.push(new HideHeavenStem(this.getHideHeavenStemMain(), HideHeavenStemType.MAIN));
+        let o: HeavenStem | null = this.getHideHeavenStemMiddle();
+        if (o) {
+            l.push(new HideHeavenStem(o, HideHeavenStemType.MIDDLE));
+        }
+        o = this.getHideHeavenStemResidual();
+        if (o) {
+            l.push(new HideHeavenStem(o, HideHeavenStemType.RESIDUAL));
+        }
+        return l;
+    }
+
     getZodiac(): Zodiac {
         return Zodiac.fromIndex(this.index);
     }
@@ -863,6 +883,54 @@ export class HeavenStem extends LoopTyme {
 
     combine(target: HeavenStem): Element | null {
         return this.getCombine().equals(target) ? Element.fromIndex(this.index + 2) : null;
+    }
+}
+
+export class HideHeavenStem extends AbstractCulture {
+    protected heavenStem: HeavenStem;
+    protected type: HideHeavenStemType;
+
+    constructor(heavenStem: HeavenStem | string | number, type: HideHeavenStemType) {
+        super();
+        if (typeof heavenStem === 'number') {
+            this.heavenStem = HeavenStem.fromIndex(heavenStem);
+        } else if (typeof heavenStem === 'string') {
+            this.heavenStem = HeavenStem.fromName(heavenStem);
+        } else {
+            this.heavenStem = heavenStem;
+        }
+        this.type = type;
+    }
+
+    getName(): string {
+        return this.heavenStem.getName();
+    }
+
+    getHeavenStem(): HeavenStem {
+        return this.heavenStem;
+    }
+
+    getType(): HideHeavenStemType {
+        return this.type;
+    }
+}
+
+export class HideHeavenStemDay extends AbstractCultureDay {
+    constructor(hideHeavenStem: HideHeavenStem, dayIndex: number) {
+        super(hideHeavenStem, dayIndex);
+    }
+
+    getHideHeavenStem(): HideHeavenStem {
+        return this.culture as HideHeavenStem;
+    }
+
+    getName(): string {
+        const heavenStem: HeavenStem = this.getHideHeavenStem().getHeavenStem();
+        return heavenStem.getName() + heavenStem.getElement().getName();
+    }
+
+    toString(): string {
+        return `${this.getName()}第${this.getDayIndex() + 1}天`;
     }
 }
 
@@ -3680,6 +3748,44 @@ export class SolarDay extends AbstractTyme {
         return this.equals(end) ? new PlumRainDay(PlumRain.fromIndex(1), 0) : new PlumRainDay(PlumRain.fromIndex(0), this.subtract(start));
     }
 
+    getHideHeavenStemDay(): HideHeavenStemDay {
+        const dayCounts: number[] = [3, 5, 7, 9, 10, 30];
+        let term: SolarTerm = this.getTerm();
+        if (term.isQi()) {
+            term = term.next(-1);
+        }
+        let dayIndex: number = this.subtract(term.getJulianDay().getSolarDay());
+        const startIndex: number = (term.getIndex() - 1) * 3;
+        const data: string = '93705542220504xx1513904541632524533533105544806564xx7573304542018584xx95'.substring(startIndex, startIndex + 6);
+        let days: number = 0;
+        let heavenStemIndex: number = 0;
+        let typeIndex: number = 0;
+        while (typeIndex < 3) {
+            const i: number = typeIndex * 2;
+            const d: string = data.substring(i, i + 1);
+            let count: number = 0;
+            if (d != 'x') {
+                heavenStemIndex = parseInt(d, 10);
+                count = dayCounts[parseInt(data.substring(i + 1, i + 2), 10)];
+                days += count;
+            }
+            if (dayIndex <= days) {
+                dayIndex -= days - count;
+                break;
+            }
+            typeIndex++;
+        }
+        let type: HideHeavenStemType;
+        if (typeIndex == 0) {
+            type = HideHeavenStemType.RESIDUAL;
+        } else if (typeIndex == 1) {
+            type = HideHeavenStemType.MIDDLE;
+        } else {
+            type = HideHeavenStemType.MAIN;
+        }
+        return new HideHeavenStemDay(new HideHeavenStem(heavenStemIndex, type), dayIndex);
+    }
+
     getNineDay(): NineDay | null {
         const year: number = this.getYear();
         let start: SolarDay = SolarTerm.fromIndex(year + 1, 0).getJulianDay().getSolarDay();
@@ -4538,6 +4644,19 @@ export class ChildLimit {
     getStartFortune(): Fortune {
         return Fortune.fromChildLimit(this, 0);
     }
+
+    getEndLunarYear(): LunarYear {
+        const endTime: SolarTime = this.getEndTime();
+        const solarYear: number = endTime.getYear();
+        let y: LunarYear = endTime.getLunarHour().getLunarDay().getLunarMonth().getLunarYear();
+        if (y.getYear() < solarYear) {
+            // 正月初一在立春之后的，农历年往后推一年
+            if (LunarHour.fromYmdHms(solarYear, 1, 1, 0, 0, 0).getSolarTime().isAfter(SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarTime())) {
+                y = y.next(1);
+            }
+        }
+        return y;
+    }
 }
 
 export class DecadeFortune extends AbstractTyme {
@@ -4555,7 +4674,7 @@ export class DecadeFortune extends AbstractTyme {
     }
 
     getStartAge(): number {
-        return this.childLimit.getYearCount() + 1 + this.index * 10;
+        return this.childLimit.getEndTime().getYear() - this.childLimit.getStartTime().getYear() + 1 + this.index * 10;
     }
 
     getEndAge(): number {
@@ -4563,7 +4682,7 @@ export class DecadeFortune extends AbstractTyme {
     }
 
     getStartLunarYear(): LunarYear {
-        return this.childLimit.getEndTime().getLunarHour().getLunarDay().getLunarMonth().getLunarYear().next(this.index * 10);
+        return this.childLimit.getEndLunarYear().next(this.index * 10);
     }
 
     getEndLunarYear(): LunarYear {
@@ -4602,11 +4721,11 @@ export class Fortune extends AbstractTyme {
     }
 
     getAge(): number {
-        return this.childLimit.getYearCount() + 1 + this.index;
+        return this.childLimit.getEndTime().getYear() - this.childLimit.getStartTime().getYear() + 1 + this.index;
     }
 
     getLunarYear(): LunarYear {
-        return this.childLimit.getEndTime().getLunarHour().getLunarDay().getLunarMonth().getLunarYear().next(this.index);
+        return this.childLimit.getEndLunarYear().next(this.index);
     }
 
     getSixtyCycle(): SixtyCycle {
