@@ -4147,6 +4147,14 @@ export class SolarFestival extends AbstractTyme {
         return null;
     }
 
+    static fromDate(date: Date): SolarFestival | null {
+        return new SolarFestival.fromYmd(date.getFullYear(), date.getMonth()+1, date.getDate());
+    }
+
+    static now(): SolarFestival | null {
+        return new SolarFestival.fromDate(new Date());
+    }
+
     getName(): string {
         return this.name;
     }
