@@ -3559,6 +3559,14 @@ export class SolarDay extends AbstractTyme {
         return new SolarDay(year, month, day);
     }
 
+    static fromDate(date: Date): SolarDay {
+        return new SolarDay(date.getFullYear(), date.getMonth()+1, date.getDate());
+    }
+
+    static now(): SolarDay {
+        return new SolarDay.fromDate(new Date());
+    }
+
     getSolarMonth(): SolarMonth {
         return this.month;
     }
