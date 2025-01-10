@@ -53,6 +53,14 @@ export abstract class AbstractCulture implements Culture {
         }
         return i;
     }
+
+    protected static numeric(n: number | string, name: string): number {
+        const d: number = (typeof n === 'number') ? n : Number(n);
+        if (isNaN(d)) {
+            throw new Error(`illegal ${name}: ${n}`);
+        }
+        return d;
+    }
 }
 
 export abstract class AbstractTyme extends AbstractCulture implements Tyme {
@@ -134,8 +142,8 @@ export class Animal extends LoopTyme {
         super(Animal.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Animal {
-        return new Animal(index);
+    static fromIndex(index: number | string): Animal {
+        return new Animal(this.numeric(index, 'animal index'));
     }
 
     static fromName(name: string): Animal {
@@ -158,8 +166,8 @@ export class TwentyEightStar extends LoopTyme {
         super(TwentyEightStar.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): TwentyEightStar {
-        return new TwentyEightStar(index);
+    static fromIndex(index: number | string): TwentyEightStar {
+        return new TwentyEightStar(this.numeric(index, 'twenty eight star index'));
     }
 
     static fromName(name: string): TwentyEightStar {
@@ -198,8 +206,8 @@ export class SevenStar extends LoopTyme {
         super(SevenStar.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): SevenStar {
-        return new SevenStar(index);
+    static fromIndex(index: number | string): SevenStar {
+        return new SevenStar(this.numeric(index, 'seven star index'));
     }
 
     static fromName(name: string): SevenStar {
@@ -222,8 +230,8 @@ export class Week extends LoopTyme {
         super(Week.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Week {
-        return new Week(index);
+    static fromIndex(index: number | string): Week {
+        return new Week(this.numeric(index, 'week index'));
     }
 
     static fromName(name: string): Week {
@@ -246,8 +254,8 @@ export class Land extends LoopTyme {
         super(Land.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Land {
-        return new Land(index);
+    static fromIndex(index: number | string): Land {
+        return new Land(this.numeric(index, 'land index'));
     }
 
     static fromName(name: string): Land {
@@ -270,8 +278,8 @@ export class Direction extends LoopTyme {
         super(Direction.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Direction {
-        return new Direction(index);
+    static fromIndex(index: number | string): Direction {
+        return new Direction(this.numeric(index, 'direction index'));
     }
 
     static fromName(name: string): Direction {
@@ -298,8 +306,8 @@ export class Zone extends LoopTyme {
         super(Zone.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Zone {
-        return new Zone(index);
+    static fromIndex(index: number | string): Zone {
+        return new Zone(this.numeric(index, 'zone index'));
     }
 
     static fromName(name: string): Zone {
@@ -326,8 +334,8 @@ export class Beast extends LoopTyme {
         super(Beast.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Beast {
-        return new Beast(index);
+    static fromIndex(index: number | string): Beast {
+        return new Beast(this.numeric(index, 'beast index'));
     }
 
     static fromName(name: string): Beast {
@@ -350,8 +358,8 @@ export class Luck extends LoopTyme {
         super(Luck.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Luck {
-        return new Luck(index);
+    static fromIndex(index: number | string): Luck {
+        return new Luck(this.numeric(index, 'luck index'));
     }
 
     static fromName(name: string): Luck {
@@ -370,8 +378,8 @@ export class Constellation extends LoopTyme {
         super(Constellation.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Constellation {
-        return new Constellation(index);
+    static fromIndex(index: number | string): Constellation {
+        return new Constellation(this.numeric(index, 'constellation index'));
     }
 
     static fromName(name: string): Constellation {
@@ -390,8 +398,8 @@ export class Duty extends LoopTyme {
         super(Duty.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Duty {
-        return new Duty(index);
+    static fromIndex(index: number | string): Duty {
+        return new Duty(this.numeric(index, 'duty index'));
     }
 
     static fromName(name: string): Duty {
@@ -410,8 +418,8 @@ export class Element extends LoopTyme {
         super(Element.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Element {
-        return new Element(index);
+    static fromIndex(index: number | string): Element {
+        return new Element(this.numeric(index, 'element index'));
     }
 
     static fromName(name: string): Element {
@@ -465,8 +473,8 @@ export class God extends LoopTyme {
         super(God.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): God {
-        return new God(index);
+    static fromIndex(index: number | string): God {
+        return new God(this.numeric(index, 'god index'));
     }
 
     static fromName(name: string): God {
@@ -505,8 +513,8 @@ export class Phase extends LoopTyme {
         super(Phase.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Phase {
-        return new Phase(index);
+    static fromIndex(index: number | string): Phase {
+        return new Phase(this.numeric(index, 'phase index'));
     }
 
     static fromName(name: string): Phase {
@@ -525,8 +533,8 @@ export class Sixty extends LoopTyme {
         super(Sixty.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Sixty {
-        return new Sixty(index);
+    static fromIndex(index: number | string): Sixty {
+        return new Sixty(this.numeric(index, 'sixty index'));
     }
 
     static fromName(name: string): Sixty {
@@ -545,8 +553,8 @@ export class Sound extends LoopTyme {
         super(Sound.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Sound {
-        return new Sound(index);
+    static fromIndex(index: number | string): Sound {
+        return new Sound(this.numeric(index, 'sound index'));
     }
 
     static fromName(name: string): Sound {
@@ -595,8 +603,8 @@ export class Taboo extends LoopTyme {
         super(Taboo.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Taboo {
-        return new Taboo(index);
+    static fromIndex(index: number | string): Taboo {
+        return new Taboo(this.numeric(index, 'taboo index'));
     }
 
     static fromName(name: string): Taboo {
@@ -640,8 +648,8 @@ export class Ten extends LoopTyme {
         super(Ten.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Ten {
-        return new Ten(index);
+    static fromIndex(index: number | string): Ten {
+        return new Ten(this.numeric(index, 'ten index'));
     }
 
     static fromName(name: string): Ten {
@@ -660,8 +668,8 @@ export class Terrain extends LoopTyme {
         super(Terrain.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Terrain {
-        return new Terrain(index);
+    static fromIndex(index: number | string): Terrain {
+        return new Terrain(this.numeric(index, 'terrain index'));
     }
 
     static fromName(name: string): Terrain {
@@ -680,8 +688,8 @@ export class Twenty extends LoopTyme {
         super(Twenty.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Twenty {
-        return new Twenty(index);
+    static fromIndex(index: number | string): Twenty {
+        return new Twenty(this.numeric(index, 'twenty index'));
     }
 
     static fromName(name: string): Twenty {
@@ -704,8 +712,8 @@ export class Zodiac extends LoopTyme {
         super(Zodiac.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Zodiac {
-        return new Zodiac(index);
+    static fromIndex(index: number | string): Zodiac {
+        return new Zodiac(this.numeric(index, 'zodiac index'));
     }
 
     static fromName(name: string): Zodiac {
@@ -728,8 +736,8 @@ export class EarthBranch extends LoopTyme {
         super(EarthBranch.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): EarthBranch {
-        return new EarthBranch(index);
+    static fromIndex(index: number | string): EarthBranch {
+        return new EarthBranch(this.numeric(index, 'earth branch index'));
     }
 
     static fromName(name: string): EarthBranch {
@@ -815,8 +823,8 @@ export class HeavenStem extends LoopTyme {
         super(HeavenStem.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): HeavenStem {
-        return new HeavenStem(index);
+    static fromIndex(index: number | string): HeavenStem {
+        return new HeavenStem(this.numeric(index, 'heaven stem index'));
     }
 
     static fromName(name: string): HeavenStem {
@@ -941,8 +949,8 @@ export class PengZuHeavenStem extends LoopTyme {
         super(PengZuHeavenStem.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): PengZuHeavenStem {
-        return new PengZuHeavenStem(index);
+    static fromIndex(index: number | string): PengZuHeavenStem {
+        return new PengZuHeavenStem(this.numeric(index, 'peng zu heaven stem index'));
     }
 
     static fromName(name: string): PengZuHeavenStem {
@@ -961,8 +969,8 @@ export class PengZuEarthBranch extends LoopTyme {
         super(PengZuEarthBranch.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): PengZuEarthBranch {
-        return new PengZuEarthBranch(index);
+    static fromIndex(index: number | string): PengZuEarthBranch {
+        return new PengZuEarthBranch(this.numeric(index, 'peng zu earth branch index'));
     }
 
     static fromName(name: string): PengZuEarthBranch {
@@ -1008,8 +1016,8 @@ export class TenStar extends LoopTyme {
         super(TenStar.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): TenStar {
-        return new TenStar(index);
+    static fromIndex(index: number | string): TenStar {
+        return new TenStar(this.numeric(index, 'ten star index'));
     }
 
     static fromName(name: string): TenStar {
@@ -1029,8 +1037,8 @@ export class SixStar extends LoopTyme {
         super(SixStar.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): SixStar {
-        return new SixStar(index);
+    static fromIndex(index: number | string): SixStar {
+        return new SixStar(this.numeric(index, 'six star index'));
     }
 
     static fromName(name: string): SixStar {
@@ -1050,8 +1058,8 @@ export class MinorRen extends LoopTyme {
         super(MinorRen.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): MinorRen {
-        return new MinorRen(index);
+    static fromIndex(index: number | string): MinorRen {
+        return new MinorRen(this.numeric(index, 'minor ren index'));
     }
 
     static fromName(name: string): MinorRen {
@@ -1078,8 +1086,8 @@ export class SixtyCycle extends LoopTyme {
         super(SixtyCycle.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): SixtyCycle {
-        return new SixtyCycle(index);
+    static fromIndex(index: number | string): SixtyCycle {
+        return new SixtyCycle(this.numeric(index, 'sixty cycle index'));
     }
 
     static fromName(name: string): SixtyCycle {
@@ -1125,8 +1133,8 @@ export class Dog extends LoopTyme {
         super(Dog.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Dog {
-        return new Dog(index);
+    static fromIndex(index: number | string): Dog {
+        return new Dog(this.numeric(index, 'dog index'));
     }
 
     static fromName(name: string): Dog {
@@ -1155,8 +1163,8 @@ export class PlumRain extends LoopTyme {
         super(PlumRain.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): PlumRain {
-        return new PlumRain(index);
+    static fromIndex(index: number | string): PlumRain {
+        return new PlumRain(this.numeric(index, 'plum rain index'));
     }
 
     static fromName(name: string): PlumRain {
@@ -1278,8 +1286,8 @@ export class Nine extends LoopTyme {
         super(Nine.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Nine {
-        return new Nine(index);
+    static fromIndex(index: number | string): Nine {
+        return new Nine(this.numeric(index, 'nine index'));
     }
 
     static fromName(name: string): Nine {
@@ -1308,8 +1316,8 @@ export class Phenology extends LoopTyme {
         super(Phenology.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Phenology {
-        return new Phenology(index);
+    static fromIndex(index: number | string): Phenology {
+        return new Phenology(this.numeric(index, 'phenology index'));
     }
 
     static fromName(name: string): Phenology {
@@ -1332,8 +1340,8 @@ export class ThreePhenology extends LoopTyme {
         super(ThreePhenology.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): ThreePhenology {
-        return new ThreePhenology(index);
+    static fromIndex(index: number | string): ThreePhenology {
+        return new ThreePhenology(this.numeric(index, 'three phenology index'));
     }
 
     static fromName(name: string): ThreePhenology {
@@ -1356,8 +1364,8 @@ export class Dipper extends LoopTyme {
         super(Dipper.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Dipper {
-        return new Dipper(index);
+    static fromIndex(index: number | string): Dipper {
+        return new Dipper(this.numeric(index, 'dipper index'));
     }
 
     static fromName(name: string): Dipper {
@@ -1386,8 +1394,8 @@ export class NineStar extends LoopTyme {
         super(NineStar.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): NineStar {
-        return new NineStar(index);
+    static fromIndex(index: number | string): NineStar {
+        return new NineStar(this.numeric(index, 'nine star index'));
     }
 
     static fromName(name: string): NineStar {
@@ -1426,8 +1434,8 @@ export class TwelveStar extends LoopTyme {
         super(TwelveStar.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): TwelveStar {
-        return new TwelveStar(index);
+    static fromIndex(index: number | string): TwelveStar {
+        return new TwelveStar(this.numeric(index, 'twelve star index'));
     }
 
     static fromName(name: string): TwelveStar {
@@ -1450,8 +1458,8 @@ export class Ecliptic extends LoopTyme {
         super(Ecliptic.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): Ecliptic {
-        return new Ecliptic(index);
+    static fromIndex(index: number | string): Ecliptic {
+        return new Ecliptic(this.numeric(index, 'ecliptic index'));
     }
 
     static fromName(name: string): Ecliptic {
@@ -1500,16 +1508,17 @@ export class LunarYear extends AbstractTyme {
         LunarYear.isInit = true;
     }
 
-    protected constructor(year: number) {
+    protected constructor(year: number | string) {
         super();
         LunarYear.init();
-        if (year < -1 || year > 9999) {
+        const y: number = LunarYear.numeric(year, 'lunar year');
+        if (y < -1 || y > 9999) {
             throw new Error(`illegal lunar year: ${year}`);
         }
-        this.year = year;
+        this.year = y;
     }
 
-    static fromYear(year: number): LunarYear {
+    static fromYear(year: number | string): LunarYear {
         return new LunarYear(year);
     }
 
@@ -1584,8 +1593,8 @@ export class LunarSeason extends LoopTyme {
         super(LunarSeason.NAMES, indexOfName);
     }
 
-    static fromIndex(index: number): LunarSeason {
-        return new LunarSeason(index);
+    static fromIndex(index: number | string): LunarSeason {
+        return new LunarSeason(this.numeric(index, 'lunar season index'));
     }
 
     static fromName(name: string): LunarSeason {
@@ -1624,7 +1633,7 @@ export class LunarMonth extends AbstractTyme {
     protected indexInYear: number;
     protected firstJulianDay: JulianDay;
 
-    public constructor(year: number, month: number, cache?: number[]) {
+    public constructor(year: number | string, month: number | string, cache?: number[]) {
         super();
         if (cache) {
             const m: number = cache[1];
@@ -1635,19 +1644,21 @@ export class LunarMonth extends AbstractTyme {
             this.indexInYear = cache[3];
             this.firstJulianDay = JulianDay.fromJulianDay(cache[4]);
         } else {
-            const currentYear: LunarYear = LunarYear.fromYear(year);
-            const currentLeapMonth: number = currentYear.getLeapMonth();
-            if (month === 0 || month > 12 || month < -12) {
+            const t: number = LunarMonth.numeric(month, 'lunar month');
+            if (t === 0 || t > 12 || t < -12) {
                 throw new Error(`illegal lunar month: ${month}`);
             }
-            const leap: boolean = month < 0;
-            const m: number = Math.abs(month);
+            const currentYear: LunarYear = LunarYear.fromYear(year);
+            const y: number = currentYear.getYear();
+            const currentLeapMonth: number = currentYear.getLeapMonth();
+            const leap: boolean = t < 0;
+            const m: number = Math.abs(t);
             if (leap && m != currentLeapMonth) {
                 throw new Error(`illegal leap month ${m} in lunar year ${year}`);
             }
 
             // 冬至
-            const dongZhi: SolarTerm = SolarTerm.fromIndex(year, 0);
+            const dongZhi: SolarTerm = SolarTerm.fromIndex(y, 0);
             const dongZhiJd: number = dongZhi.getCursoryJulianDay();
 
             // 冬至前的初一，今年首朔的日月黄经差
@@ -1658,9 +1669,9 @@ export class LunarMonth extends AbstractTyme {
 
             // 正常情况正月初一为第3个朔日，但有些特殊的
             let offset: number = 2;
-            if (year > 8 && year < 24) {
+            if (y > 8 && y < 24) {
                 offset = 1;
-            } else if (LunarYear.fromYear(year - 1).getLeapMonth() > 10 && year != 239 && year != 240) {
+            } else if (LunarYear.fromYear(y - 1).getLeapMonth() > 10 && y != 239 && y != 240) {
                 offset = 3;
             }
 
@@ -1683,7 +1694,7 @@ export class LunarMonth extends AbstractTyme {
         }
     }
 
-    static fromYm(year: number, month: number): LunarMonth {
+    static fromYm(year: number | string, month: number | string): LunarMonth {
         let m: LunarMonth;
         const key: string = `${year}${month}`;
         let cache: number[] = LunarMonth.cache[key];
@@ -1827,24 +1838,23 @@ export class LunarWeek extends AbstractTyme {
     protected index: number;
     protected start: Week;
 
-    protected constructor(year: number, month: number, index: number, start: number) {
+    protected constructor(year: number | string, month: number | string, index: number | string, start: number | string) {
         super();
-        if (index < 0 || index > 5) {
+        const i: number = LunarWeek.numeric(index, 'lunar week index');
+        if (i < 0 || i > 5) {
             throw new Error(`illegal lunar week index: ${index}`);
         }
-        if (start < 0 || start > 6) {
-            throw new Error(`illegal lunar week start: ${start}`);
-        }
+        const t: Week = Week.fromIndex(start);
         const m: LunarMonth = LunarMonth.fromYm(year, month);
-        if (index >= m.getWeekCount(start)) {
+        if (i >= m.getWeekCount(t.getIndex())) {
             throw new Error(`illegal lunar week index: ${index} in month: ${m.toString()}`);
         }
         this.month = m;
-        this.index = index;
-        this.start = Week.fromIndex(start);
+        this.index = i;
+        this.start = t;
     }
 
-    static fromYm(year: number, month: number, index: number, start: number): LunarWeek {
+    static fromYm(year: number | string, month: number | string, index: number | string, start: number | string): LunarWeek {
         return new LunarWeek(year, month, index, start);
     }
 
@@ -1930,17 +1940,18 @@ export class LunarDay extends AbstractTyme {
     protected month: LunarMonth;
     protected day: number;
 
-    protected constructor(year: number, month: number, day: number) {
+    protected constructor(year: number | string, month: number | string, day: number | string) {
         super();
         const m: LunarMonth = LunarMonth.fromYm(year, month);
-        if (day < 1 || day > m.getDayCount()) {
+        const d: number = LunarDay.numeric(day, 'lunar day');
+        if (d < 1 || d > m.getDayCount()) {
             throw new Error(`illegal day ${day} in ${m.toString()}`);
         }
         this.month = m;
-        this.day = day;
+        this.day = d;
     }
 
-    static fromYmd(year: number, month: number, day: number): LunarDay {
+    static fromYmd(year: number | string, month: number | string, day: number | string): LunarDay {
         return new LunarDay(year, month, day);
     }
 
@@ -2154,24 +2165,27 @@ export class LunarHour extends AbstractTyme {
     protected minute: number;
     protected second: number;
 
-    protected constructor(year: number, month: number, day: number, hour: number, minute: number, second: number) {
+    protected constructor(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string) {
         super();
-        if (hour < 0 || hour > 23) {
+        const h: number = LunarHour.numeric(hour, 'hour');
+        if (h < 0 || h > 23) {
             throw new Error(`illegal hour: ${hour}`);
         }
-        if (minute < 0 || minute > 59) {
+        const m: number = LunarHour.numeric(minute, 'minute');
+        if (m < 0 || m > 59) {
             throw new Error(`illegal minute: ${minute}`);
         }
-        if (second < 0 || second > 59) {
+        const s: number = LunarHour.numeric(second, 'second');
+        if (s < 0 || s > 59) {
             throw new Error(`illegal second: ${second}`);
         }
         this.day = LunarDay.fromYmd(year, month, day);
-        this.hour = hour;
-        this.minute = minute;
-        this.second = second;
+        this.hour = h;
+        this.minute = m;
+        this.second = s;
     }
 
-    static fromYmdHms(year: number, month: number, day: number, hour: number, minute: number, second: number): LunarHour {
+    static fromYmdHms(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string): LunarHour {
         return new LunarHour(year, month, day, hour, minute, second);
     }
 
@@ -2336,28 +2350,33 @@ export class JulianDay extends AbstractTyme {
     static J2000: number = 2451545;
     protected day: number;
 
-    protected constructor(day: number) {
+    protected constructor(day: number | string) {
         super();
-        this.day = day;
+        this.day = JulianDay.numeric(day, 'julian day');
     }
 
-    static fromJulianDay(day: number): JulianDay {
+    static fromJulianDay(day: number | string): JulianDay {
         return new JulianDay(day);
     }
 
-    static fromYmdHms(year: number, month: number, day: number, hour: number, minute: number, second: number): JulianDay {
-        const d: number = day + ((second / 60 + minute) / 60 + hour) / 24;
+    static fromYmdHms(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string): JulianDay {
+        let y: number = this.numeric(year, 'year');
+        let m: number = this.numeric(month, 'month');
+        const h: number = this.numeric(hour, 'hour');
+        const i: number = this.numeric(minute, 'minute');
+        const s: number = this.numeric(second, 'second');
+        const d: number = this.numeric(day, 'day') + ((s / 60 + i) / 60 + h) / 24;
         let n: number = 0;
-        const g: boolean = year * 372 + month * 31 + ~~(d) >= 588829;
-        if (month <= 2) {
-            month += 12;
-            year--;
+        const g: boolean = y * 372 + m * 31 + ~~(d) >= 588829;
+        if (m <= 2) {
+            m += 12;
+            y--;
         }
         if (g) {
-            n = ~~(year / 100);
+            n = ~~(y / 100);
             n = 2 - n + ~~(n / 4);
         }
-        return JulianDay.fromJulianDay(~~(365.25 * (year + 4716)) + ~~(30.6001 * (month + 1)) + d + n - 1524.5);
+        return JulianDay.fromJulianDay(~~(365.25 * (y + 4716)) + ~~(30.6001 * (m + 1)) + d + n - 1524.5);
     }
 
     getDay(): number {
@@ -3060,13 +3079,13 @@ export class SolarTerm extends LoopTyme {
 
     protected cursoryJulianDay: number;
 
-    protected constructor(year: number, indexOrName: number | string, cursoryJulianDay?: number) {
+    protected constructor(year: number | string, indexOrName: number | string, cursoryJulianDay?: number) {
         super(SolarTerm.NAMES, indexOrName);
         if (cursoryJulianDay) {
             this.cursoryJulianDay = cursoryJulianDay;
         } else {
             this.cursoryJulianDay = 0;
-            this.initByYear(year, typeof indexOrName === 'number' ? indexOrName : this.index);
+            this.initByYear(SolarTerm.numeric(year, 'lunar year'), typeof indexOrName === 'number' ? indexOrName : this.index);
         }
     }
 
@@ -3080,11 +3099,11 @@ export class SolarTerm extends LoopTyme {
         this.cursoryJulianDay = ShouXingUtil.calcQi(w + 15.2184 * offset);
     }
 
-    static fromIndex(year: number, index: number): SolarTerm {
+    static fromIndex(year: number | string, index: number): SolarTerm {
         return new SolarTerm(year, index);
     }
 
-    static fromName(year: number, name: string): SolarTerm {
+    static fromName(year: number | string, name: string): SolarTerm {
         return new SolarTerm(year, name);
     }
 
@@ -3122,15 +3141,16 @@ export class SolarTermDay extends AbstractCultureDay {
 export class SolarYear extends AbstractTyme {
     protected year: number;
 
-    protected constructor(year: number) {
+    protected constructor(year: number | string) {
         super();
-        if (year < 1 || year > 9999) {
+        const y: number = SolarYear.numeric(year, 'solar year');
+        if (y < 1 || y > 9999) {
             throw new Error(`illegal solar year: ${year}`);
         }
-        this.year = year;
+        this.year = y;
     }
 
-    static fromYear(year: number): SolarYear {
+    static fromYear(year: number | string): SolarYear {
         return new SolarYear(year);
     }
 
@@ -3190,16 +3210,17 @@ export class SolarHalfYear extends AbstractTyme {
     protected year: SolarYear;
     protected index: number;
 
-    protected constructor(year: number, index: number) {
+    protected constructor(year: number | string, index: number | string) {
         super();
-        if (index < 0 || index > 1) {
+        const i: number = SolarHalfYear.numeric(index, 'solar half year index');
+        if (i < 0 || i > 1) {
             throw new Error(`illegal solar half year index: ${index}`);
         }
         this.year = SolarYear.fromYear(year);
-        this.index = index;
+        this.index = i;
     }
 
-    static fromIndex(year: number, index: number): SolarHalfYear {
+    static fromIndex(year: number | string, index: number | string): SolarHalfYear {
         return new SolarHalfYear(year, index);
     }
 
@@ -3262,16 +3283,17 @@ export class SolarSeason extends AbstractTyme {
     protected year: SolarYear;
     protected index: number;
 
-    protected constructor(year: number, index: number) {
+    protected constructor(year: number | string, index: number | string) {
         super();
-        if (index < 0 || index > 3) {
+        const i: number = SolarSeason.numeric(index, 'solar season index');
+        if (i < 0 || i > 3) {
             throw new Error(`illegal solar season index: ${index}`);
         }
         this.year = SolarYear.fromYear(year);
-        this.index = index;
+        this.index = i;
     }
 
-    static fromIndex(year: number, index: number): SolarSeason {
+    static fromIndex(year: number | string, index: number | string): SolarSeason {
         return new SolarSeason(year, index);
     }
 
@@ -3326,16 +3348,17 @@ export class SolarMonth extends AbstractTyme {
     protected year: SolarYear;
     protected month: number;
 
-    protected constructor(year: number, month: number) {
+    protected constructor(year: number | string, month: number | string) {
         super();
-        if (month < 1 || month > 12) {
+        const m: number = SolarMonth.numeric(month, 'solar month');
+        if (m < 1 || m > 12) {
             throw new Error(`illegal solar month: ${month}`);
         }
         this.year = SolarYear.fromYear(year);
-        this.month = month;
+        this.month = m;
     }
 
-    static fromYm(year: number, month: number): SolarMonth {
+    static fromYm(year: number | string, month: number | string): SolarMonth {
         return new SolarMonth(year, month);
     }
 
@@ -3423,24 +3446,23 @@ export class SolarWeek extends AbstractTyme {
     protected index: number;
     protected start: Week;
 
-    protected constructor(year: number, month: number, index: number, start: number) {
+    protected constructor(year: number | string, month: number | string, index: number | string, start: number | string) {
         super();
-        if (index < 0 || index > 5) {
+        const i: number = SolarWeek.numeric(index, 'solar week index');
+        if (i < 0 || i > 5) {
             throw new Error(`illegal solar week index: ${index}`);
         }
-        if (start < 0 || start > 6) {
-            throw new Error(`illegal solar week start: ${start}`);
-        }
-        const m: SolarMonth = SolarMonth.fromYm(year, month)
-        if (index >= m.getWeekCount(start)) {
+        const t: Week = Week.fromIndex(start);
+        const m: SolarMonth = SolarMonth.fromYm(year, month);
+        if (i >= m.getWeekCount(t.getIndex())) {
             throw new Error(`illegal solar week index: ${index} in month: ${m.toString()}`);
         }
         this.month = m;
-        this.index = index;
-        this.start = Week.fromIndex(start);
+        this.index = i;
+        this.start = t;
     }
 
-    static fromYm(year: number, month: number, index: number, start: number): SolarWeek {
+    static fromYm(year: number | string, month: number | string, index: number | string, start: number | string): SolarWeek {
         return new SolarWeek(year, month, index, start);
     }
 
@@ -3538,24 +3560,25 @@ export class SolarDay extends AbstractTyme {
     protected month: SolarMonth;
     protected day: number;
 
-    protected constructor(year: number, month: number, day: number) {
+    protected constructor(year: number | string, month: number | string, day: number | string) {
         super();
-        if (day < 1) {
+        const d: number = SolarDay.numeric(day, 'solar day');
+        if (d < 1) {
             throw new Error(`illegal solar day: ${year}-${month}-${day}`);
         }
         const m: SolarMonth = SolarMonth.fromYm(year, month);
-        if (1582 === year && 10 === month) {
-            if ((day > 4 && day < 15) || day > 31) {
+        if (1582 === m.getYear() && 10 === m.getMonth()) {
+            if ((d > 4 && d < 15) || d > 31) {
                 throw new Error(`illegal solar day: ${year}-${month}-${day}`);
             }
-        } else if (day > m.getDayCount()) {
+        } else if (d > m.getDayCount()) {
             throw new Error(`illegal solar day: ${year}-${month}-${day}`);
         }
         this.month = m;
-        this.day = day;
+        this.day = d;
     }
 
-    static fromYmd(year: number, month: number, day: number): SolarDay {
+    static fromYmd(year: number | string, month: number | string, day: number | string): SolarDay {
         return new SolarDay(year, month, day);
     }
 
@@ -3837,24 +3860,27 @@ export class SolarTime extends AbstractTyme {
     protected minute: number;
     protected second: number;
 
-    protected constructor(year: number, month: number, day: number, hour: number, minute: number, second: number) {
+    protected constructor(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string) {
         super();
-        if (hour < 0 || hour > 23) {
+        const h: number = SolarTime.numeric(hour, 'hour');
+        if (h < 0 || h > 23) {
             throw new Error(`illegal hour: ${hour}`);
         }
-        if (minute < 0 || minute > 59) {
+        const m: number = SolarTime.numeric(minute, 'minute');
+        if (m < 0 || m > 59) {
             throw new Error(`illegal minute: ${minute}`);
         }
-        if (second < 0 || second > 59) {
+        const s: number = SolarTime.numeric(second, 'second');
+        if (s < 0 || s > 59) {
             throw new Error(`illegal second: ${second}`);
         }
         this.day = SolarDay.fromYmd(year, month, day);
-        this.hour = hour;
-        this.minute = minute;
-        this.second = second;
+        this.hour = h;
+        this.minute = m;
+        this.second = s;
     }
 
-    static fromYmdHms(year: number, month: number, day: number, hour: number, minute: number, second: number): SolarTime {
+    static fromYmdHms(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string): SolarTime {
         return new SolarTime(year, month, day, hour, minute, second);
     }
 

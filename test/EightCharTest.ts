@@ -5,7 +5,7 @@ import {
     EightChar, Fortune,
     Gender,
     HeavenStem,
-    LunarHour, LunarSect2EightCharProvider,
+    LunarHour, LunarSect1ChildLimitProvider, LunarSect2ChildLimitProvider, LunarSect2EightCharProvider,
     SixtyCycle,
     SolarTime
 } from '../lib';
@@ -532,6 +532,74 @@ class EightCharTest {
         })
         deepStrictEqual(timeList, ['1962年6月30日 23:00:00', '2022年6月15日 23:00:00']);
 
+        LunarHour.provider = new DefaultEightCharProvider();
+    }
+
+    @test
+    test47() {
+        // 采用Lunar流派1的起运算法
+        ChildLimit.provider = new LunarSect1ChildLimitProvider();
+        // 童限
+        const childLimit: ChildLimit = ChildLimit.fromSolarTime(SolarTime.fromYmdHms(1986, 5, 29, 13, 37, 0), Gender.MAN);
+        // 童限年数
+        equal(childLimit.getYearCount(), 2);
+        // 童限月数
+        equal(childLimit.getMonthCount(), 7);
+        // 童限日数
+        equal(childLimit.getDayCount(), 0);
+        // 童限时数
+        equal(childLimit.getHourCount(), 0);
+        // 童限分数
+        equal(childLimit.getMinuteCount(), 0);
+        // 童限结束(即开始起运)的公历时刻
+        equal(childLimit.getEndTime().toString(), '1988年12月29日 13:37:00');
+
+        // 为了不影响其他测试用例，恢复默认起运算法
+        ChildLimit.provider = new DefaultChildLimitProvider();
+    }
+
+    @test
+    test48() {
+        // 采用Lunar流派2的起运算法
+        ChildLimit.provider = new LunarSect2ChildLimitProvider();
+        // 童限
+        const childLimit: ChildLimit = ChildLimit.fromSolarTime(SolarTime.fromYmdHms(1986, 5, 29, 13, 37, 0), Gender.MAN);
+        // 童限年数
+        equal(childLimit.getYearCount(), 2);
+        // 童限月数
+        equal(childLimit.getMonthCount(), 7);
+        // 童限日数
+        equal(childLimit.getDayCount(), 0);
+        // 童限时数
+        equal(childLimit.getHourCount(), 14);
+        // 童限分数
+        equal(childLimit.getMinuteCount(), 0);
+        // 童限结束(即开始起运)的公历时刻
+        equal(childLimit.getEndTime().toString(), '1988年12月30日 03:37:00');
+
+        // 为了不影响其他测试用例，恢复默认起运算法
+        ChildLimit.provider = new DefaultChildLimitProvider();
+    }
+
+    @test
+    test49() {
+        // 采用Lunar流派2的八字算法
+        LunarHour.provider = new LunarSect2EightCharProvider();
+        // 童限
+        const eightChar: EightChar = LunarHour.fromYmdHms(2001, 10, 18, 18, 0, 0).getEightChar();
+        equal(eightChar.getName(), '辛巳 己亥 己亥 癸酉');
+        // 为了不影响其他测试用例，恢复默认八字算法
+        LunarHour.provider = new DefaultEightCharProvider();
+    }
+
+    @test
+    test50() {
+        // 采用Lunar流派2的八字算法
+        LunarHour.provider = new LunarSect2EightCharProvider();
+        // 童限
+        const eightChar: EightChar = LunarHour.fromYmdHms('2001', '10', '18', '18', '0', '0').getEightChar();
+        equal(eightChar.getName(), '辛巳 己亥 己亥 癸酉');
+        // 为了不影响其他测试用例，恢复默认八字算法
         LunarHour.provider = new DefaultEightCharProvider();
     }
 }
