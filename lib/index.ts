@@ -1551,7 +1551,7 @@ export class LunarYear extends AbstractTyme {
         if (this.year === -1) {
             return 11;
         }
-        for (const m in LunarYear.LEAP) {
+        for (const m of Object.keys(LunarYear.LEAP)) {
             if (LunarYear.LEAP[m].indexOf(this.year) > -1) {
                 return parseInt(m, 10);
             }
@@ -2782,7 +2782,7 @@ export class ShouXingUtil {
         let m: number;
         let c: number;
         let pn: number = 1;
-        let n0, m0: number = ShouXingUtil.XL0[pn + 1] - ShouXingUtil.XL0[pn];
+        let n0: number, m0: number = ShouXingUtil.XL0[pn + 1] - ShouXingUtil.XL0[pn];
         for (let i: number = 0; i < 6; i++, tn *= t) {
             n1 = ~~(ShouXingUtil.XL0[pn + i]);
             n2 = ~~(ShouXingUtil.XL0[pn + 1 + i]);
@@ -2912,7 +2912,7 @@ export class ShouXingUtil {
     }
 
     static saLonT(w: number): number {
-        let t, v: number = 628.3319653318;
+        let t: number, v: number = 628.3319653318;
         t = (w - 1.75347 - Math.PI) / v;
         v = ShouXingUtil.ev(t);
         t += (w - ShouXingUtil.saLon(t, 10)) / v;
@@ -2926,7 +2926,7 @@ export class ShouXingUtil {
     }
 
     static msaLonT(w: number): number {
-        let t, v: number = 7771.37714500204;
+        let t: number, v: number = 7771.37714500204;
         t = (w + 1.08472) / v;
         t += (w - ShouXingUtil.msaLon(t, 3, 3)) / v;
         v = ShouXingUtil.mv(t) - ShouXingUtil.ev(t);
@@ -2944,9 +2944,9 @@ export class ShouXingUtil {
     }
 
     static msaLonT2(w: number): number {
-        let t, v: number = 7771.37714500204;
+        let t: number, v: number = 7771.37714500204;
         t = (w + 1.08472) / v;
-        let l, t2: number = t * t;
+        let l: number, t2: number = t * t;
         t -= (-0.00003309 * t2 + 0.10976 * Math.cos(0.784758 + 8328.6914246 * t + 0.000152292 * t2) + 0.02224 * Math.cos(0.18740 + 7214.0628654 * t - 0.00021848 * t2) - 0.03342 * Math.cos(4.669257 + 628.307585 * t)) / v;
         t2 = t * t;
         l = ShouXingUtil.mLon(t, 20) - (4.8950632 + 628.3319653318 * t + 0.000005297 * t2 + 0.0334166 * Math.cos(4.669257 + 628.307585 * t) + 0.0002061 * Math.cos(2.67823 + 628.307585 * t) * t + 0.000349 * Math.cos(4.6261 + 1256.61517 * t) - 20.5 / ShouXingUtil.SECOND_PER_RAD);
