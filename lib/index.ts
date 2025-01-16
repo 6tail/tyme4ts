@@ -143,7 +143,7 @@ export class Animal extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Animal {
-        return new Animal(this.numeric(index, 'animal index'));
+        return new Animal(Animal.numeric(index, 'animal index'));
     }
 
     static fromName(name: string): Animal {
@@ -167,7 +167,7 @@ export class TwentyEightStar extends LoopTyme {
     }
 
     static fromIndex(index: number | string): TwentyEightStar {
-        return new TwentyEightStar(this.numeric(index, 'twenty eight star index'));
+        return new TwentyEightStar(TwentyEightStar.numeric(index, 'twenty eight star index'));
     }
 
     static fromName(name: string): TwentyEightStar {
@@ -207,7 +207,7 @@ export class SevenStar extends LoopTyme {
     }
 
     static fromIndex(index: number | string): SevenStar {
-        return new SevenStar(this.numeric(index, 'seven star index'));
+        return new SevenStar(SevenStar.numeric(index, 'seven star index'));
     }
 
     static fromName(name: string): SevenStar {
@@ -231,7 +231,7 @@ export class Week extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Week {
-        return new Week(this.numeric(index, 'week index'));
+        return new Week(Week.numeric(index, 'week index'));
     }
 
     static fromName(name: string): Week {
@@ -255,7 +255,7 @@ export class Land extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Land {
-        return new Land(this.numeric(index, 'land index'));
+        return new Land(Land.numeric(index, 'land index'));
     }
 
     static fromName(name: string): Land {
@@ -279,7 +279,7 @@ export class Direction extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Direction {
-        return new Direction(this.numeric(index, 'direction index'));
+        return new Direction(Direction.numeric(index, 'direction index'));
     }
 
     static fromName(name: string): Direction {
@@ -307,7 +307,7 @@ export class Zone extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Zone {
-        return new Zone(this.numeric(index, 'zone index'));
+        return new Zone(Zone.numeric(index, 'zone index'));
     }
 
     static fromName(name: string): Zone {
@@ -335,7 +335,7 @@ export class Beast extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Beast {
-        return new Beast(this.numeric(index, 'beast index'));
+        return new Beast(Beast.numeric(index, 'beast index'));
     }
 
     static fromName(name: string): Beast {
@@ -359,7 +359,7 @@ export class Luck extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Luck {
-        return new Luck(this.numeric(index, 'luck index'));
+        return new Luck(Luck.numeric(index, 'luck index'));
     }
 
     static fromName(name: string): Luck {
@@ -379,7 +379,7 @@ export class Constellation extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Constellation {
-        return new Constellation(this.numeric(index, 'constellation index'));
+        return new Constellation(Constellation.numeric(index, 'constellation index'));
     }
 
     static fromName(name: string): Constellation {
@@ -399,7 +399,7 @@ export class Duty extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Duty {
-        return new Duty(this.numeric(index, 'duty index'));
+        return new Duty(Duty.numeric(index, 'duty index'));
     }
 
     static fromName(name: string): Duty {
@@ -419,7 +419,7 @@ export class Element extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Element {
-        return new Element(this.numeric(index, 'element index'));
+        return new Element(Element.numeric(index, 'element index'));
     }
 
     static fromName(name: string): Element {
@@ -474,7 +474,7 @@ export class God extends LoopTyme {
     }
 
     static fromIndex(index: number | string): God {
-        return new God(this.numeric(index, 'god index'));
+        return new God(God.numeric(index, 'god index'));
     }
 
     static fromName(name: string): God {
@@ -514,7 +514,7 @@ export class Phase extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Phase {
-        return new Phase(this.numeric(index, 'phase index'));
+        return new Phase(Phase.numeric(index, 'phase index'));
     }
 
     static fromName(name: string): Phase {
@@ -534,7 +534,7 @@ export class Sixty extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Sixty {
-        return new Sixty(this.numeric(index, 'sixty index'));
+        return new Sixty(Sixty.numeric(index, 'sixty index'));
     }
 
     static fromName(name: string): Sixty {
@@ -554,7 +554,7 @@ export class Sound extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Sound {
-        return new Sound(this.numeric(index, 'sound index'));
+        return new Sound(Sound.numeric(index, 'sound index'));
     }
 
     static fromName(name: string): Sound {
@@ -604,7 +604,7 @@ export class Taboo extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Taboo {
-        return new Taboo(this.numeric(index, 'taboo index'));
+        return new Taboo(Taboo.numeric(index, 'taboo index'));
     }
 
     static fromName(name: string): Taboo {
@@ -649,7 +649,7 @@ export class Ten extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Ten {
-        return new Ten(this.numeric(index, 'ten index'));
+        return new Ten(Ten.numeric(index, 'ten index'));
     }
 
     static fromName(name: string): Ten {
@@ -669,7 +669,7 @@ export class Terrain extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Terrain {
-        return new Terrain(this.numeric(index, 'terrain index'));
+        return new Terrain(Terrain.numeric(index, 'terrain index'));
     }
 
     static fromName(name: string): Terrain {
@@ -689,7 +689,7 @@ export class Twenty extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Twenty {
-        return new Twenty(this.numeric(index, 'twenty index'));
+        return new Twenty(Twenty.numeric(index, 'twenty index'));
     }
 
     static fromName(name: string): Twenty {
@@ -713,7 +713,7 @@ export class Zodiac extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Zodiac {
-        return new Zodiac(this.numeric(index, 'zodiac index'));
+        return new Zodiac(Zodiac.numeric(index, 'zodiac index'));
     }
 
     static fromName(name: string): Zodiac {
@@ -737,7 +737,7 @@ export class EarthBranch extends LoopTyme {
     }
 
     static fromIndex(index: number | string): EarthBranch {
-        return new EarthBranch(this.numeric(index, 'earth branch index'));
+        return new EarthBranch(EarthBranch.numeric(index, 'earth branch index'));
     }
 
     static fromName(name: string): EarthBranch {
@@ -824,7 +824,7 @@ export class HeavenStem extends LoopTyme {
     }
 
     static fromIndex(index: number | string): HeavenStem {
-        return new HeavenStem(this.numeric(index, 'heaven stem index'));
+        return new HeavenStem(HeavenStem.numeric(index, 'heaven stem index'));
     }
 
     static fromName(name: string): HeavenStem {
@@ -950,7 +950,7 @@ export class PengZuHeavenStem extends LoopTyme {
     }
 
     static fromIndex(index: number | string): PengZuHeavenStem {
-        return new PengZuHeavenStem(this.numeric(index, 'peng zu heaven stem index'));
+        return new PengZuHeavenStem(PengZuHeavenStem.numeric(index, 'peng zu heaven stem index'));
     }
 
     static fromName(name: string): PengZuHeavenStem {
@@ -970,7 +970,7 @@ export class PengZuEarthBranch extends LoopTyme {
     }
 
     static fromIndex(index: number | string): PengZuEarthBranch {
-        return new PengZuEarthBranch(this.numeric(index, 'peng zu earth branch index'));
+        return new PengZuEarthBranch(PengZuEarthBranch.numeric(index, 'peng zu earth branch index'));
     }
 
     static fromName(name: string): PengZuEarthBranch {
@@ -1017,7 +1017,7 @@ export class TenStar extends LoopTyme {
     }
 
     static fromIndex(index: number | string): TenStar {
-        return new TenStar(this.numeric(index, 'ten star index'));
+        return new TenStar(TenStar.numeric(index, 'ten star index'));
     }
 
     static fromName(name: string): TenStar {
@@ -1038,7 +1038,7 @@ export class SixStar extends LoopTyme {
     }
 
     static fromIndex(index: number | string): SixStar {
-        return new SixStar(this.numeric(index, 'six star index'));
+        return new SixStar(SixStar.numeric(index, 'six star index'));
     }
 
     static fromName(name: string): SixStar {
@@ -1059,7 +1059,7 @@ export class MinorRen extends LoopTyme {
     }
 
     static fromIndex(index: number | string): MinorRen {
-        return new MinorRen(this.numeric(index, 'minor ren index'));
+        return new MinorRen(MinorRen.numeric(index, 'minor ren index'));
     }
 
     static fromName(name: string): MinorRen {
@@ -1087,7 +1087,7 @@ export class SixtyCycle extends LoopTyme {
     }
 
     static fromIndex(index: number | string): SixtyCycle {
-        return new SixtyCycle(this.numeric(index, 'sixty cycle index'));
+        return new SixtyCycle(SixtyCycle.numeric(index, 'sixty cycle index'));
     }
 
     static fromName(name: string): SixtyCycle {
@@ -1134,7 +1134,7 @@ export class Dog extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Dog {
-        return new Dog(this.numeric(index, 'dog index'));
+        return new Dog(Dog.numeric(index, 'dog index'));
     }
 
     static fromName(name: string): Dog {
@@ -1164,7 +1164,7 @@ export class PlumRain extends LoopTyme {
     }
 
     static fromIndex(index: number | string): PlumRain {
-        return new PlumRain(this.numeric(index, 'plum rain index'));
+        return new PlumRain(PlumRain.numeric(index, 'plum rain index'));
     }
 
     static fromName(name: string): PlumRain {
@@ -1287,7 +1287,7 @@ export class Nine extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Nine {
-        return new Nine(this.numeric(index, 'nine index'));
+        return new Nine(Nine.numeric(index, 'nine index'));
     }
 
     static fromName(name: string): Nine {
@@ -1317,7 +1317,7 @@ export class Phenology extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Phenology {
-        return new Phenology(this.numeric(index, 'phenology index'));
+        return new Phenology(Phenology.numeric(index, 'phenology index'));
     }
 
     static fromName(name: string): Phenology {
@@ -1341,7 +1341,7 @@ export class ThreePhenology extends LoopTyme {
     }
 
     static fromIndex(index: number | string): ThreePhenology {
-        return new ThreePhenology(this.numeric(index, 'three phenology index'));
+        return new ThreePhenology(ThreePhenology.numeric(index, 'three phenology index'));
     }
 
     static fromName(name: string): ThreePhenology {
@@ -1365,7 +1365,7 @@ export class Dipper extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Dipper {
-        return new Dipper(this.numeric(index, 'dipper index'));
+        return new Dipper(Dipper.numeric(index, 'dipper index'));
     }
 
     static fromName(name: string): Dipper {
@@ -1395,7 +1395,7 @@ export class NineStar extends LoopTyme {
     }
 
     static fromIndex(index: number | string): NineStar {
-        return new NineStar(this.numeric(index, 'nine star index'));
+        return new NineStar(NineStar.numeric(index, 'nine star index'));
     }
 
     static fromName(name: string): NineStar {
@@ -1435,7 +1435,7 @@ export class TwelveStar extends LoopTyme {
     }
 
     static fromIndex(index: number | string): TwelveStar {
-        return new TwelveStar(this.numeric(index, 'twelve star index'));
+        return new TwelveStar(TwelveStar.numeric(index, 'twelve star index'));
     }
 
     static fromName(name: string): TwelveStar {
@@ -1459,7 +1459,7 @@ export class Ecliptic extends LoopTyme {
     }
 
     static fromIndex(index: number | string): Ecliptic {
-        return new Ecliptic(this.numeric(index, 'ecliptic index'));
+        return new Ecliptic(Ecliptic.numeric(index, 'ecliptic index'));
     }
 
     static fromName(name: string): Ecliptic {
@@ -1477,7 +1477,7 @@ export class Ecliptic extends LoopTyme {
 
 export class LunarYear extends AbstractTyme {
     protected static isInit: boolean = false;
-    protected static LEAP: { [key: string]: number[] } = {};
+    protected static LEAP: Record<string, number[]> = {};
     protected year: number;
 
     protected static init(): void {
@@ -1551,7 +1551,7 @@ export class LunarYear extends AbstractTyme {
         if (this.year === -1) {
             return 11;
         }
-        for (const m in LunarYear.LEAP) {
+        for (const m of Object.keys(LunarYear.LEAP)) {
             if (LunarYear.LEAP[m].indexOf(this.year) > -1) {
                 return parseInt(m, 10);
             }
@@ -1594,7 +1594,7 @@ export class LunarSeason extends LoopTyme {
     }
 
     static fromIndex(index: number | string): LunarSeason {
-        return new LunarSeason(this.numeric(index, 'lunar season index'));
+        return new LunarSeason(LunarSeason.numeric(index, 'lunar season index'));
     }
 
     static fromName(name: string): LunarSeason {
@@ -1623,7 +1623,7 @@ export class FetusMonth extends LoopTyme {
 }
 
 export class LunarMonth extends AbstractTyme {
-    static cache: {[key: string]: number[]} = {};
+    static cache: Record<string, number[]> = {};
     static NAMES: string[] = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
 
     protected year: LunarYear;
@@ -2360,12 +2360,12 @@ export class JulianDay extends AbstractTyme {
     }
 
     static fromYmdHms(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string): JulianDay {
-        let y: number = this.numeric(year, 'year');
-        let m: number = this.numeric(month, 'month');
-        const h: number = this.numeric(hour, 'hour');
-        const i: number = this.numeric(minute, 'minute');
-        const s: number = this.numeric(second, 'second');
-        const d: number = this.numeric(day, 'day') + ((s / 60 + i) / 60 + h) / 24;
+        let y: number = JulianDay.numeric(year, 'year');
+        let m: number = JulianDay.numeric(month, 'month');
+        const h: number = JulianDay.numeric(hour, 'hour');
+        const i: number = JulianDay.numeric(minute, 'minute');
+        const s: number = JulianDay.numeric(second, 'second');
+        const d: number = JulianDay.numeric(day, 'day') + ((s / 60 + i) / 60 + h) / 24;
         let n: number = 0;
         const g: boolean = y * 372 + m * 31 + ~~(d) >= 588829;
         if (m <= 2) {
@@ -2778,11 +2778,11 @@ export class ShouXingUtil {
     static eLon(t: number, n: number): number {
         t /= 10;
         let v: number = 0, tn: number = 1;
-        let n1, n2;
-        let m;
-        let c;
+        let n1: number, n2: number;
+        let m: number;
+        let c: number;
         let pn: number = 1;
-        let n0, m0: number = ShouXingUtil.XL0[pn + 1] - ShouXingUtil.XL0[pn];
+        let n0: number, m0: number = ShouXingUtil.XL0[pn + 1] - ShouXingUtil.XL0[pn];
         for (let i: number = 0; i < 6; i++, tn *= t) {
             n1 = ~~(ShouXingUtil.XL0[pn + i]);
             n2 = ~~(ShouXingUtil.XL0[pn + 1 + i]);
@@ -2818,8 +2818,8 @@ export class ShouXingUtil {
         let obl: number = ob[0].length;
         let tn: number = 1;
         let v: number = 0;
-        let j;
-        let c;
+        let j: number;
+        let c: number;
         let t2: number = t * t,
             t3: number = t2 * t,
             t4: number = t3 * t,
@@ -2889,14 +2889,14 @@ export class ShouXingUtil {
             }
             return ShouXingUtil.dtExt(y, jsd) - (ShouXingUtil.dtExt(y0, jsd) - t0) * (y0 + 100 - y) / 100;
         }
-        let i;
+        let i: number;
         for (i = 0; i < size; i += 5) {
             if (y < ShouXingUtil.DT_AT[i + 5]) {
                 break;
             }
         }
         let t1: number = (y - ShouXingUtil.DT_AT[i]) / (ShouXingUtil.DT_AT[i + 5] - ShouXingUtil.DT_AT[i]) * 10,
-            t2 = t1 * t1,
+            t2: number = t1 * t1,
             t3: number = t2 * t1;
         return ShouXingUtil.DT_AT[i + 1] + ShouXingUtil.DT_AT[i + 2] * t1 + ShouXingUtil.DT_AT[i + 3] * t2 + ShouXingUtil.DT_AT[i + 4] * t3;
     }
@@ -2912,7 +2912,7 @@ export class ShouXingUtil {
     }
 
     static saLonT(w: number): number {
-        let t, v: number = 628.3319653318;
+        let t: number, v: number = 628.3319653318;
         t = (w - 1.75347 - Math.PI) / v;
         v = ShouXingUtil.ev(t);
         t += (w - ShouXingUtil.saLon(t, 10)) / v;
@@ -2926,7 +2926,7 @@ export class ShouXingUtil {
     }
 
     static msaLonT(w: number): number {
-        let t, v: number = 7771.37714500204;
+        let t: number, v: number = 7771.37714500204;
         t = (w + 1.08472) / v;
         t += (w - ShouXingUtil.msaLon(t, 3, 3)) / v;
         v = ShouXingUtil.mv(t) - ShouXingUtil.ev(t);
@@ -2944,9 +2944,9 @@ export class ShouXingUtil {
     }
 
     static msaLonT2(w: number): number {
-        let t, v: number = 7771.37714500204;
+        let t: number, v: number = 7771.37714500204;
         t = (w + 1.08472) / v;
-        let l, t2: number = t * t;
+        let l: number, t2: number = t * t;
         t -= (-0.00003309 * t2 + 0.10976 * Math.cos(0.784758 + 8328.6914246 * t + 0.000152292 * t2) + 0.02224 * Math.cos(0.18740 + 7214.0628654 * t - 0.00021848 * t2) - 0.03342 * Math.cos(4.669257 + 628.307585 * t)) / v;
         t2 = t * t;
         l = ShouXingUtil.mLon(t, 20) - (4.8950632 + 628.3319653318 * t + 0.000005297 * t2 + 0.0334166 * Math.cos(4.669257 + 628.307585 * t) + 0.0002061 * Math.cos(2.67823 + 628.307585 * t) * t + 0.000349 * Math.cos(4.6261 + 1256.61517 * t) - 20.5 / ShouXingUtil.SECOND_PER_RAD);
@@ -2994,7 +2994,7 @@ export class ShouXingUtil {
     static calcShuo(jd: number): number {
         let size: number = ShouXingUtil.SHUO_KB.length;
         let d: number = 0;
-        let pc: number = 14, i;
+        let pc: number = 14, i: number;
         jd += 2451545;
         let f1: number = ShouXingUtil.SHUO_KB[0] - pc, f2 = ShouXingUtil.SHUO_KB[size - 1] - pc, f3 = 2436935;
         if (jd < f1 || jd >= f3) {
@@ -3027,7 +3027,7 @@ export class ShouXingUtil {
     static calcQi(jd: number): number {
         let size: number = ShouXingUtil.QI_KB.length;
         let d: number = 0;
-        let pc: number = 7, i;
+        let pc: number = 7, i: number;
         jd += 2451545;
         let f1: number = ShouXingUtil.QI_KB[0] - pc, f2 = ShouXingUtil.QI_KB[size - 1] - pc, f3 = 2436935;
         if (jd < f1 || jd >= f3) {
@@ -4307,7 +4307,7 @@ export class LunarFestival extends AbstractTyme {
 
     next(n: number): LunarFestival {
         if (n === 0) {
-            return <LunarFestival>LunarFestival.fromYmd(this.day.getYear(), this.day.getMonth(), this.day.getDay());
+            return LunarFestival.fromYmd(this.day.getYear(), this.day.getMonth(), this.day.getDay()) as LunarFestival;
         }
         const size: number = LunarFestival.NAMES.length;
         let t: number = this.index + n;
@@ -4315,7 +4315,7 @@ export class LunarFestival extends AbstractTyme {
         if (t < 0) {
             t -= size;
         }
-        return <LunarFestival>LunarFestival.fromIndex(this.day.getYear() + ~~(t / size), offset);
+        return LunarFestival.fromIndex(this.day.getYear() + ~~(t / size), offset) as LunarFestival;
     }
 }
 
