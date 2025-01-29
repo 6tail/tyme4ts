@@ -132,6 +132,10 @@ export abstract class LoopTyme extends AbstractTyme {
     protected nextIndex(n: number): number {
         return this.indexOfBy(this.index + n);
     }
+
+    stepsTo(targetIndex: number): number {
+        return this.indexOfBy(targetIndex - this.index);
+    }
 }
 
 export class Animal extends LoopTyme {
@@ -1407,7 +1411,7 @@ export class NineStar extends LoopTyme {
     }
 
     getColor(): string {
-        return ['白', '黒', '碧', '绿', '黄', '白', '赤', '白', '紫'][this.index];
+        return ['白', '黑', '碧', '绿', '黄', '白', '赤', '白', '紫'][this.index];
     }
 
     getElement(): Element {
@@ -1584,6 +1588,10 @@ export class LunarYear extends AbstractTyme {
         }
         return l;
     }
+
+    getKitchenGodSteed(): KitchenGodSteed {
+        return KitchenGodSteed.fromLunarYear(this.year);
+    }
 }
 
 export class LunarSeason extends LoopTyme {
@@ -1697,7 +1705,7 @@ export class LunarMonth extends AbstractTyme {
     static fromYm(year: number | string, month: number | string): LunarMonth {
         let m: LunarMonth;
         const key: string = `${year}${month}`;
-        let cache: number[] = LunarMonth.cache[key];
+        const cache: number[] = LunarMonth.cache[key];
         if (cache) {
             m = new LunarMonth(0, 0, cache);
         } else {
@@ -1814,7 +1822,11 @@ export class LunarMonth extends AbstractTyme {
     }
 
     getNineStar(): NineStar {
-        return NineStar.fromIndex(27 - this.year.getSixtyCycle().getEarthBranch().getIndex() % 3 * 3 - this.getSixtyCycle().getEarthBranch().getIndex());
+        let index: number = this.getSixtyCycle().getEarthBranch().getIndex();
+        if (index < 2) {
+            index += 3;
+        }
+        return NineStar.fromIndex(27 - this.year.getSixtyCycle().getEarthBranch().getIndex() % 3 * 3 - index);
     }
 
     getJupiterDirection(): Direction {
@@ -2767,7 +2779,9 @@ export class ShouXingUtil {
     }
 
     static nutationLon2(t: number): number {
-        let a: number = -1.742 * t, t2: number = t * t, dl: number = 0;
+        let a: number = -1.742 * t;
+        const t2: number = t * t;
+        let dl: number = 0;
         for (let i: number = 0, j: number = ShouXingUtil.NUT_B.length; i < j; i += 5) {
             dl += (ShouXingUtil.NUT_B[i + 3] + a) * Math.sin(ShouXingUtil.NUT_B[i] + ShouXingUtil.NUT_B[i + 1] * t + ShouXingUtil.NUT_B[i + 2] * t2);
             a = 0;
@@ -2781,11 +2795,11 @@ export class ShouXingUtil {
         let n1: number, n2: number;
         let m: number;
         let c: number;
-        let pn: number = 1;
-        let n0: number, m0: number = ShouXingUtil.XL0[pn + 1] - ShouXingUtil.XL0[pn];
+        let n0: number;
+        const m0: number = ShouXingUtil.XL0[2] - ShouXingUtil.XL0[1];
         for (let i: number = 0; i < 6; i++, tn *= t) {
-            n1 = ~~(ShouXingUtil.XL0[pn + i]);
-            n2 = ~~(ShouXingUtil.XL0[pn + 1 + i]);
+            n1 = ~~(ShouXingUtil.XL0[1 + i]);
+            n2 = ~~(ShouXingUtil.XL0[2 + i]);
             n0 = n2 - n1;
             if (n0 === 0) {
                 continue;
@@ -2808,23 +2822,22 @@ export class ShouXingUtil {
             v += c * tn;
         }
         v /= ShouXingUtil.XL0[0];
-        let t2: number = t * t;
+        const t2: number = t * t;
         v += (-0.0728 - 2.7702 * t - 1.1019 * t2 - 0.0996 * t2 * t) / ShouXingUtil.SECOND_PER_RAD;
         return v;
     }
 
     static mLon(t: number, n: number): number {
-        let ob: number[][] = ShouXingUtil.XL1;
-        let obl: number = ob[0].length;
+        const obl: number = ShouXingUtil.XL1[0].length;
         let tn: number = 1;
         let v: number = 0;
         let j: number;
         let c: number;
         let t2: number = t * t,
             t3: number = t2 * t,
-            t4: number = t3 * t,
-            t5: number = t4 * t,
-            tx: number = t - 10;
+            t4: number = t3 * t;
+        const t5: number = t4 * t;
+        const tx: number = t - 10;
         v += (3.81034409 + 8399.684730072 * t - 3.319e-05 * t2 + 3.11e-08 * t3 - 2.033e-10 * t4) * ShouXingUtil.SECOND_PER_RAD;
         v += 5028.792262 * t + 1.1124406 * t2 + 0.00007699 * t3 - 0.000023479 * t4 - 0.0000000178 * t5;
         if (tx > 0) {
@@ -2838,9 +2851,9 @@ export class ShouXingUtil {
         if (n < 0) {
             n = obl;
         }
-        for (let i: number = 0, x: number = ob.length; i < x; i++, tn *= t) {
-            let f: number[] = ob[i];
-            let l: number = f.length;
+        for (let i: number = 0, x: number = ShouXingUtil.XL1.length; i < x; i++, tn *= t) {
+            const f: number[] = ShouXingUtil.XL1[i];
+            const l: number = f.length;
             let m: number = ~~((n * l / obl + 0.5));
             if (i > 0) {
                 m += 6;
@@ -2858,14 +2871,14 @@ export class ShouXingUtil {
     }
 
     static gxcSunLon(t: number): number {
-        let t2: number = t * t;
-        let v: number = -0.043126 + 628.301955 * t - 0.000002732 * t2;
-        let e: number = 0.016708634 - 0.000042037 * t - 0.0000001267 * t2;
+        const t2: number = t * t;
+        const v: number = -0.043126 + 628.301955 * t - 0.000002732 * t2;
+        const e: number = 0.016708634 - 0.000042037 * t - 0.0000001267 * t2;
         return -20.49552 * (1 + e * Math.cos(v)) / ShouXingUtil.SECOND_PER_RAD;
     }
 
     static ev(t: number): number {
-        let f: number = 628.307585 * t;
+        const f: number = 628.307585 * t;
         return 628.332 + 21 * Math.sin(1.527 + f) + 0.44 * Math.sin(1.48 + f * 2) + 0.129 * Math.sin(5.82 + f) * t + 0.00055 * Math.sin(4.21 + f) * t * t;
     }
 
@@ -2874,16 +2887,16 @@ export class ShouXingUtil {
     }
 
     static dtExt(y: number, jsd: number): number {
-        let dy: number = (y - 1820) / 100;
+        const dy: number = (y - 1820) / 100;
         return -20 + jsd * dy * dy;
     }
 
     static dtCalc(y: number): number {
         const size: number = ShouXingUtil.DT_AT.length;
-        let y0: number = ShouXingUtil.DT_AT[size - 2];
-        let t0: number = ShouXingUtil.DT_AT[size - 1];
+        const y0: number = ShouXingUtil.DT_AT[size - 2];
+        const t0: number = ShouXingUtil.DT_AT[size - 1];
         if (y >= y0) {
-            let jsd: number = 31;
+            const jsd: number = 31;
             if (y > y0 + 100) {
                 return ShouXingUtil.dtExt(y, jsd);
             }
@@ -2895,9 +2908,9 @@ export class ShouXingUtil {
                 break;
             }
         }
-        let t1: number = (y - ShouXingUtil.DT_AT[i]) / (ShouXingUtil.DT_AT[i + 5] - ShouXingUtil.DT_AT[i]) * 10,
-            t2: number = t1 * t1,
-            t3: number = t2 * t1;
+        const t1: number = (y - ShouXingUtil.DT_AT[i]) / (ShouXingUtil.DT_AT[i + 5] - ShouXingUtil.DT_AT[i]) * 10;
+        const t2: number = t1 * t1;
+        const t3: number = t2 * t1;
         return ShouXingUtil.DT_AT[i + 1] + ShouXingUtil.DT_AT[i + 2] * t1 + ShouXingUtil.DT_AT[i + 3] * t2 + ShouXingUtil.DT_AT[i + 4] * t3;
     }
 
@@ -2946,10 +2959,10 @@ export class ShouXingUtil {
     static msaLonT2(w: number): number {
         let t: number, v: number = 7771.37714500204;
         t = (w + 1.08472) / v;
-        let l: number, t2: number = t * t;
+        let t2: number = t * t;
         t -= (-0.00003309 * t2 + 0.10976 * Math.cos(0.784758 + 8328.6914246 * t + 0.000152292 * t2) + 0.02224 * Math.cos(0.18740 + 7214.0628654 * t - 0.00021848 * t2) - 0.03342 * Math.cos(4.669257 + 628.307585 * t)) / v;
         t2 = t * t;
-        l = ShouXingUtil.mLon(t, 20) - (4.8950632 + 628.3319653318 * t + 0.000005297 * t2 + 0.0334166 * Math.cos(4.669257 + 628.307585 * t) + 0.0002061 * Math.cos(2.67823 + 628.307585 * t) * t + 0.000349 * Math.cos(4.6261 + 1256.61517 * t) - 20.5 / ShouXingUtil.SECOND_PER_RAD);
+        const l: number = ShouXingUtil.mLon(t, 20) - (4.8950632 + 628.3319653318 * t + 0.000005297 * t2 + 0.0334166 * Math.cos(4.669257 + 628.307585 * t) + 0.0002061 * Math.cos(2.67823 + 628.307585 * t) * t + 0.000349 * Math.cos(4.6261 + 1256.61517 * t) - 20.5 / ShouXingUtil.SECOND_PER_RAD);
         v = 7771.38 - 914 * Math.sin(0.7848 + 8328.691425 * t + 0.0001523 * t2) - 179 * Math.sin(2.543 + 15542.7543 * t) - 160 * Math.sin(0.1874 + 7214.0629 * t);
         t += (w - l) / v;
         return t;
@@ -2968,7 +2981,7 @@ export class ShouXingUtil {
     static shuoHigh(w: number): number {
         let t: number = ShouXingUtil.msaLonT2(w) * 36525;
         t = t - ShouXingUtil.dtT(t) + ShouXingUtil.ONE_THIRD;
-        let v: number = ((t + 0.5) % 1) * ShouXingUtil.SECOND_PER_DAY;
+        const v: number = ((t + 0.5) % 1) * ShouXingUtil.SECOND_PER_DAY;
         if (v < 1800 || v > ShouXingUtil.SECOND_PER_DAY - 1800) {
             t = ShouXingUtil.msaLonT(w) * 36525 - ShouXingUtil.dtT(t) + ShouXingUtil.ONE_THIRD;
         }
@@ -2985,18 +2998,21 @@ export class ShouXingUtil {
     }
 
     static shuoLow(w: number): number {
-        let v: number = 7771.37714500204;
+        const v: number = 7771.37714500204;
         let t: number = (w + 1.08472) / v;
         t -= (-0.0000331 * t * t + 0.10976 * Math.cos(0.785 + 8328.6914 * t) + 0.02224 * Math.cos(0.187 + 7214.0629 * t) - 0.03342 * Math.cos(4.669 + 628.3076 * t)) / v + (32 * (t + 1.8) * (t + 1.8) - 20) / ShouXingUtil.SECOND_PER_DAY / 36525;
         return t * 36525 + ShouXingUtil.ONE_THIRD;
     }
 
     static calcShuo(jd: number): number {
-        let size: number = ShouXingUtil.SHUO_KB.length;
+        const size: number = ShouXingUtil.SHUO_KB.length;
         let d: number = 0;
-        let pc: number = 14, i: number;
+        const pc: number = 14;
+        let i: number;
         jd += 2451545;
-        let f1: number = ShouXingUtil.SHUO_KB[0] - pc, f2 = ShouXingUtil.SHUO_KB[size - 1] - pc, f3 = 2436935;
+        const f1: number = ShouXingUtil.SHUO_KB[0] - pc;
+        const f2: number = ShouXingUtil.SHUO_KB[size - 1] - pc;
+        const f3: number = 2436935;
         if (jd < f1 || jd >= f3) {
             d = Math.floor(ShouXingUtil.shuoHigh(Math.floor((jd + pc - 2451551) / 29.5306) * ShouXingUtil.PI_2) + 0.5);
         } else if (jd >= f1 && jd < f2) {
@@ -3013,8 +3029,8 @@ export class ShouXingUtil {
             d -= 2451545;
         } else if (jd >= f2 && jd < f3) {
             d = Math.floor(ShouXingUtil.shuoLow(Math.floor((jd + pc - 2451551) / 29.5306) * ShouXingUtil.PI_2) + 0.5);
-            let from: number = Math.floor((jd - f2) / 29.5306);
-            let n: string = ShouXingUtil.SB.substring(from, from + 1);
+            const from: number = Math.floor((jd - f2) / 29.5306);
+            const n: string = ShouXingUtil.SB.substring(from, from + 1);
             if ('1' === n) {
                 d += 1;
             } else if ('2' === n) {
@@ -3025,11 +3041,14 @@ export class ShouXingUtil {
     }
 
     static calcQi(jd: number): number {
-        let size: number = ShouXingUtil.QI_KB.length;
+        const size: number = ShouXingUtil.QI_KB.length;
         let d: number = 0;
-        let pc: number = 7, i: number;
+        const pc: number = 7;
+        let i: number;
         jd += 2451545;
-        let f1: number = ShouXingUtil.QI_KB[0] - pc, f2 = ShouXingUtil.QI_KB[size - 1] - pc, f3 = 2436935;
+        const f1: number = ShouXingUtil.QI_KB[0] - pc;
+        const f2: number = ShouXingUtil.QI_KB[size - 1] - pc;
+        const f3: number = 2436935;
         if (jd < f1 || jd >= f3) {
             d = Math.floor(ShouXingUtil.qiHigh(Math.floor((jd + pc - 2451259) / 365.2422 * 24) * Math.PI / 12) + 0.5);
         } else if (jd >= f1 && jd < f2) {
@@ -3046,8 +3065,8 @@ export class ShouXingUtil {
             d -= 2451545;
         } else if (jd >= f2 && jd < f3) {
             d = Math.floor(ShouXingUtil.qiLow(Math.floor((jd + pc - 2451259) / 365.2422 * 24) * Math.PI / 12) + 0.5);
-            let from: number = Math.floor((jd - f2) / 365.2422 * 24);
-            let n: string = ShouXingUtil.QB.substring(from, from + 1);
+            const from: number = Math.floor((jd - f2) / 365.2422 * 24);
+            const n: string = ShouXingUtil.QB.substring(from, from + 1);
             if ('1' === n) {
                 d += 1;
             } else if ('2' === n) {
@@ -3703,16 +3722,12 @@ export class SolarDay extends AbstractTyme {
     }
 
     getDogDay(): DogDay | null {
+        // 夏至
         const xiaZhi: SolarTerm = SolarTerm.fromIndex(this.getYear(), 12);
         // 第1个庚日
         let start: SolarDay = xiaZhi.getJulianDay().getSolarDay();
-        let add: number = 6 - start.getLunarDay().getSixtyCycle().getHeavenStem().getIndex();
-        if (add < 0) {
-            add += 10;
-        }
         // 第3个庚日，即初伏第1天
-        add += 20;
-        start = start.next(add);
+        start = start.next(start.getLunarDay().getSixtyCycle().getHeavenStem().stepsTo(6) + 20);
         let days: number = this.subtract(start);
         // 初伏以前
         if (days < 0) {
@@ -3748,22 +3763,14 @@ export class SolarDay extends AbstractTyme {
         // 芒种
         const grainInEar: SolarTerm = SolarTerm.fromIndex(this.getYear(), 11);
         let start: SolarDay = grainInEar.getJulianDay().getSolarDay();
-        let add: number = 2 - start.getLunarDay().getSixtyCycle().getHeavenStem().getIndex();
-        if (add < 0) {
-            add += 10;
-        }
         // 芒种后的第1个丙日
-        start = start.next(add);
+        start = start.next(start.getLunarDay().getSixtyCycle().getHeavenStem().stepsTo(2));
 
         // 小暑
         const slightHeat: SolarTerm = grainInEar.next(2);
         let end: SolarDay = slightHeat.getJulianDay().getSolarDay();
-        add = 7 - end.getLunarDay().getSixtyCycle().getEarthBranch().getIndex();
-        if (add < 0) {
-            add += 12;
-        }
         // 小暑后的第1个未日
-        end = end.next(add);
+        end = end.next(end.getLunarDay().getSixtyCycle().getEarthBranch().stepsTo(7));
 
         if (this.isBefore(start) || this.isAfter(end)) {
             return null;
@@ -4117,7 +4124,7 @@ export class LegalHoliday extends AbstractTyme {
                 index += size;
             }
         }
-        let d: string = data[index];
+        const d: string = data[index];
         return new LegalHoliday(parseInt(d.substring(0, 4), 10), parseInt(d.substring(4, 6), 10), parseInt(d.substring(6, 8), 10), d);
     }
 }
@@ -4406,7 +4413,7 @@ export class EightChar extends AbstractCulture {
             if (m > 0) {
                 term = term.next(m);
             }
-            let solarTime: SolarTime = term.getJulianDay().getSolarTime();
+            const solarTime: SolarTime = term.getJulianDay().getSolarTime();
             if (solarTime.getYear() >= startYear) {
                 // 日干支和节令干支的偏移值
                 let solarDay: SolarDay = solarTime.getSolarDay();
@@ -4765,5 +4772,87 @@ export class Fortune extends AbstractTyme {
 
     next(n: number): Fortune {
         return Fortune.fromChildLimit(this.childLimit, this.index + n);
+    }
+}
+
+export class KitchenGodSteed extends AbstractCulture {
+    static NUMBERS: string[] = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'];
+    protected firstDaySixtyCycle: SixtyCycle;
+
+    protected constructor(lunarYear: number | string) {
+        super();
+        this.firstDaySixtyCycle = LunarDay.fromYmd(lunarYear, 1, 1).getSixtyCycle();
+    }
+
+    static fromLunarYear(lunarYear: number | string): KitchenGodSteed {
+        return new KitchenGodSteed(lunarYear);
+    }
+
+    protected byHeavenStem(n: number): string {
+        return KitchenGodSteed.NUMBERS[this.firstDaySixtyCycle.getHeavenStem().stepsTo(n)];
+    }
+
+    protected byEarthBranch(n: number): string {
+        return KitchenGodSteed.NUMBERS[this.firstDaySixtyCycle.getEarthBranch().stepsTo(n)];
+    }
+
+    getMouse(): string {
+        return `${this.byEarthBranch(0)}鼠偷粮`;
+    }
+
+    getGrass(): string {
+        return `草子${this.byEarthBranch(0)}分`;
+    }
+
+    getCattle(): string {
+        return `${this.byEarthBranch(1)}牛耕田`;
+    }
+
+    getFlower(): string {
+        return `花收${this.byEarthBranch(3)}分`;
+    }
+
+    getDragon(): string {
+        return `${this.byEarthBranch(4)}龙治水`;
+    }
+
+    getHorse(): string {
+        return `${this.byEarthBranch(6)}马驮谷`;
+    }
+
+    getChicken(): string {
+        return `${this.byEarthBranch(9)}鸡抢米`;
+    }
+
+    getSilkworm(): string {
+        return `${this.byEarthBranch(9)}姑看蚕`;
+    }
+
+    getPig(): string {
+        return `${this.byEarthBranch(11)}屠共猪`;
+    }
+
+    getField(): string {
+        return `甲田${this.byHeavenStem(0)}分`;
+    }
+
+    getCake(): string {
+        return `${this.byHeavenStem(2)}人分饼`;
+    }
+
+    getGold(): string {
+        return `${this.byHeavenStem(7)}日得金`;
+    }
+
+    getPeopleCakes(): string {
+        return `${this.byEarthBranch(2)}人${this.byHeavenStem(2)}丙`;
+    }
+
+    getPeopleHoes(): string {
+        return `${this.byEarthBranch(2)}人${this.byHeavenStem(3)}锄`;
+    }
+
+    getName(): string {
+        return '灶马头';
     }
 }

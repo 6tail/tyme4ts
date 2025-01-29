@@ -1,6 +1,6 @@
 {
   "name": "tyme4ts",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Tyme是一个非常强大的日历工具库，可以看作 Lunar 的升级版，拥有更优的设计和扩展性，支持公历和农历、星座、干支、生肖、节气、法定假日等。",
   "main": "./dist/lib/index.cjs",
   "module": "./dist/lib/index.mjs",
@@ -13,6 +13,7 @@
     }
   },
   "scripts": {
+    "lint": "eslint",
     "build": "unbuild",
     "test": "mocha -r ts-node/register --config=.mocharc.json",
     "release": "npm run test && npm publish"
@@ -35,12 +36,16 @@
   },
   "devDependencies": {
     "@testdeck/mocha": "^0.3.3",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^20.10.5",
-    "mocha": "^10.2.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.10",
+    "@typescript-eslint/eslint-plugin": "^8.21.0",
+    "@typescript-eslint/parser": "^8.21.0",
+    "typescript-eslint": "^8.21.0",
+    "eslint": "^9.19.0",
+    "mocha": "^11.1.0",
     "ts-node": "^10.9.2",
-    "tslint": "^6.1.3",
-    "typescript": "^5.3.3",
-    "unbuild": "^2.0.0"
+    "typescript": "^5.7.3",
+    "unbuild": "^3.3.1",
+    "globals": "^15.14.0"
   }
 }
