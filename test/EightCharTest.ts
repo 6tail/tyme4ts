@@ -334,9 +334,9 @@ class EightCharTest {
         // 结束年龄
         equal(decadeFortune.getEndAge(), 19);
         // 开始年
-        equal(decadeFortune.getStartLunarYear().getYear(), 2001);
+        equal(decadeFortune.getStartLunarYear().getYear(), 2000);
         // 结束年
-        equal(decadeFortune.getEndLunarYear().getYear(), 2010);
+        equal(decadeFortune.getEndLunarYear().getYear(), 2009);
         // 干支
         equal(decadeFortune.getName(), '庚子');
         // 下一大运
@@ -347,7 +347,7 @@ class EightCharTest {
         // 年龄
         equal(fortune.getAge(), 10);
         // 农历年
-        equal(fortune.getLunarYear().getYear(), 2001);
+        equal(fortune.getLunarYear().getYear(), 2000);
         // 干支
         equal(fortune.getName(), '戊申');
         // 小运推移
@@ -355,7 +355,7 @@ class EightCharTest {
         equal(fortune.next(-2).getName(), '庚戌');
 
         // 流年
-        equal(fortune.getLunarYear().getSixtyCycle().getName(), '辛巳');
+        equal(fortune.getLunarYear().getSixtyCycle().getName(), '庚辰');
     }
 
     @test

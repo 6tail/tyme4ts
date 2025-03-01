@@ -571,7 +571,7 @@ export class Sound extends LoopTyme {
 }
 
 export class Taboo extends LoopTyme {
-    static NAMES: string[] = ['祭祀', '祈福', '求嗣', '开光', '塑绘', '齐醮', '斋醮', '沐浴', '酬神', '造庙', '祀灶', '焚香', '谢土', '出火', '雕刻', '嫁娶', '订婚', '纳采', '问名', '纳婿', '归宁', '安床', '合帐', '冠笄', '订盟', '进人口', '裁衣', '挽面', '开容', '修坟', '启钻', '破土', '安葬', '立碑', '成服', '除服', '开生坟', '合寿木', '入殓', '移柩', '普渡', '入宅', '安香', '安门', '修造', '起基', '动土', '上梁', '竖柱', '开井开池', '作陂放水', '拆卸', '破屋', '坏垣', '补垣', '伐木做梁', '作灶', '解除', '开柱眼', '穿屏扇架', '盖屋合脊', '开厕', '造仓', '塞穴', '平治道涂', '造桥', '作厕', '筑堤', '开池', '伐木', '开渠', '掘井', '扫舍', '放水', '造屋', '合脊', '造畜稠', '修门', '定磉', '作梁', '修饰垣墙', '架马', '开市', '挂匾', '纳财', '求财', '开仓', '买车', '置产', '雇庸', '出货财', '安机械', '造车器', '经络', '酝酿', '作染', '鼓铸', '造船', '割蜜', '栽种', '取渔', '结网', '牧养', '安碓磑', '习艺', '入学', '理发', '探病', '见贵', '乘船', '渡水', '针灸', '出行', '移徙', '分居', '剃头', '整手足甲', '纳畜', '捕捉', '畋猎', '教牛马', '会亲友', '赴任', '求医', '治病', '词讼', '起基动土', '破屋坏垣', '盖屋', '造仓库', '立券交易', '交易', '立券', '安机', '会友', '求医疗病', '诸事不宜', '馀事勿取', '行丧', '断蚁', '归岫'];
+    static NAMES: string[] = ['祭祀', '祈福', '求嗣', '开光', '塑绘', '齐醮', '斋醮', '沐浴', '酬神', '造庙', '祀灶', '焚香', '谢土', '出火', '雕刻', '嫁娶', '订婚', '纳采', '问名', '纳婿', '归宁', '安床', '合帐', '冠笄', '订盟', '进人口', '裁衣', '挽面', '开容', '修坟', '启钻', '破土', '安葬', '立碑', '成服', '除服', '开生坟', '合寿木', '入殓', '移柩', '普渡', '入宅', '安香', '安门', '修造', '起基', '动土', '上梁', '竖柱', '开井开池', '作陂放水', '拆卸', '破屋', '坏垣', '补垣', '伐木做梁', '作灶', '解除', '开柱眼', '穿屏扇架', '盖屋合脊', '开厕', '造仓', '塞穴', '平治道涂', '造桥', '作厕', '筑堤', '开池', '伐木', '开渠', '掘井', '扫舍', '放水', '造屋', '合脊', '造畜稠', '修门', '定磉', '作梁', '修饰垣墙', '架马', '开市', '挂匾', '纳财', '求财', '开仓', '买车', '置产', '雇佣', '出货财', '安机械', '造车器', '经络', '酝酿', '作染', '鼓铸', '造船', '割蜜', '栽种', '取渔', '结网', '牧养', '安碓磑', '习艺', '入学', '理发', '探病', '见贵', '乘船', '渡水', '针灸', '出行', '移徙', '分居', '剃头', '整手足甲', '纳畜', '捕捉', '畋猎', '教牛马', '会亲友', '赴任', '求医', '治病', '词讼', '起基动土', '破屋坏垣', '盖屋', '造仓库', '立券交易', '交易', '立券', '安机', '会友', '求医疗病', '诸事不宜', '馀事勿取', '行丧', '断蚁', '归岫'];
 
     protected static dayTaboo: string[] = [
         '8319000776262322200C1E1D,06292C2E1F;0F11185C0001092A0D7014692983847B7C2C2E302F802D2B,06454F208A;111852838470795B302F404533802D152B39201E23221D212726,0F2E1F010D29;004023222089,0F29111847;11180001032A0D70795B2C2E302F802D4E152B33714161201F26,52095847;0F17000102061979454F3A15477677,241F8A20;34357C89,7129;1551000403706A454F3A3D771F262322271E1D21,382B415220;0F000102037039297175261F1D21,454F2E156341;00076A54196348767765,7920297115528A0D382B;11180001020439332C2E302F2B5844477515634C1F2721,0F520D19267A29717020;297170192C2E2D2F2B3E363F4C,0F5215632001034720;4C78,297172380D2A2E0F474841;18115C0001702A2C2E2F5283847129795B6375802D154C,1F208A24;1811795B032C2E302F802D4163754C27261E1D2120,010D0F29521F;00401D232289,71290F4720;0F170001020E032A70692C2E302F802D2B0D7129474C201F2322,5211183809615D;0F1811000102062A0D2C2D804B2B672E2F7129,70471F8A20;0007343589,0F71296B7080;175447440D15838477656A49,2B2E1F8A2022;11187129705B79000106032A0D397B6F7C802D2C2B61756627261E0C1D21,0F2E154147;0007385476771548,52061F20;0106111839513A2C2E2D2F8C804B4723221F63,71522920;1118000717161A2C2E3371292B56433D6375363F,0F010347208A;161A7889,292E1F0F3861;11180F00012A0D70795D7B7C39332D2C2E4E4863664C,064F478A20;5452838479195D00012A0D7B7C2C2E3348156366242526201E,0F7129;00262789,292C2E1F2B2F;040318111A17332C15290D200C7A,47450638;0004031A170F11332C2E302F1571292A657677451949,70201D52;007B343589,88;00010670175B71292A152322271E,03637C2B38;04067033392C7161262322271E1D210C,;000715547776,521F;181100012C2E2F1F,0F38;70076A363F,2920;7889,292E1F;0F707B7C00012F75,5220;528403395B2F1E20,0F01;4089,88;02060418110D332C2E415B637566262322271F20,520F;0F181100012C2E7129,5220;7C343589,88;0001020603691817452C2E2D498344,412B6A096338;393589,88;076A48,45752F29384C0F204F612B;000301394F2E154763751F27,0F707A802629710D1920;4F2C2E2B383F443D433663,0F01478A2015;201E27262322,89;0F000102700D335283845329711563,38048A7D4520;6A0339332C20528384531563,29713801000F0C47806B;005089,88;291503000D332E53261F2075,0F5238584F45;003989,88;3435000789,88;150001021745512E443D65262322,2B63387C;394889,88;00036A7415384878,45751F20240F522E834F;00010203332C2E2F1558631F,0F1920707A29712646;0717363F1A2C4F3A67433D8B,71290F010347;',
@@ -3096,26 +3096,24 @@ export class ShouXingUtil {
 export class SolarTerm extends LoopTyme {
     static NAMES: string[] = ['冬至', '小寒', '大寒', '立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑', '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪'];
 
+    protected year: number;
     protected cursoryJulianDay: number;
 
-    protected constructor(year: number | string, indexOrName: number | string, cursoryJulianDay?: number) {
+    protected constructor(year: number | string, indexOrName: number | string) {
         super(SolarTerm.NAMES, indexOrName);
-        if (cursoryJulianDay) {
-            this.cursoryJulianDay = cursoryJulianDay;
-        } else {
-            this.cursoryJulianDay = 0;
-            this.initByYear(SolarTerm.numeric(year, 'lunar year'), typeof indexOrName === 'number' ? indexOrName : this.index);
+        let y: number = SolarTerm.numeric(year, 'lunar year');
+        if (typeof indexOrName === 'number') {
+            const size: number = SolarTerm.NAMES.length;
+            y = ~~((y * size + indexOrName) / size);
         }
-    }
-
-    protected initByYear(year: number, offset: number) {
-        const jd: number = Math.floor((year - 2000) * 365.2422 + 180);
+        const jd: number = Math.floor((y - 2000) * 365.2422 + 180);
         // 355是2000.12冬至，得到较靠近jd的冬至估计值
         let w: number = Math.floor((jd - 355 + 183) / 365.2422) * 365.2422 + 355;
         if (ShouXingUtil.calcQi(w) > jd) {
             w -= 365.2422;
         }
-        this.cursoryJulianDay = ShouXingUtil.calcQi(w + 15.2184 * offset);
+        this.year = y;
+        this.cursoryJulianDay = ShouXingUtil.calcQi(w + 15.2184 * this.index);
     }
 
     static fromIndex(year: number | string, index: number): SolarTerm {
@@ -3127,7 +3125,9 @@ export class SolarTerm extends LoopTyme {
     }
 
     next(n: number): SolarTerm {
-        return new SolarTerm(0, this.nextIndex(n), this.cursoryJulianDay + 15.2184 * n);
+        const size: number = this.getSize();
+        const i: number = this.index + n;
+        return SolarTerm.fromIndex(~~((this.year * size + i) / size), this.indexOfBy(i));
     }
 
     isJie(): boolean {
@@ -3140,6 +3140,10 @@ export class SolarTerm extends LoopTyme {
 
     getJulianDay(): JulianDay {
         return JulianDay.fromJulianDay(ShouXingUtil.qiAccurate2(this.cursoryJulianDay) + JulianDay.J2000);
+    }
+
+    getYear(): number {
+        return this.year;
     }
 
     getCursoryJulianDay(): number {
@@ -3264,18 +3268,8 @@ export class SolarHalfYear extends AbstractTyme {
     }
 
     next(n: number): SolarHalfYear {
-        let i: number = this.index;
-        let y: number = this.getYear();
-        if (n != 0) {
-            i += n;
-            y += ~~(i / 2);
-            i %= 2;
-            if (i < 0) {
-                i += 2;
-                y -= 1;
-            }
-        }
-        return SolarHalfYear.fromIndex(y, i);
+        const i: number = this.index + n;
+        return SolarHalfYear.fromIndex(~~((this.getYear() * 2 + i) / 2), this.indexOf(i, 2));
     }
 
     getMonths(): SolarMonth[] {
@@ -3337,18 +3331,8 @@ export class SolarSeason extends AbstractTyme {
     }
 
     next(n: number): SolarSeason {
-        let i: number = this.index;
-        let y: number = this.year.getYear();
-        if (n != 0) {
-            i += n;
-            y += ~~(i / 4);
-            i %= 4;
-            if (i < 0) {
-                i += 4;
-                y -= 1;
-            }
-        }
-        return SolarSeason.fromIndex(y, i);
+        const i: number = this.index + n;
+        return SolarSeason.fromIndex(~~((this.getYear() * 4 + i) / 4), this.indexOf(i, 4));
     }
 
     getMonths(): SolarMonth[] {
@@ -3426,18 +3410,8 @@ export class SolarMonth extends AbstractTyme {
     }
 
     next(n: number): SolarMonth {
-        let m: number = this.month;
-        let y: number = this.getYear();
-        if (n != 0) {
-            m += n;
-            y += ~~(m / 12);
-            m %= 12;
-            if (m < 1) {
-                m += 12;
-                y--;
-            }
-        }
-        return SolarMonth.fromYm(y, m);
+        const i: number = this.month - 1 + n;
+        return SolarMonth.fromYm(~~((this.getYear() * 12 + i) / 12), this.indexOf(i, 12) + 1);
     }
 
     getWeeks(start: number): SolarWeek[] {
@@ -3622,32 +3596,8 @@ export class SolarDay extends AbstractTyme {
     }
 
     getConstellation(): Constellation {
-        let index: number = 11;
         const y: number = this.getMonth() * 100 + this.day;
-        if (y >= 321 && y <= 419) {
-            index = 0;
-        } else if (y >= 420 && y <= 520) {
-            index = 1;
-        } else if (y >= 521 && y <= 621) {
-            index = 2;
-        } else if (y >= 622 && y <= 722) {
-            index = 3;
-        } else if (y >= 723 && y <= 822) {
-            index = 4;
-        } else if (y >= 823 && y <= 922) {
-            index = 5;
-        } else if (y >= 923 && y <= 1023) {
-            index = 6;
-        } else if (y >= 1024 && y <= 1122) {
-            index = 7;
-        } else if (y >= 1123 && y <= 1221) {
-            index = 8;
-        } else if (y >= 1222 || y <= 119) {
-            index = 9;
-        } else if (y <= 218) {
-            index = 10;
-        }
-        return Constellation.fromIndex(index);
+        return Constellation.fromIndex(y > 1221 || y < 120 ? 9 : y < 219 ? 10 : y < 321 ? 11 : y < 420 ? 0 : y < 521 ? 1 : y < 622 ? 2 : y < 723 ? 3 : y < 823 ? 4 : y < 923 ? 5 : y < 1024 ? 6 : y < 1123 ? 7 : 8);
     }
 
     getName(): string {
@@ -4205,16 +4155,9 @@ export class SolarFestival extends AbstractTyme {
     }
 
     next(n: number): SolarFestival | null {
-        if (n === 0) {
-            return SolarFestival.fromYmd(this.day.getYear(), this.day.getMonth(), this.day.getDay());
-        }
         const size: number = SolarFestival.NAMES.length;
-        let t: number = this.index + n;
-        const offset: number = this.indexOf(t, size);
-        if (t < 0) {
-            t -= size;
-        }
-        return SolarFestival.fromIndex(this.day.getYear() + ~~(t / size), offset);
+        const i: number = this.index + n;
+        return SolarFestival.fromIndex(~~((this.day.getYear() * size + i) / size), this.indexOf(i, size));
     }
 }
 
@@ -4313,16 +4256,9 @@ export class LunarFestival extends AbstractTyme {
     }
 
     next(n: number): LunarFestival {
-        if (n === 0) {
-            return LunarFestival.fromYmd(this.day.getYear(), this.day.getMonth(), this.day.getDay()) as LunarFestival;
-        }
         const size: number = LunarFestival.NAMES.length;
-        let t: number = this.index + n;
-        const offset: number = this.indexOf(t, size);
-        if (t < 0) {
-            t -= size;
-        }
-        return LunarFestival.fromIndex(this.day.getYear() + ~~(t / size), offset) as LunarFestival;
+        const i: number = this.index + n;
+        return LunarFestival.fromIndex(~~((this.day.getYear() * size + i) / size), this.indexOf(i, size)) as LunarFestival;
     }
 }
 
@@ -4679,16 +4615,7 @@ export class ChildLimit {
     }
 
     getEndLunarYear(): LunarYear {
-        const endTime: SolarTime = this.getEndTime();
-        const solarYear: number = endTime.getYear();
-        let y: LunarYear = endTime.getLunarHour().getLunarDay().getLunarMonth().getLunarYear();
-        if (y.getYear() < solarYear) {
-            // 正月初一在立春之后的，农历年往后推一年
-            if (LunarHour.fromYmdHms(solarYear, 1, 1, 0, 0, 0).getSolarTime().isAfter(SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarTime())) {
-                y = y.next(1);
-            }
-        }
-        return y;
+        return LunarYear.fromYear(this.getStartTime().getLunarHour().getYear() + this.getEndTime().getYear() - this.getStartTime().getYear());
     }
 }
 
