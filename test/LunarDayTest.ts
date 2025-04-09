@@ -154,7 +154,7 @@ class LunarDayTest {
     test26() {
         const lunar: LunarDay = LunarDay.fromYmd(2005, 11, 23);
         equal(lunar.getLunarMonth().getSixtyCycle().getName(), '戊子');
-        equal(lunar.getMonthSixtyCycle().getName(), '戊子');
+        equal(lunar.getSixtyCycleDay().getMonth().getName(), '戊子');
     }
 
     @test

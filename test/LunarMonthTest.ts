@@ -156,14 +156,14 @@ class LunarMonthTest {
     test29() {
         const d: LunarDay = SolarDay.fromYmd(2023, 10, 7).getLunarDay();
         equal(d.getLunarMonth().getSixtyCycle().toString(), '壬戌');
-        equal(d.getMonthSixtyCycle().toString(), '辛酉');
+        equal(d.getSixtyCycleDay().getMonth().toString(), '辛酉');
     }
 
     @test
     test30() {
         const d: LunarDay = SolarDay.fromYmd(2023, 10, 8).getLunarDay();
         equal(d.getLunarMonth().getSixtyCycle().toString(), '壬戌');
-        equal(d.getMonthSixtyCycle().toString(), '壬戌');
+        equal(d.getSixtyCycleDay().getMonth().toString(), '壬戌');
     }
 
     @test
@@ -171,21 +171,21 @@ class LunarMonthTest {
         const d: LunarDay = SolarDay.fromYmd(2023, 10, 15).getLunarDay();
         equal(d.getLunarMonth().getName(), '九月');
         equal(d.getLunarMonth().getSixtyCycle().toString(), '癸亥');
-        equal(d.getMonthSixtyCycle().toString(), '壬戌');
+        equal(d.getSixtyCycleDay().getMonth().toString(), '壬戌');
     }
 
     @test
     test32() {
         const d: LunarDay = SolarDay.fromYmd(2023, 11, 7).getLunarDay();
         equal(d.getLunarMonth().getSixtyCycle().toString(), '癸亥');
-        equal(d.getMonthSixtyCycle().toString(), '壬戌');
+        equal(d.getSixtyCycleDay().getMonth().toString(), '壬戌');
     }
 
     @test
     test33() {
         const d: LunarDay = SolarDay.fromYmd(2023, 11, 8).getLunarDay();
         equal(d.getLunarMonth().getSixtyCycle().toString(), '癸亥');
-        equal(d.getMonthSixtyCycle().toString(), '癸亥');
+        equal(d.getSixtyCycleDay().getMonth().toString(), '癸亥');
     }
 
     @test
@@ -213,21 +213,21 @@ class LunarMonthTest {
     test36() {
         const d: LunarDay = SolarDay.fromYmd(1983, 2, 15).getLunarDay();
         equal(d.getLunarMonth().getSixtyCycle().toString(), '甲寅');
-        equal(d.getMonthSixtyCycle().toString(), '甲寅');
+        equal(d.getSixtyCycleDay().getMonth().toString(), '甲寅');
     }
 
     @test
     test37() {
         const d: LunarDay = SolarDay.fromYmd(2023, 10, 30).getLunarDay();
         equal(d.getLunarMonth().getSixtyCycle().toString(), '癸亥');
-        equal(d.getMonthSixtyCycle().toString(), '壬戌');
+        equal(d.getSixtyCycleDay().getMonth().toString(), '壬戌');
     }
 
     @test
     test38() {
         const d: LunarDay = SolarDay.fromYmd(2023, 10, 19).getLunarDay();
         equal(d.getLunarMonth().getSixtyCycle().toString(), '癸亥');
-        equal(d.getMonthSixtyCycle().toString(), '壬戌');
+        equal(d.getSixtyCycleDay().getMonth().toString(), '壬戌');
     }
 
     @test
@@ -254,6 +254,6 @@ class LunarMonthTest {
 
     @test
     test43() {
-        equal(LunarDay.fromYmd(2018, 6, 26).getMonthSixtyCycle().toString(), '庚申');
+        equal(LunarDay.fromYmd(2018, 6, 26).getSixtyCycleDay().getMonth().toString(), '庚申');
     }
 }

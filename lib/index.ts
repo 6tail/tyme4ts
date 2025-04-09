@@ -1224,9 +1224,8 @@ export class FetusDay extends AbstractCulture {
     protected side: Side;
     protected direction: Direction;
 
-    protected constructor(lunarDay: LunarDay) {
+    protected constructor(sixtyCycle: SixtyCycle) {
         super();
-        const sixtyCycle: SixtyCycle = lunarDay.getSixtyCycle();
         this.fetusHeavenStem = new FetusHeavenStem(sixtyCycle.getHeavenStem().getIndex() % 5);
         this.fetusEarthBranch = new FetusEarthBranch(sixtyCycle.getEarthBranch().getIndex() % 6);
         const index: number = [3, 3, 8, 8, 8, 8, 8, 1, 1, 1, 1, 1, 1, 6, 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 0, 0, 0, 0, 0, -9, -9, -9, -9, -9, -5, -5, -1, -1, -1, -3, -7, -7, -7, -7, -5, 7, 7, 7, 7, 7, 7, 2, 2, 2, 2, 2, 3, 3, 3, 3][sixtyCycle.getIndex()];
@@ -1235,7 +1234,11 @@ export class FetusDay extends AbstractCulture {
     }
 
     static fromLunarDay(lunarDay: LunarDay): FetusDay {
-        return new FetusDay(lunarDay);
+        return new FetusDay(lunarDay.getSixtyCycle());
+    }
+
+    static fromSixtyCycleDay(sixtyCycleDay: SixtyCycleDay): FetusDay {
+        return new FetusDay(sixtyCycleDay.getSixtyCycle());
     }
 
     getName(): string {
@@ -1579,9 +1582,13 @@ export class LunarYear extends AbstractTyme {
         return Direction.fromIndex([0, 7, 7, 2, 3, 3, 8, 1, 1, 6, 0, 0][this.getSixtyCycle().getEarthBranch().getIndex()]);
     }
 
+    getFirstMonth(): LunarMonth {
+        return LunarMonth.fromYm(this.year, 1);
+    }
+
     getMonths(): LunarMonth[] {
         const l: LunarMonth[] = [];
-        let m: LunarMonth = LunarMonth.fromYm(this.year, 1);
+        let m: LunarMonth = this.getFirstMonth();
         while (m.getYear() === this.year) {
             l.push(m);
             m = m.next(1);
@@ -1951,6 +1958,8 @@ export class LunarDay extends AbstractTyme {
     static NAMES: string[] = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十', '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
     protected month: LunarMonth;
     protected day: number;
+    protected solarDay: SolarDay | undefined;
+    protected sixtyCycleDay: SixtyCycleDay | undefined;
 
     protected constructor(year: number | string, month: number | string, day: number | string) {
         super();
@@ -1992,7 +2001,7 @@ export class LunarDay extends AbstractTyme {
     }
 
     next(n: number): LunarDay {
-        return 0 !== n ? this.getSolarDay().next(n).getLunarDay() : LunarDay.fromYmd(this.getYear(), this.getMonth(), this.day);
+        return this.getSolarDay().next(n).getLunarDay();
     }
 
     isBefore(target: LunarDay): boolean {
@@ -2027,34 +2036,18 @@ export class LunarDay extends AbstractTyme {
         return this.getSolarDay().getWeek();
     }
 
+    /**
+     * @deprecated
+     */
     getYearSixtyCycle(): SixtyCycle {
-        const solarDay: SolarDay = this.getSolarDay();
-        const solarYear: number = solarDay.getYear();
-        const springSolarDay: SolarDay = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarDay();
-        const lunarYear: LunarYear = this.month.getLunarYear();
-        const year: number = lunarYear.getYear();
-        let sixtyCycle: SixtyCycle = lunarYear.getSixtyCycle();
-        if (year === solarYear) {
-            if (solarDay.isBefore(springSolarDay)) {
-                sixtyCycle = sixtyCycle.next(-1);
-            }
-        } else if (year < solarYear) {
-            if (!solarDay.isBefore(springSolarDay)) {
-                sixtyCycle = sixtyCycle.next(1);
-            }
-        }
-        return sixtyCycle;
+        return this.getSixtyCycleDay().getYear();
     }
 
+    /**
+     * @deprecated
+     */
     getMonthSixtyCycle(): SixtyCycle {
-        const solarDay: SolarDay = this.getSolarDay();
-        const year: number = solarDay.getYear();
-        const term: SolarTerm = solarDay.getTerm();
-        let index: number = term.getIndex() - 3;
-        if (index < 0 && term.getJulianDay().getSolarDay().isAfter(SolarTerm.fromIndex(year, 3).getJulianDay().getSolarDay())) {
-            index += 24;
-        }
-        return LunarMonth.fromYm(year, 1).getSixtyCycle().next(Math.floor(index / 2));
+        return this.getSixtyCycleDay().getMonth();
     }
 
     getSixtyCycle(): SixtyCycle {
@@ -2063,11 +2056,310 @@ export class LunarDay extends AbstractTyme {
     }
 
     getDuty(): Duty {
-        return Duty.fromIndex(this.getSixtyCycle().getEarthBranch().getIndex() - this.getMonthSixtyCycle().getEarthBranch().getIndex());
+        return this.getSixtyCycleDay().getDuty();
     }
 
     getTwelveStar(): TwelveStar {
-        return TwelveStar.fromIndex(this.getSixtyCycle().getEarthBranch().getIndex() + (8 - this.getMonthSixtyCycle().getEarthBranch().getIndex() % 6) * 2);
+        return this.getSixtyCycleDay().getTwelveStar();
+    }
+
+    getNineStar(): NineStar {
+        const d: SolarDay = this.getSolarDay();
+        const dongZhi: SolarTerm = SolarTerm.fromIndex(d.getYear(), 0);
+        const xiaZhi: SolarTerm = dongZhi.next(12);
+        const dongZhi2: SolarTerm = dongZhi.next(24);
+        const dongZhiSolar: SolarDay = dongZhi.getJulianDay().getSolarDay();
+        const xiaZhiSolar: SolarDay = xiaZhi.getJulianDay().getSolarDay();
+        const dongZhiSolar2: SolarDay = dongZhi2.getJulianDay().getSolarDay();
+        const dongZhiIndex: number = dongZhiSolar.getLunarDay().getSixtyCycle().getIndex();
+        const xiaZhiIndex: number = xiaZhiSolar.getLunarDay().getSixtyCycle().getIndex();
+        const dongZhiIndex2: number = dongZhiSolar2.getLunarDay().getSixtyCycle().getIndex();
+        const solarShunBai: SolarDay = dongZhiSolar.next(dongZhiIndex > 29 ? 60 - dongZhiIndex : -dongZhiIndex);
+        const solarShunBai2: SolarDay = dongZhiSolar2.next(dongZhiIndex2 > 29 ? 60 - dongZhiIndex2 : -dongZhiIndex2);
+        const solarNiZi: SolarDay = xiaZhiSolar.next(xiaZhiIndex > 29 ? 60 - xiaZhiIndex : -xiaZhiIndex);
+        let offset: number = 0;
+        if (!d.isBefore(solarShunBai) && d.isBefore(solarNiZi)) {
+            offset = d.subtract(solarShunBai);
+        } else if (!d.isBefore(solarNiZi) && d.isBefore(solarShunBai2)) {
+            offset = 8 - d.subtract(solarNiZi);
+        } else if (!d.isBefore(solarShunBai2)) {
+            offset = d.subtract(solarShunBai2);
+        } else if (d.isBefore(solarShunBai)) {
+            offset = 8 + solarShunBai.subtract(d);
+        }
+        return NineStar.fromIndex(offset);
+    }
+
+    getJupiterDirection(): Direction {
+        const index: number = this.getSixtyCycle().getIndex();
+        return index % 12 < 6 ? Element.fromIndex(~~(index / 12)).getDirection() : this.month.getLunarYear().getJupiterDirection();
+    }
+
+    getFetusDay(): FetusDay {
+        return FetusDay.fromLunarDay(this);
+    }
+
+    getPhase(): Phase {
+        return Phase.fromIndex(this.day - 1);
+    }
+
+    getSolarDay(): SolarDay {
+        if (!this.solarDay) {
+            this.solarDay = this.month.getFirstJulianDay().next(this.day - 1).getSolarDay();
+        }
+        return this.solarDay;
+    }
+
+    getSixtyCycleDay(): SixtyCycleDay {
+        if (!this.sixtyCycleDay) {
+            this.sixtyCycleDay = this.getSolarDay().getSixtyCycleDay();
+        }
+        return this.sixtyCycleDay;
+    }
+
+    getTwentyEightStar(): TwentyEightStar {
+        return TwentyEightStar.fromIndex([10, 18, 26, 6, 14, 22, 2][this.getSolarDay().getWeek().getIndex()]).next(-7 * this.getSixtyCycle().getEarthBranch().getIndex());
+    }
+
+    getFestival(): LunarFestival | null {
+        return LunarFestival.fromYmd(this.getYear(), this.getMonth(), this.day);
+    }
+
+    getSixStar(): SixStar {
+        return SixStar.fromIndex((this.month.getMonth() + this.day - 2) % 6);
+    }
+
+    getGods(): God[] {
+        return this.getSixtyCycleDay().getGods();
+    }
+
+    getRecommends(): Taboo[] {
+        return this.getSixtyCycleDay().getRecommends();
+    }
+
+    getAvoids(): Taboo[] {
+        return this.getSixtyCycleDay().getAvoids();
+    }
+
+    getHours(): LunarHour[] {
+        const l: LunarHour[] = [];
+        const y: number = this.getYear();
+        const m: number = this.getMonth();
+        l.push(LunarHour.fromYmdHms(y, m, this.day, 0, 0, 0));
+        for (let i: number = 0; i < 24; i += 2) {
+            l.push(LunarHour.fromYmdHms(y, m, this.day, i + 1, 0, 0));
+        }
+        return l;
+    }
+
+    getMinorRen(): MinorRen {
+        return this.getLunarMonth().getMinorRen().next(this.day - 1);
+    }
+}
+
+export class SixtyCycleYear extends AbstractTyme {
+    protected year: number;
+
+    protected constructor(year: number | string) {
+        super();
+        const y: number = SixtyCycleYear.numeric(year, 'sixty cycle year');
+        if (y < -1 || y > 9999) {
+            throw new Error(`illegal sixty cycle year: ${year}`);
+        }
+        this.year = y;
+    }
+
+    static fromYear(year: number | string): SixtyCycleYear {
+        return new SixtyCycleYear(year);
+    }
+
+    getYear(): number {
+        return this.year;
+    }
+
+    getName(): string {
+        return `${this.getSixtyCycle().getName()}年`;
+    }
+
+    next(n: number): SixtyCycleYear {
+        return SixtyCycleYear.fromYear(this.year + n);
+    }
+
+    getSixtyCycle(): SixtyCycle {
+        return SixtyCycle.fromIndex(this.year - 4);
+    }
+
+    getTwenty(): Twenty {
+        return Twenty.fromIndex(Math.floor((this.year - 1864) / 20));
+    }
+
+    getNineStar(): NineStar {
+        return NineStar.fromIndex(63 + this.getTwenty().getSixty().getIndex() * 3 - this.getSixtyCycle().getIndex());
+    }
+
+    getJupiterDirection(): Direction {
+        return Direction.fromIndex([0, 7, 7, 2, 3, 3, 8, 1, 1, 6, 0, 0][this.getSixtyCycle().getEarthBranch().getIndex()]);
+    }
+
+    getFirstMonth(): SixtyCycleMonth {
+        const h: HeavenStem = HeavenStem.fromIndex((this.getSixtyCycle().getHeavenStem().getIndex() + 1) * 2);
+        return new SixtyCycleMonth(this, SixtyCycle.fromName(h.getName() + '寅'));
+    }
+
+    getMonths(): SixtyCycleMonth[] {
+        const l: SixtyCycleMonth[] = [];
+        const m: SixtyCycleMonth = this.getFirstMonth();
+        l.push(m);
+        for (let i = 1; i < 12; i++) {
+            l.push(m.next(i));
+        }
+        return l;
+    }
+}
+
+export class SixtyCycleMonth extends AbstractTyme {
+    protected year: SixtyCycleYear;
+    protected month: SixtyCycle;
+
+    public constructor(year: SixtyCycleYear, month: SixtyCycle) {
+        super();
+        this.year = year;
+        this.month = month;
+    }
+
+    static fromIndex(year: number | string, index: number | string): SixtyCycleMonth {
+        return SixtyCycleYear.fromYear(year).getFirstMonth().next(SixtyCycleMonth.numeric(index, 'index'));
+    }
+
+    getSixtyCycleYear(): SixtyCycleYear {
+        return this.year;
+    }
+
+    getYear(): SixtyCycle {
+        return this.year.getSixtyCycle();
+    }
+
+    getIndexInYear(): number {
+        return this.month.getEarthBranch().next(-2).getIndex();
+    }
+
+    getName(): string {
+        return this.month.getName() + '月';
+    }
+
+    toString(): string {
+        return this.year.toString() + this.getName();
+    }
+
+    next(n: number): SixtyCycleMonth {
+        return new SixtyCycleMonth(SixtyCycleYear.fromYear((this.year.getYear() * 12 + this.getIndexInYear() + n) / 12), this.month.next(n));
+    }
+
+    getFirstDay(): SixtyCycleDay {
+        return SixtyCycleDay.fromSolarDay(SolarTerm.fromIndex(this.year.getYear(), 3 + this.getIndexInYear() * 2).getJulianDay().getSolarDay());
+    }
+
+    getDays(): SixtyCycleDay[] {
+        const l: SixtyCycleDay[] = [];
+        let d: SixtyCycleDay = this.getFirstDay();
+        while (d.getSixtyCycleMonth().equals(this)) {
+            l.push(d);
+            d = d.next(1);
+        }
+        return l;
+    }
+
+    getSixtyCycle(): SixtyCycle {
+        return this.month;
+    }
+
+    getNineStar(): NineStar {
+        let index: number = this.getSixtyCycle().getEarthBranch().getIndex();
+        if (index < 2) {
+            index += 3;
+        }
+        return NineStar.fromIndex(27 - this.year.getSixtyCycle().getEarthBranch().getIndex() % 3 * 3 - index);
+    }
+
+    getJupiterDirection(): Direction {
+        const sixtyCycle: SixtyCycle = this.getSixtyCycle();
+        const n: number = [7, -1, 1, 3][sixtyCycle.getEarthBranch().next(-2).getIndex() % 4];
+        return n === -1 ? sixtyCycle.getHeavenStem().getDirection() : Direction.fromIndex(n);
+    }
+}
+
+export class SixtyCycleDay extends AbstractTyme {
+    protected solarDay: SolarDay;
+    protected month: SixtyCycleMonth;
+    protected day: SixtyCycle;
+
+    constructor(solarDay: SolarDay, month: SixtyCycleMonth, day: SixtyCycle) {
+        super();
+        this.solarDay = solarDay;
+        this.month = month;
+        this.day = day;
+    }
+
+    static fromSolarDay(solarDay: SolarDay): SixtyCycleDay {
+        const solarYear: number = solarDay.getYear();
+        const springSolarDay: SolarDay = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarDay();
+        const lunarDay: LunarDay = solarDay.getLunarDay();
+        let lunarYear: LunarYear = lunarDay.getLunarMonth().getLunarYear();
+        if (lunarYear.getYear() == solarYear) {
+            if (solarDay.isBefore(springSolarDay)) {
+                lunarYear = lunarYear.next(-1);
+            }
+        } else if (lunarYear.getYear() < solarYear) {
+            if (!solarDay.isBefore(springSolarDay)) {
+                lunarYear = lunarYear.next(1);
+            }
+        }
+        const term: SolarTerm = solarDay.getTerm();
+        let index: number = term.getIndex() - 3;
+        if (index < 0 && term.getJulianDay().getSolarDay().isAfter(springSolarDay)) {
+            index += 24;
+        }
+        return new SixtyCycleDay(solarDay, new SixtyCycleMonth(SixtyCycleYear.fromYear(lunarYear.getYear()), LunarMonth.fromYm(solarYear, 1).getSixtyCycle().next(~~Math.floor(index / 2))), lunarDay.getSixtyCycle());
+    }
+
+    getSolarDay(): SolarDay {
+        return this.solarDay;
+    }
+
+    getSixtyCycleMonth(): SixtyCycleMonth {
+        return this.month;
+    }
+
+    getYear(): SixtyCycle {
+        return this.month.getYear();
+    }
+
+    getMonth(): SixtyCycle {
+        return this.month.getSixtyCycle();
+    }
+
+    getSixtyCycle(): SixtyCycle {
+        return this.day;
+    }
+
+    getName(): string {
+        return this.day.getName() + '日';
+    }
+
+    toString(): string {
+        return this.month.toString() + this.getName();
+    }
+
+    next(n: number): SixtyCycleDay {
+        return SixtyCycleDay.fromSolarDay(this.solarDay.next(n));
+    }
+
+    getDuty(): Duty {
+        return Duty.fromIndex(this.getSixtyCycle().getEarthBranch().getIndex() - this.getMonth().getEarthBranch().getIndex());
+    }
+
+    getTwelveStar(): TwelveStar {
+        return TwelveStar.fromIndex(this.getSixtyCycle().getEarthBranch().getIndex() + (8 - this.getMonth().getEarthBranch().getIndex() % 6) * 2);
     }
 
     getNineStar(): NineStar {
@@ -2099,58 +2391,147 @@ export class LunarDay extends AbstractTyme {
 
     getJupiterDirection(): Direction {
         const index: number = this.getSixtyCycle().getIndex();
-        return index % 12 < 6 ? Element.fromIndex(~~(index / 12)).getDirection() : this.month.getLunarYear().getJupiterDirection();
+        return index % 12 < 6 ? Element.fromIndex(~~(index / 12)).getDirection() : this.month.getSixtyCycleYear().getJupiterDirection();
     }
 
     getFetusDay(): FetusDay {
-        return FetusDay.fromLunarDay(this);
-    }
-
-    getPhase(): Phase {
-        return Phase.fromIndex(this.day - 1);
-    }
-
-    getSolarDay(): SolarDay {
-        return this.month.getFirstJulianDay().next(this.day - 1).getSolarDay();
+        return FetusDay.fromSixtyCycleDay(this);
     }
 
     getTwentyEightStar(): TwentyEightStar {
-        return TwentyEightStar.fromIndex([10, 18, 26, 6, 14, 22, 2][this.getSolarDay().getWeek().getIndex()]).next(-7 * this.getSixtyCycle().getEarthBranch().getIndex());
-    }
-
-    getFestival(): LunarFestival | null {
-        return LunarFestival.fromYmd(this.getYear(), this.getMonth(), this.day);
-    }
-
-    getSixStar(): SixStar {
-        return SixStar.fromIndex((this.month.getMonth() + this.day - 2) % 6);
+        return TwentyEightStar.fromIndex([10, 18, 26, 6, 14, 22, 2][this.solarDay.getWeek().getIndex()]).next(-7 * this.day.getEarthBranch().getIndex());
     }
 
     getGods(): God[] {
-        return God.getDayGods(this.getMonthSixtyCycle(), this.getSixtyCycle());
+        return God.getDayGods(this.getMonth(), this.day);
     }
 
     getRecommends(): Taboo[] {
-        return Taboo.getDayRecommends(this.getMonthSixtyCycle(), this.getSixtyCycle());
+        return Taboo.getDayRecommends(this.getMonth(), this.day);
     }
 
     getAvoids(): Taboo[] {
-        return Taboo.getDayAvoids(this.getMonthSixtyCycle(), this.getSixtyCycle());
+        return Taboo.getDayAvoids(this.getMonth(), this.day);
     }
 
-    getHours(): LunarHour[] {
-        const l: LunarHour[] = [];
-        const y: number = this.getYear();
-        const m: number = this.getMonth();
-        l.push(LunarHour.fromYmdHms(y, m, this.day, 0, 0, 0));
-        for (let i: number = 0; i < 24; i += 2) {
-            l.push(LunarHour.fromYmdHms(y, m, this.day, i + 1, 0, 0));
+    getHours(): SixtyCycleHour[] {
+        const l: SixtyCycleHour[] = [];
+        const d: SolarDay = this.solarDay.next(-1);
+        let h: SixtyCycleHour = SixtyCycleHour.fromSolarTime(SolarTime.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), 23, 0, 0));
+        l.push(h);
+        for (let i = 0; i < 11; i++) {
+            h = h.next(7200);
+            l.push(h);
         }
         return l;
     }
+}
 
-    getMinorRen(): MinorRen {
-        return this.getLunarMonth().getMinorRen().next(this.day - 1);
+export class SixtyCycleHour extends AbstractTyme {
+    protected solarTime: SolarTime;
+    protected day: SixtyCycleDay;
+    protected hour: SixtyCycle;
+
+    public constructor(solarTime: SolarTime) {
+        super();
+        const solarYear: number = solarTime.getYear();
+        const springSolarTime: SolarTime = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarTime();
+        const lunarHour: LunarHour = solarTime.getLunarHour();
+        const lunarDay: LunarDay = lunarHour.getLunarDay();
+        let lunarYear: LunarYear = lunarDay.getLunarMonth().getLunarYear();
+        if (lunarYear.getYear() == solarYear) {
+            if (solarTime.isBefore(springSolarTime)) {
+                lunarYear = lunarYear.next(-1);
+            }
+        } else if (lunarYear.getYear() < solarYear) {
+            if (!solarTime.isBefore(springSolarTime)) {
+                lunarYear = lunarYear.next(1);
+            }
+        }
+
+        const term: SolarTerm = solarTime.getTerm();
+        let index: number = term.getIndex() - 3;
+        if (index < 0 && term.getJulianDay().getSolarTime().isAfter(SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarTime())) {
+            index += 24;
+        }
+        const d: SixtyCycle = lunarDay.getSixtyCycle();
+        this.solarTime = solarTime;
+        this.day = new SixtyCycleDay(solarTime.getSolarDay(), new SixtyCycleMonth(SixtyCycleYear.fromYear(lunarYear.getYear()), LunarMonth.fromYm(solarYear, 1).getSixtyCycle().next(~~Math.floor(index / 2))), solarTime.getHour() < 23 ? d : d.next(1));
+        this.hour = lunarHour.getSixtyCycle();
+    }
+
+    static fromSolarTime(solarTime: SolarTime): SixtyCycleHour {
+        return new SixtyCycleHour(solarTime);
+    }
+
+    getYear(): SixtyCycle {
+        return this.day.getYear();
+    }
+
+    getMonth(): SixtyCycle {
+        return this.day.getMonth();
+    }
+
+    getDay(): SixtyCycle {
+        return this.day.getSixtyCycle();
+    }
+
+    getSixtyCycle(): SixtyCycle {
+        return this.hour;
+    }
+
+    getSixtyCycleDay(): SixtyCycleDay {
+        return this.day;
+    }
+
+    getSolarTime(): SolarTime {
+        return this.solarTime;
+    }
+
+    getName(): string {
+        return this.hour.getName() + '时';
+    }
+
+    toString(): string {
+        return `${this.day.toString()}${this.getName()}`;
+    }
+
+    getIndexInDay(): number {
+        const h: number = this.solarTime.getHour();
+        return h === 23 ? 0 : ~~((h + 1) / 2);
+    }
+
+    next(n: number): SixtyCycleHour {
+        return SixtyCycleHour.fromSolarTime(this.solarTime.next(n));
+    }
+
+    getTwelveStar(): TwelveStar {
+        return TwelveStar.fromIndex(this.hour.getEarthBranch().getIndex() + (8 - this.getDay().getEarthBranch().getIndex() % 6) * 2);
+    }
+
+    getNineStar(): NineStar {
+        const solar: SolarDay = this.solarTime.getSolarDay();
+        const dongZhi: SolarTerm = SolarTerm.fromIndex(solar.getYear(), 0);
+        const xiaZhi: SolarTerm = dongZhi.next(12);
+        const asc: boolean = !solar.isBefore(dongZhi.getJulianDay().getSolarDay()) && solar.isBefore(xiaZhi.getJulianDay().getSolarDay());
+        let start: number = [8, 5, 2][this.getDay().getEarthBranch().getIndex() % 3];
+        if (asc) {
+            start = 8 - start;
+        }
+        const earthBranchIndex: number = this.getIndexInDay() % 12;
+        return NineStar.fromIndex(start + (asc ? earthBranchIndex : -earthBranchIndex));
+    }
+
+    getEightChar(): EightChar {
+        return new EightChar(this.getYear(), this.getMonth(), this.getDay(), this.hour);
+    }
+
+    getRecommends(): Taboo[] {
+        return Taboo.getHourRecommends(this.getDay(), this.hour);
+    }
+
+    getAvoids(): Taboo[] {
+        return Taboo.getHourAvoids(this.getDay(), this.hour);
     }
 }
 
@@ -2160,13 +2541,14 @@ export interface EightCharProvider {
 
 export class DefaultEightCharProvider implements EightCharProvider {
     getEightChar(hour: LunarHour): EightChar {
-        return new EightChar(hour.getYearSixtyCycle(), hour.getMonthSixtyCycle(), hour.getDaySixtyCycle(), hour.getSixtyCycle());
+        return hour.getSixtyCycleHour().getEightChar();
     }
 }
 
 export class LunarSect2EightCharProvider implements EightCharProvider {
     getEightChar(hour: LunarHour): EightChar {
-        return new EightChar(hour.getYearSixtyCycle(), hour.getMonthSixtyCycle(), hour.getLunarDay().getSixtyCycle(), hour.getSixtyCycle());
+        const h: SixtyCycleHour = hour.getSixtyCycleHour();
+        return new EightChar(h.getYear(), h.getMonth(), hour.getLunarDay().getSixtyCycle(), h.getSixtyCycle());
     }
 }
 
@@ -2176,6 +2558,8 @@ export class LunarHour extends AbstractTyme {
     protected hour: number;
     protected minute: number;
     protected second: number;
+    protected solarTime: SolarTime | undefined;
+    protected sixtyCycleHour: SixtyCycleHour | undefined;
 
     protected constructor(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string) {
         super();
@@ -2278,49 +2662,39 @@ export class LunarHour extends AbstractTyme {
         return this.minute !== target.getMinute() ? this.minute > target.getMinute() : this.second > target.getSecond();
     }
 
+    /**
+     * @deprecated
+     */
     getYearSixtyCycle(): SixtyCycle {
-        const solarTime: SolarTime = this.getSolarTime();
-        const solarYear: number = this.day.getSolarDay().getYear();
-        const springSolarTime: SolarTime = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarTime();
-        const lunarYear: LunarYear = this.day.getLunarMonth().getLunarYear();
-        const year: number = lunarYear.getYear();
-        let sixtyCycle: SixtyCycle = lunarYear.getSixtyCycle();
-        if (year === solarYear) {
-            if (solarTime.isBefore(springSolarTime)) {
-                sixtyCycle = sixtyCycle.next(-1);
-            }
-        } else if (year < solarYear) {
-            if (!solarTime.isBefore(springSolarTime)) {
-                sixtyCycle = sixtyCycle.next(1);
-            }
-        }
-        return sixtyCycle;
+        return this.getSixtyCycleHour().getYear();
     }
 
+    /**
+     * @deprecated
+     */
     getMonthSixtyCycle(): SixtyCycle {
-        const solarTime: SolarTime = this.getSolarTime();
-        const year: number = solarTime.getYear();
-        const term: SolarTerm = solarTime.getTerm();
-        let index: number = term.getIndex() - 3;
-        if (index < 0 && term.getJulianDay().getSolarTime().isAfter(SolarTerm.fromIndex(year, 3).getJulianDay().getSolarTime())) {
-            index += 24;
-        }
-        return LunarMonth.fromYm(year, 1).getSixtyCycle().next(Math.floor(index / 2));
+        return this.getSixtyCycleHour().getMonth();
     }
 
+    /**
+     * @deprecated
+     */
     getDaySixtyCycle(): SixtyCycle {
-        const d: SixtyCycle = this.day.getSixtyCycle();
-        return this.hour < 23 ? d : d.next(1);
+        return this.getSixtyCycleHour().getDay();
     }
 
     getSixtyCycle(): SixtyCycle {
         const earthBranchIndex: number = this.getIndexInDay() % 12;
-        const heavenStemIndex: number = this.getDaySixtyCycle().getHeavenStem().getIndex() % 5 * 2 + earthBranchIndex;
+        let d: SixtyCycle = this.day.getSixtyCycle();
+        if (this.hour >= 23) {
+            d = d.next(1);
+        }
+        const heavenStemIndex: number = d.getHeavenStem().getIndex() % 5 * 2 + earthBranchIndex;
         return SixtyCycle.fromName(HeavenStem.fromIndex(heavenStemIndex).getName() + EarthBranch.fromIndex(earthBranchIndex).getName());
     }
 
     getTwelveStar(): TwelveStar {
-        return TwelveStar.fromIndex(this.getSixtyCycle().getEarthBranch().getIndex() + (8 - this.getDaySixtyCycle().getEarthBranch().getIndex() % 6) * 2);
+        return TwelveStar.fromIndex(this.getSixtyCycle().getEarthBranch().getIndex() + (8 - this.getSixtyCycleHour().getDay().getEarthBranch().getIndex() % 6) * 2);
     }
 
     getNineStar(): NineStar {
@@ -2337,8 +2711,18 @@ export class LunarHour extends AbstractTyme {
     }
 
     getSolarTime(): SolarTime {
-        const d: SolarDay = this.day.getSolarDay();
-        return SolarTime.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), this.hour, this.minute, this.second);
+        if (!this.solarTime) {
+            const d: SolarDay = this.day.getSolarDay();
+            this.solarTime = SolarTime.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), this.hour, this.minute, this.second);
+        }
+        return this.solarTime;
+    }
+
+    getSixtyCycleHour(): SixtyCycleHour {
+        if (!this.sixtyCycleHour) {
+            this.sixtyCycleHour = this.getSolarTime().getSixtyCycleHour();
+        }
+        return this.sixtyCycleHour;
     }
 
     getEightChar(): EightChar {
@@ -2346,11 +2730,11 @@ export class LunarHour extends AbstractTyme {
     }
 
     getRecommends(): Taboo[] {
-        return Taboo.getHourRecommends(this.getDaySixtyCycle(), this.getSixtyCycle());
+        return Taboo.getHourRecommends(this.getSixtyCycleHour().getDay(), this.getSixtyCycle());
     }
 
     getAvoids(): Taboo[] {
-        return Taboo.getHourAvoids(this.getDaySixtyCycle(), this.getSixtyCycle());
+        return Taboo.getHourAvoids(this.getSixtyCycleHour().getDay(), this.getSixtyCycle());
     }
 
     getMinorRen(): MinorRen {
@@ -3802,6 +4186,10 @@ export class SolarDay extends AbstractTyme {
         return LunarDay.fromYmd(m.getYear(), m.getMonthWithLeap(), days + 1);
     }
 
+    getSixtyCycleDay(): SixtyCycleDay {
+        return SixtyCycleDay.fromSolarDay(this);
+    }
+
     getLegalHoliday(): LegalHoliday | null {
         return LegalHoliday.fromYmd(this.getYear(), this.getMonth(), this.day);
     }
@@ -3964,6 +4352,9 @@ export class SolarTime extends AbstractTyme {
         return LunarHour.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), this.hour, this.minute, this.second);
     }
 
+    getSixtyCycleHour(): SixtyCycleHour {
+        return SixtyCycleHour.fromSolarTime(this);
+    }
 }
 
 export class LegalHoliday extends AbstractTyme {
@@ -4308,12 +4699,13 @@ export class EightChar extends AbstractCulture {
     }
 
     getBodySign(): SixtyCycle {
-        let offset: number = this.month.getEarthBranch().getIndex() + this.hour.getEarthBranch().getIndex();
-        offset %= 12;
-        offset -= 1;
+        const offset: number = (this.month.getEarthBranch().getIndex() + this.hour.getEarthBranch().getIndex() - 1) % 12;
         return SixtyCycle.fromName(HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + offset).getName() + EarthBranch.fromIndex(2 + offset).getName());
     }
 
+    /**
+     * @deprecated
+     */
     getDuty(): Duty {
         return Duty.fromIndex(this.day.getEarthBranch().getIndex() - this.month.getEarthBranch().getIndex());
     }
@@ -4610,12 +5002,36 @@ export class ChildLimit {
         return DecadeFortune.fromChildLimit(this, 0);
     }
 
+    getDecadeFortune(): DecadeFortune {
+        return DecadeFortune.fromChildLimit(this, -1);
+    }
+
     getStartFortune(): Fortune {
         return Fortune.fromChildLimit(this, 0);
     }
 
+    /**
+     * @deprecated
+     */
     getEndLunarYear(): LunarYear {
         return LunarYear.fromYear(this.getStartTime().getLunarHour().getYear() + this.getEndTime().getYear() - this.getStartTime().getYear());
+    }
+
+    getStartSixtyCycleYear(): SixtyCycleYear {
+        return SixtyCycleYear.fromYear(this.getStartTime().getYear());
+    }
+
+    getEndSixtyCycleYear(): SixtyCycleYear {
+        return SixtyCycleYear.fromYear(this.getEndTime().getYear());
+    }
+
+    getStartAge(): number {
+        return 1;
+    }
+
+    getEndAge(): number {
+        const n: number = this.getEndSixtyCycleYear().getYear() - this.getStartSixtyCycleYear().getYear();
+        return Math.max(n, 1);
     }
 }
 
@@ -4634,19 +5050,33 @@ export class DecadeFortune extends AbstractTyme {
     }
 
     getStartAge(): number {
-        return this.childLimit.getEndTime().getYear() - this.childLimit.getStartTime().getYear() + 1 + this.index * 10;
+        return this.childLimit.getEndSixtyCycleYear().getYear() - this.childLimit.getStartSixtyCycleYear().getYear() + 1 + this.index * 10;
     }
 
     getEndAge(): number {
         return this.getStartAge() + 9;
     }
 
+    /**
+     * @deprecated
+     */
     getStartLunarYear(): LunarYear {
         return this.childLimit.getEndLunarYear().next(this.index * 10);
     }
 
+    /**
+     * @deprecated
+     */
     getEndLunarYear(): LunarYear {
         return this.getStartLunarYear().next(9);
+    }
+
+    getStartSixtyCycleYear(): SixtyCycleYear {
+        return this.childLimit.getEndSixtyCycleYear().next(this.index * 10);
+    }
+
+    getEndSixtyCycleYear(): SixtyCycleYear {
+        return this.getStartSixtyCycleYear().next(9);
     }
 
     getSixtyCycle(): SixtyCycle {
@@ -4681,11 +5111,18 @@ export class Fortune extends AbstractTyme {
     }
 
     getAge(): number {
-        return this.childLimit.getEndTime().getYear() - this.childLimit.getStartTime().getYear() + 1 + this.index;
+        return this.childLimit.getEndSixtyCycleYear().getYear() - this.childLimit.getStartSixtyCycleYear().getYear() + 1 + this.index;
     }
 
+    /**
+     * @deprecated
+     */
     getLunarYear(): LunarYear {
         return this.childLimit.getEndLunarYear().next(this.index);
+    }
+
+    getSixtyCycleYear(): SixtyCycleYear {
+        return this.childLimit.getEndSixtyCycleYear().next(this.index);
     }
 
     getSixtyCycle(): SixtyCycle {

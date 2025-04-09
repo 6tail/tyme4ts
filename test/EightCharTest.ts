@@ -283,9 +283,9 @@ class EightCharTest {
         // 结束年龄
         equal(decadeFortune.getEndAge(), 16);
         // 开始年
-        equal(decadeFortune.getStartLunarYear().getYear(), 1989);
+        equal(decadeFortune.getStartSixtyCycleYear().getYear(), 1989);
         // 结束年
-        equal(decadeFortune.getEndLunarYear().getYear(), 1998);
+        equal(decadeFortune.getEndSixtyCycleYear().getYear(), 1998);
         // 干支
         equal(decadeFortune.getName(), '乙卯');
         // 下一大运
@@ -299,13 +299,13 @@ class EightCharTest {
         const fortune: Fortune = childLimit.getStartFortune();
         // 年龄
         equal(fortune.getAge(), 7);
-        // 农历年
-        equal(fortune.getLunarYear().getYear(), 1989);
+        // 干支年
+        equal(fortune.getSixtyCycleYear().getYear(), 1989);
         // 干支
         equal(fortune.getName(), '辛巳');
 
         // 流年
-        equal(fortune.getLunarYear().getSixtyCycle().getName(), '己巳');
+        equal(fortune.getSixtyCycleYear().getSixtyCycle().getName(), '己巳');
     }
 
     @test
@@ -334,9 +334,9 @@ class EightCharTest {
         // 结束年龄
         equal(decadeFortune.getEndAge(), 19);
         // 开始年
-        equal(decadeFortune.getStartLunarYear().getYear(), 2000);
+        equal(decadeFortune.getStartSixtyCycleYear().getYear(), 2001);
         // 结束年
-        equal(decadeFortune.getEndLunarYear().getYear(), 2009);
+        equal(decadeFortune.getEndSixtyCycleYear().getYear(), 2010);
         // 干支
         equal(decadeFortune.getName(), '庚子');
         // 下一大运
@@ -346,8 +346,8 @@ class EightCharTest {
         const fortune: Fortune = childLimit.getStartFortune();
         // 年龄
         equal(fortune.getAge(), 10);
-        // 农历年
-        equal(fortune.getLunarYear().getYear(), 2000);
+        // 干支年
+        equal(fortune.getSixtyCycleYear().getYear(), 2001);
         // 干支
         equal(fortune.getName(), '戊申');
         // 小运推移
@@ -355,7 +355,7 @@ class EightCharTest {
         equal(fortune.next(-2).getName(), '庚戌');
 
         // 流年
-        equal(fortune.getLunarYear().getSixtyCycle().getName(), '庚辰');
+        equal(fortune.getSixtyCycleYear().getSixtyCycle().getName(), '辛巳');
     }
 
     @test
@@ -457,12 +457,12 @@ class EightCharTest {
 
     @test
     test26() {
-        equal(SolarTime.fromYmdHms(1986, 5, 29, 13, 37, 0).getLunarHour().getEightChar().getBodySign().getName(), '己丑');
+        equal(SolarTime.fromYmdHms(1986, 5, 29, 13, 37, 0).getLunarHour().getEightChar().getBodySign().getName(), '辛丑');
     }
 
     @test
     test27() {
-        equal(SolarTime.fromYmdHms(1994, 12, 6, 2, 0, 0).getLunarHour().getEightChar().getBodySign().getName(), '乙丑');
+        equal(SolarTime.fromYmdHms(1994, 12, 6, 2, 0, 0).getLunarHour().getEightChar().getBodySign().getName(), '丁丑');
     }
 
     @test
