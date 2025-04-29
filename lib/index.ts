@@ -2252,7 +2252,7 @@ export class SixtyCycleMonth extends AbstractTyme {
     }
 
     next(n: number): SixtyCycleMonth {
-        return new SixtyCycleMonth(SixtyCycleYear.fromYear((this.year.getYear() * 12 + this.getIndexInYear() + n) / 12), this.month.next(n));
+        return new SixtyCycleMonth(SixtyCycleYear.fromYear(Math.floor((this.year.getYear() * 12 + this.getIndexInYear() + n) / 12)), this.month.next(n));
     }
 
     getFirstDay(): SixtyCycleDay {
@@ -3610,6 +3610,10 @@ export class SolarYear extends AbstractTyme {
         }
         return l;
     }
+
+    getRabByungYear(): RabByungYear {
+        return RabByungYear.fromYear(this.year);
+    }
 }
 
 export class SolarHalfYear extends AbstractTyme {
@@ -4184,6 +4188,10 @@ export class SolarDay extends AbstractTyme {
             days += m.getDayCount();
         }
         return LunarDay.fromYmd(m.getYear(), m.getMonthWithLeap(), days + 1);
+    }
+
+    getRabByungDay(): RabByungDay {
+        return RabByungDay.fromSolarDay(this);
     }
 
     getSixtyCycleDay(): SixtyCycleDay {
@@ -5218,5 +5226,476 @@ export class KitchenGodSteed extends AbstractCulture {
 
     getName(): string {
         return '灶马头';
+    }
+}
+
+export class RabByungElement extends Element {
+    protected constructor(indexOrName: number | string) {
+        super((typeof indexOrName === 'number') ? indexOrName : (indexOrName + '').replace('铁', '金'));
+    }
+
+    static fromIndex(index: number | string): RabByungElement {
+        return new RabByungElement(RabByungElement.numeric(index, 'rab-byung element index'));
+    }
+
+    static fromName(name: string): RabByungElement {
+        return new RabByungElement(name);
+    }
+
+    next(n: number): RabByungElement {
+        return RabByungElement.fromIndex(this.nextIndex(n));
+    }
+
+    getReinforce(): RabByungElement {
+        return this.next(1);
+    }
+
+    getRestrain(): RabByungElement {
+        return this.next(2);
+    }
+
+    getReinforced(): RabByungElement {
+        return this.next(-1);
+    }
+
+    getRestrained(): RabByungElement {
+        return this.next(-2);
+    }
+
+    getName(): string {
+        return super.getName().replace('金', '铁');
+    }
+}
+
+export class RabByungYear extends AbstractTyme {
+    protected rabByungIndex: number;
+    protected sixtyCycle: SixtyCycle;
+
+    protected constructor(rabByungIndex: number | string, sixtyCycle: SixtyCycle) {
+        super();
+        const index: number = RabByungYear.numeric(rabByungIndex, 'rab-byung index');
+        if (index < 0 || index > 150) {
+            throw new Error(`illegal rab-byung index: ${index}`);
+        }
+        this.rabByungIndex = index;
+        this.sixtyCycle = sixtyCycle;
+    }
+
+    static fromYear(year: number | string): RabByungYear {
+        const y: number = RabByungYear.numeric(year, 'rab-byung year');
+        return new RabByungYear(Math.floor((y - 1024) / 60), SixtyCycle.fromIndex(y - 4));
+    }
+
+    static fromElementZodiac(rabByungIndex: number | string, element: RabByungElement, zodiac: Zodiac): RabByungYear {
+        for (let i = 0; i < 60; i++) {
+            const sixtyCycle: SixtyCycle = SixtyCycle.fromIndex(i);
+            if (sixtyCycle.getEarthBranch().getZodiac().equals(zodiac) && sixtyCycle.getHeavenStem().getElement().getIndex() == element.getIndex()) {
+                return new RabByungYear(rabByungIndex, sixtyCycle);
+            }
+        }
+        throw new Error(`illegal rab-byung element ${element}, zodiac ${zodiac}`);
+    }
+
+    getRabByungIndex(): number {
+        return this.rabByungIndex;
+    }
+
+    getSixtyCycle(): SixtyCycle {
+        return this.sixtyCycle;
+    }
+
+    getZodiac(): Zodiac {
+        return this.getSixtyCycle().getEarthBranch().getZodiac();
+    }
+
+    getElement(): RabByungElement {
+        return RabByungElement.fromIndex(this.getSixtyCycle().getHeavenStem().getElement().getIndex());
+    }
+
+    getName(): string {
+        const digits: string[] = ['零', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+        const units: string[] = ['', '十', '百'];
+        let n: number = this.rabByungIndex + 1;
+        let s: string = '';
+        let pos: number = 0;
+        while (n > 0) {
+            const digit: number = n % 10;
+            if (digit > 0) {
+                s = digits[digit] + units[pos] + s;
+            } else if (s.length > 0) {
+                s = digits[digit] + s;
+            }
+            n = Math.floor(n / 10);
+            pos++;
+        }
+        if (s.indexOf('一十') === 0) {
+            s = s.substring(1);
+        }
+        return `第${s}饶迥${this.getElement()}${this.getZodiac()}年`;
+    }
+
+    next(n: number): RabByungYear {
+        return RabByungYear.fromYear(this.getYear() + n);
+    }
+
+    getYear(): number {
+        return 1024 + this.rabByungIndex * 60 + this.getSixtyCycle().getIndex();
+    }
+
+    getLeapMonth(): number {
+        let y: number = 1;
+        let m: number = 4;
+        let t: number = 0;
+        const currentYear: number = this.getYear();
+        while (y < currentYear) {
+            const i: number = m - 1 + (t % 2 == 0 ? 33 : 32);
+            y = Math.floor((y * 12 + i) / 12);
+            m = i % 12 + 1;
+            t++;
+        }
+        return y == currentYear ? m : 0;
+    }
+
+    getSolarYear(): SolarYear {
+        return SolarYear.fromYear(this.getYear());
+    }
+
+    getFirstMonth(): RabByungMonth {
+        return new RabByungMonth(this, 1);
+    }
+
+    getMonthCount(): number {
+        return this.getLeapMonth() == 0 ? 12 : 13;
+    }
+
+    getMonths(): RabByungMonth[] {
+        const l: RabByungMonth[] = [];
+        const leapMonth: number = this.getLeapMonth();
+        for (let i = 1; i <= 12; i++) {
+            l.push(new RabByungMonth(this, i));
+            if (i === leapMonth) {
+                l.push(new RabByungMonth(this, -i));
+            }
+        }
+        return l;
+    }
+}
+
+export class RabByungMonth extends AbstractTyme {
+    static DAYS: Record<string, number[]> = {};
+    static NAMES: string[] = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+    static ALIAS: string[] = ['神变月', '苦行月', '具香月', '萨嘎月', '作净月', '明净月', '具醉月', '具贤月', '天降月', '持众月', '庄严月', '满意月'];
+
+    protected static isInit: boolean = false;
+
+    protected year: RabByungYear;
+    protected month: number;
+    protected leap: boolean;
+    protected indexInYear: number;
+
+    protected static init(): void {
+        if (RabByungMonth.isInit) {
+            return;
+        }
+        let y: number = 1950;
+        let m: number = 11;
+        const years: string[] = '2c>,182[>1:2TA4ZI=n1E2Bk1J2Ff3Mk503Oc62g=,172^>1:2XA1>2UE2Bo1I2Fj3Lo62Fb3Mf5,03N^72b=1:2]A1>2ZF1B2VI2Em1K2Fe,2Lh1R3Na603P\\:172Y>1;2UB2=m2Dq1J2Eh,2Kl1Q3Me603Pa:172^>1;2YA2=p1C2UI,2Dk2Jp3QEc3Mi603Pf:3L[72b?1:2]A1<2UB2XH,2Cn1I2Ei1L2Ie1Q3Na703Q\\:2`@1;2XA,4\\H;m1B2TI2Em1L2Ij1Q3Nf603Q`903QW:,2[@1;2TB2XI1E4TMAh2Io3RFe3Mj603Pc803Q[;,2^?1;2WA2>q1E2Bm1I2Fi1M2Hc3Of70,3P^82a>1:2[A1>2WE1B2TI2Fm1L2Hf3Ni6,03Oa703PZ:3`A62V>4]F;q1B4YJ>l2Eq1L2Gi3Ml5,03Nd603Q_9172[>1;2XB2>p1E2VK2Fl,1K2Fc3Mh603Pc9172`>1;2\\B1>2UD2=j2En,1J2Fg3Mm62Ib3Pj;3M_703R[:2`B1=2YB2=n,1C2TI2Fk1L2Ig1P3Nd703Q_:152X<2[A,2<q1B2WI2Ep1L2Il1Q3Ni703Qc9152[:2^@,1;2WB2>o1E2Bk1I2Fh1M2Ib3Pf803R^9,2a?1;2ZA1>2UE2Bp1I2Fl1M2If3Oi80,3Pa803QY:2^A1>2ZE1B4WJ>j2Fp1M2Hi1N2H`,3Od703Q]:162Y>1;2VB2?o1E4VM@h2Gl1M,2Hd3Ng603Qa9172^>1;2ZB1?2UE2@l2Fo1L,2Gg3Mk62H`3Pf:172c?3QY;2_B1>2YD2?o1E,2TK2Fj1M2Ie1P3Mb703R^;172X=2\\C1>,2TD2WJ2Fn1L2Ij1P3Ng703Rb:162[<2_B1=,2VC2>m1E4TMAh2Io3QFe3Nl82Ja3Qf:152_;0,3RU<2ZB1>2TE2Bn1I2Fj1M2Je3Pk:2K^3Ra:,03RY;2]A1>2XE1B2TI2Fo1M2Ii1P2Ka3Qd8,03R]:3bB62W>4]F:q1B2?n1F4VNAh2Il1O2Jd,3Pg803Q`:162\\=1;2XB1?2TF2Bl2Ho1N,2Ig3Nk703Qd9162`>1;2]B1?2XE2Ao1G2TM,2Hj1M2Id1P3M_603R\\;172W>2\\E1@2TE,2?i2Gm1M2Ih1P3Md603Ra;172[=28q1?2WD,2?m2Fq1M2Il1P3Mi72I^3Re:162_<172W=,2ZC2?q1E2Bk1I2Fh1M2Jd1Q3M^52b;16,2Y<2]B1>2VE2Bp1I2Fm1M2Jh1Q2Lb3Re:15,2\\;3aC62U>2[E1B4WJ>k1F4TNBg2Jl1P2Le3Qh9,03R`:172Z=1:2VB2?q1F2Bk2Ip1P2Jg,1P2J_3Qc:162^=1;2[B1?2WF2Bo1H2Bg2Ij,1O2Jc3Qg:3L\\62c>3QY;3aC72V?2[F1A2TG2Bj,2Hm1N2Jg1P3Mb603R_;182Z>1:2T@2WF2Am,2Gp1M2Ik1P3Mg603Rc;172^>192W?2ZE,2@p1F2Bj2Io3QEe1M2Jb1Q3M]72b=182Z>,2]D1?2VE2Bn1I2Fk1M2Jg1Q3Ma62e<172]=,172U>2YE1B2UI2Fp1N2Jk1Q3Me503M\\6,2`<172Y>3_F:2TB2?n1F2Cj2Jo3QDc2Lh1R,3L_52c;172]=1:2XB1?2UF2Cn1I2Eg2Kk1P,2Lb3Rf;162a=1:2]B1?2ZF1B2TH2Dj2Jm,1O2Kf1Q3M`603Q\\;182Y?2;q1A2WH2Cm,2Hq1O2Ji1P3Me603Qa;182]>1:2WA2[G2Ap,1G2Bi2Im1P3Mi72I_3Qf;3N\\72Eh1:2Z?29o,1@2UF2Bm1I2Fh1M2Je1Q3N`72f?3PY92]>19,2U?2YF2Bq1I2Fm1M2Jj1Q3Nd603O]72`=,182X?4]F:o1B4WI=k1F4UNCi2Jn3REc3Mh503N`6,2c<182\\>1:2VA2?q1F2Cm1J2Fg2Lk1R3Mc5,2f<172`=1:2[A1?2XF2Cq1I2Ek2Kn1R,2Lf1R3N_62d>3PZ:3aC72W?2;p1B2WI2Dn1J,2De2Ki1Q3Mc603Q_:182\\?1;2VB2<m2Cq1I,2Dh2Jl1P3Mg603Qd;182`?1;2ZA2<p1B,2UH2Cl1I2Ef3Mm82Jc1Q3N_703QY:2]@1;2UA,2XG2Bp1I2Fk1M2Jh1Q3Nc703Q]92`?1:,2X@4\\G:n1B2VI2Fp1M2Jl1R3Ng603P`82d>,192[?1;2UA2>o1F2Ck1J2Gg3Mk603Oc70,3OZ82_>1:2YA1?2VF2Cp1J2Fj1M2Gc3Nf5,03O^72b>1:2^B1?4[G;n1C2VJ2Fn1L2Gf,3Mi503Nb603Q]:172Y?1<2UB2>m2Eq1K2Fi,2Kl1R3Mf603Qa:182^?1;2YB2>q1D2VJ,2Dl1J2Fe3Mj603Qg;3N]72c@3QX;2]A1=2VB,2YI2Co1J2Fi1M2Je1Q3Nb703R]:2aA1<2XA,2<n1C2UI2Fn1M2Jj1Q3Nf703Q`903RX:,2[@1<2TB4YJ>l1E4UNBi1J2Ge3Mk703Pc803Q[9,2^?1;2XB2>q1E2Cn1J2Gj1M2Ic3Of70,3P^82b?1;2\\A1>2XF1C2UJ2Fm1M2Hf3Ni6,03Oa703Q[:3aB72W>1<2TC2?m2Fq1L2Gi3Ml5,03Ne703Q_:172\\>1<2XB2?q1E2WL2Fl,1L2Gd3Ni603Qd:172a?1;2\\B1>2VD2>k,2Eo1K2Gh1M2Ic1Q3N`703R\\;3aC62U=2YC2>o,1D2TJ2Fl1M2Jh1Q3Ne703R`:162Y<2\\B,1=2TC4XJ=j2Fp1M2Jm3QFc3Ni803Qc:152\\;2_A,1<2WB2>o1E2Bl1J2Gh1N2Jc3Qg903R^:,2b@1;2[B1>2VE2Cq1J2Gl1N2Jf3Pj80,3Qa803RZ;2_B1>4[F:o1C4XK?k2Fp1M2Ii1O2Ia,3Pd703R^:172Y>1<2VC2?p1F2Ai2Hl1M,2Hd3Oh703Qb:172^>1<2[C1?2UE2Al2Go,1L2Hg3Nl82Ia3Qg;3M]72e@3RZ;3`C72T>2YD2@o1E,2TK2Gk1M2Jf1Q3Nb703R^;172Y=2\\D1>,2TD4XK>i2Fo1M2Jj1Q3Ng703Rb;172\\<2`C1=,2WC2?n1F4VNBi1J2Gf1N2Kb3Rf:162_;15,2V<2ZB1?2TE2Bn1J2Gk1N2Kf1Q2L^3Rb:,152Z;2^B1>2YE1B2UJ2Go1N2Ji1P2Kb3Qd9,03R];172X>1;2TC2@n1G2Bi2Im1O2Jd,3Ph803Ra:172\\>1;2YC1@2UF2Bl2Hp1N,2Ig3Ol82J`3Qe:172a>1;4^C7q1?2XF2Ao1G2UN,2Hj1N2Jd1Q3N`703R];182X>2]F1@2TF,2@j2Gn1M2Jq1Q3Ne703Ra;172\\>192T?,2WE2@m1F4TMAf2Im3QEc3Nj82J`3Rf;172_=182W>,2ZD2?q1F2Bl1I2Gj1N2Ke1R3M_62b<17,2Z=2]C1?2WE2Bq1I2Gn1N2Ki1Q3Mb52e;16,2]<172V>4[F:o1B4XK?l1G4UOCh2Jl1Q2Le3Rh:,152`;172Z>1;2WB2@q1G2Cl2Ip1P2K_'.split(',', -1);
+        for (let x = 0, z = years.length; x < z; x++) {
+            let ys: string = years[x];
+            while (ys) {
+                const len: number = ys.charCodeAt(0) - 48;
+                const data: number[] = [];
+                for (let i = 0; i < len; i++) {
+                    data.push(ys.charCodeAt(i + 1) - 83);
+                }
+                RabByungMonth.DAYS[(y * 13 + m) + ''] = data;
+                m++;
+                ys = ys.substring(len + 1);
+            }
+            y++;
+            m = 0;
+        }
+        RabByungMonth.isInit = true;
+    }
+
+    public constructor(year: RabByungYear, monthNum: number | string) {
+        super();
+        RabByungMonth.init();
+        const month: number = RabByungYear.numeric(monthNum, 'rab-byung month');
+        if (month == 0 || month > 12 || month < -12) {
+            throw new Error(`illegal rab-byung month ${month}`);
+        }
+        const y: number = year.getYear();
+        if (y < 1950 || y > 2050) {
+            throw new Error(`rab-byung year ${y} must between 1950 and 2050`);
+        }
+        const m: number = Math.abs(month);
+        if (y == 1950 && m < 12) {
+            throw new Error(`month ${month} must be 12 in rab-byung year ${y}`);
+        }
+        const leap: boolean = month < 0;
+        const leapMonth: number = year.getLeapMonth();
+        if (leap && m !== leapMonth) {
+            throw new Error(`illegal leap month ${m} in rab-byung year ${y}`);
+        }
+        this.year = year;
+        this.month = m;
+        this.leap = leap;
+        // 位于当年的索引
+        let index: number = m - 1;
+        if (leap || (leapMonth > 0 && m > leapMonth)) {
+            index += 1;
+        }
+        this.indexInYear = index;
+    }
+
+    static fromYm(year: number | string, month: number | string): RabByungMonth {
+        return new RabByungMonth(RabByungYear.fromYear(year), month);
+    }
+
+    static fromElementZodiac(rabByungIndex: number | string, element: RabByungElement, zodiac: Zodiac, month: number | string): RabByungMonth {
+        return new RabByungMonth(RabByungYear.fromElementZodiac(rabByungIndex, element, zodiac), month);
+    }
+
+    getRabByungYear(): RabByungYear {
+        return this.year;
+    }
+
+    getYear(): number {
+        return this.year.getYear();
+    }
+
+    getMonth(): number {
+        return this.month;
+    }
+
+    getMonthWithLeap(): number {
+        return this.leap ? -this.month : this.month;
+    }
+
+    getDayCount(): number {
+        return 30 + this.getLeapDays().length - this.getMissDays().length;
+    }
+
+    getIndexInYear(): number {
+        return this.indexInYear;
+    }
+
+    isLeap(): boolean {
+        return this.leap;
+    }
+
+    getName(): string {
+        return (this.leap ? '闰' : '') + RabByungMonth.NAMES[this.month - 1];
+    }
+
+    getAlias(): string {
+        return (this.leap ? '闰' : '') + RabByungMonth.ALIAS[this.month - 1];
+    }
+
+    toString(): string {
+        return this.year.toString() + this.getName();
+    }
+
+    next(n: number): RabByungMonth {
+        if (n === 0) {
+            return RabByungMonth.fromYm(this.getYear(), this.getMonthWithLeap());
+        }
+        let m: number = this.indexInYear + 1 + n;
+        let y: RabByungYear = this.year;
+        let leapMonth: number = y.getLeapMonth();
+        if (n > 0) {
+            let monthCount: number = leapMonth > 0 ? 13 : 12;
+            while (m > monthCount) {
+                m -= monthCount;
+                y = y.next(1);
+                leapMonth = y.getLeapMonth();
+                monthCount = leapMonth > 0 ? 13 : 12;
+            }
+        } else {
+            while (m <= 0) {
+                y = y.next(-1);
+                leapMonth = y.getLeapMonth();
+                m += leapMonth > 0 ? 13 : 12;
+            }
+        }
+        let leap: boolean = false;
+        if (leapMonth > 0) {
+            if (m === leapMonth + 1) {
+                leap = true;
+            }
+            if (m > leapMonth) {
+                m--;
+            }
+        }
+        return RabByungMonth.fromYm(y.getYear(), leap ? -m : m);
+    }
+
+    getSpecialDays(): number[] {
+        const days: number[] = RabByungMonth.DAYS[(this.getYear() * 13 + this.getIndexInYear()) + ''];
+        return days ? days : [];
+    }
+
+    getLeapDays(): number[] {
+        const l: number[] = [];
+        const days: number[] = this.getSpecialDays();
+        for (let i = 0, j = days.length; i < j; i++) {
+            const d: number = days[i];
+            if (d > 0) {
+                l.push(d);
+            }
+        }
+        return l;
+    }
+
+    getMissDays(): number[] {
+        const l: number[] = [];
+        const days: number[] = this.getSpecialDays();
+        for (let i = 0, j = days.length; i < j; i++) {
+            const d: number = days[i];
+            if (d < 0) {
+                l.push(-d);
+            }
+        }
+        return l;
+    }
+
+    getDays(): LunarDay[] {
+        const y: number = this.getYear();
+        const m: number = this.getMonthWithLeap();
+        const l: LunarDay[] = [];
+        for (let i: number = 1, j: number = this.getDayCount(); i <= j; i++) {
+            l.push(LunarDay.fromYmd(y, m, i));
+        }
+        return l;
+    }
+}
+
+export class RabByungDay extends AbstractTyme {
+    static NAMES: string[] = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十', '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
+    protected month: RabByungMonth;
+    protected day: number;
+    protected leap: boolean;
+
+    protected constructor(month: RabByungMonth, dayNum: number | string) {
+        super();
+        const day: number = RabByungDay.numeric(dayNum, 'rab-byung day');
+        if (day == 0 || day < -30 || day > 30) {
+            throw new Error(`illegal day ${day} in ${month.toString()}`);
+        }
+        const leap: boolean = day < 0;
+        const d: number = Math.abs(day);
+        if (leap && !month.getLeapDays().includes(d)) {
+            throw new Error(`illegal leap day ${d} in ${month.toString()}`);
+        } else if (!leap && month.getMissDays().includes(d)) {
+            throw new Error(`illegal day ${d} in ${month.toString()}`);
+        }
+        this.month = month;
+        this.day = d;
+        this.leap = leap;
+    }
+
+    static fromYmd(year: number | string, month: number | string, day: number | string): RabByungDay {
+        return new RabByungDay(RabByungMonth.fromYm(year, month), day);
+    }
+
+    static fromElementZodiac(rabByungIndex: number | string, element: RabByungElement, zodiac: Zodiac, month: number | string, day: number | string): RabByungDay {
+        return new RabByungDay(RabByungMonth.fromElementZodiac(rabByungIndex, element, zodiac, month), day);
+    }
+
+    static fromSolarDay(solarDay: SolarDay): RabByungDay {
+        let days: number = solarDay.subtract(SolarDay.fromYmd(1951, 1, 8));
+        let m: RabByungMonth = RabByungMonth.fromYm(1950, 12);
+        let count: number = m.getDayCount();
+        while (days >= count) {
+            days -= count;
+            m = m.next(1);
+            count = m.getDayCount();
+        }
+        let day: number = days + 1;
+        const specialDays: number[] = m.getSpecialDays();
+        for (let i = 0, j = specialDays.length; i < j; i++) {
+            const d: number = specialDays[i];
+            if (d < 0) {
+                if (day >= -d) {
+                    day++;
+                }
+            } else if (d > 0) {
+                if (day == d + 1) {
+                    day = -d;
+                    break;
+                } else if (day > d + 1) {
+                    day--;
+                }
+            }
+        }
+        return new RabByungDay(m, day);
+    }
+
+    getRabByungMonth(): RabByungMonth {
+        return this.month;
+    }
+
+    getYear(): number {
+        return this.month.getYear();
+    }
+
+    getMonth(): number {
+        return this.month.getMonthWithLeap();
+    }
+
+    getDay(): number {
+        return this.day;
+    }
+
+    isLeap(): boolean {
+        return this.leap;
+    }
+
+    getDayWithLeap(): number {
+        return this.leap ? -this.day : this.day;
+    }
+
+    getName(): string {
+        return (this.leap ? '闰' : '') + RabByungDay.NAMES[this.day - 1];
+    }
+
+    toString(): string {
+        return this.month.toString() + this.getName();
+    }
+
+    next(n: number): RabByungDay {
+        return this.getSolarDay().next(n).getRabByungDay();
+    }
+
+    subtract(target: RabByungDay): number {
+        return this.getSolarDay().subtract(target.getSolarDay());
+    }
+
+    getSolarDay(): SolarDay {
+        let m: RabByungMonth = RabByungMonth.fromYm(1950, 12);
+        let n: number = 0;
+        while (!this.month.equals(m)) {
+            n += m.getDayCount();
+            m = m.next(1);
+        }
+        let t: number = this.day;
+        const specialDays: number[] = m.getSpecialDays();
+        for (let i = 0, j = specialDays.length; i < j; i++) {
+            const d: number = specialDays[i];
+            if (d < 0) {
+                if (t > -d) {
+                    t--;
+                }
+            } else if (d > 0) {
+                if (t > d) {
+                    t++;
+                }
+            }
+        }
+        if (this.leap) {
+            t++;
+        }
+        return SolarDay.fromYmd(1951, 1, 7).next(n + t);
     }
 }
