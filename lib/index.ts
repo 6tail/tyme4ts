@@ -4420,10 +4420,9 @@ export class LegalHoliday extends AbstractTyme {
         const data: string[] = [];
         const today: string = `${ys}${ms}${ds}`;
         let reg: RegExp = new RegExp(`${ys}\\d{4}[0-1][0-8][+|-]\\d{2}`, 'g');
-        let matcher: RegExpExecArray | null = reg.exec(LegalHoliday.DATA);
-        while (matcher) {
+        let matcher: RegExpExecArray | null;
+        while (matcher = reg.exec(LegalHoliday.DATA)) {
             data.push(matcher[0]);
-            matcher = reg.exec(LegalHoliday.DATA);
         }
         let index: number = -1;
         let size: number = data.length;
@@ -4445,10 +4444,8 @@ export class LegalHoliday extends AbstractTyme {
                 data.length = 0;
                 ys = (Array(4).join('0') + y).slice(-4);
                 reg = new RegExp(`${ys}\\d{4}[0-1][0-8][+|-]\\d{2}`, 'g');
-                matcher = reg.exec(LegalHoliday.DATA);
-                while (matcher) {
+                while (matcher = reg.exec(LegalHoliday.DATA)) {
                     data.push(matcher[0]);
-                    matcher = reg.exec(LegalHoliday.DATA);
                 }
                 size = data.length;
                 if (size < 1) {
@@ -4461,10 +4458,8 @@ export class LegalHoliday extends AbstractTyme {
                 data.length = 0;
                 ys = (Array(4).join('0') + y).slice(-4);
                 reg = new RegExp(`${ys}\\d{4}[0-1][0-8][+|-]\\d{2}`, 'g');
-                matcher = reg.exec(LegalHoliday.DATA);
-                while (matcher) {
+                while (matcher = reg.exec(LegalHoliday.DATA)) {
                     data.push(matcher[0]);
-                    matcher = reg.exec(LegalHoliday.DATA);
                 }
                 size = data.length;
                 if (size < 1) {
@@ -4609,15 +4604,13 @@ export class LunarFestival extends AbstractTyme {
             return new LunarFestival(FestivalType.DAY, LunarDay.fromYmd(year, month, day), null, matcher[0]);
         }
         const reg: RegExp = new RegExp(`@\\d{2}1\\d{2}`, 'g');
-        matcher = reg.exec(LunarFestival.DATA);
-        while (matcher) {
+        while (matcher = reg.exec(LunarFestival.DATA)) {
             const data: string = matcher[0];
             const solarTerm: SolarTerm = SolarTerm.fromIndex(year, parseInt(data.substring(4), 10));
             const lunarDay: LunarDay = solarTerm.getJulianDay().getSolarDay().getLunarDay();
             if (lunarDay.getYear() === year && lunarDay.getMonth() === month && lunarDay.getDay() === day) {
                 return new LunarFestival(FestivalType.TERM, lunarDay, solarTerm, data);
             }
-            matcher = reg.exec(LegalHoliday.DATA);
         }
         matcher = new RegExp(`@\\d{2}2`, 'g').exec(LunarFestival.DATA);
         if (matcher) {

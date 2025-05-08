@@ -1,6 +1,6 @@
 # Tyme [![License](https://img.shields.io/badge/license-MIT-4EB1BA.svg?style=flat-square)](https://github.com/6tail/tyme4ts/blob/master/LICENSE)
 
-Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail.cn/calendar/api.html "https://6tail.cn/calendar/api.html") 的升级版，拥有更优的设计和扩展性，支持公历和农历、星座、干支、生肖、节气、法定假日等。
+Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail.cn/calendar/api.html "https://6tail.cn/calendar/api.html") 的升级版，拥有更优的设计和扩展性，支持公历、农历、藏历、星座、干支、生肖、节气、法定假日等。
 
 ## 示例
 
@@ -20,7 +20,10 @@ Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail
     
     // 农历丙寅年四月廿一
     console.log(solar.getLunarDay().toString());
-     
+    
+    // 第十七饶迥火虎年四月廿一
+    console.log(solar.getRabByungDay().toString());
+    
     // run
     ts-node test.ts
 

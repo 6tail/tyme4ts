@@ -1,5 +1,5 @@
 import {suite, test} from '@testdeck/mocha';
-import {LunarDay, LunarFestival} from '../lib';
+import {LunarDay, LunarFestival, SolarDay} from '../lib';
 import {equal, ok} from 'assert';
 
 @suite
@@ -31,5 +31,12 @@ class LunarFestivalTest {
         const f = LunarDay.fromYmd(2021, 12, 29).getFestival();
         ok(f);
         equal(f.toString(), '农历辛丑年十二月廿九 除夕');
+    }
+
+    @test
+    test6() {
+        const f = SolarDay.fromYmd(2025, 12, 21).getLunarDay().getFestival();
+        ok(f);
+        equal(f.toString(), '农历乙巳年十一月初二 冬至节');
     }
 }
