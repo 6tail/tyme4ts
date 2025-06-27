@@ -6,7 +6,7 @@ export default [
         files: ["lib/*.ts"]
     },
     {
-        ignores: ["test/*.ts"],
+        ignores: ["test/*.ts", "dist/*"],
     },
     {
         languageOptions: {
