@@ -602,4 +602,19 @@ class EightCharTest {
         // 为了不影响其他测试用例，恢复默认八字算法
         LunarHour.provider = new DefaultEightCharProvider();
     }
+
+    @test
+    test51() {
+        const eightChar: EightChar = new EightChar(
+            SixtyCycle.fromName('壬申'),
+            SixtyCycle.fromName('壬寅'),
+            SixtyCycle.fromName('庚辰'),
+            SixtyCycle.fromName('甲申')
+        );
+        const timeList: string[] = [];
+        eightChar.getSolarTimes(1801, 2099).forEach(time => {
+            timeList.push(time.toString());
+        })
+        deepStrictEqual(timeList, ['1812年2月18日 16:00:00', '1992年3月5日 15:00:00', '2052年2月19日 16:00:00']);
+    }
 }
