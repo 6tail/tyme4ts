@@ -38,7 +38,7 @@ class PhenologyTest {
         const jd: JulianDay = p.getJulianDay();
         equal(p.getName(), '麋角解');
         equal(jd.getSolarDay().toString(), '2025年12月26日');
-        equal(jd.getSolarTime().toString(), '2025年12月26日 20:49:39');
+        equal(jd.getSolarTime().toString(), '2025年12月26日 20:49:56');
     }
 
     @test
@@ -47,12 +47,12 @@ class PhenologyTest {
         const jd: JulianDay = p.getJulianDay();
         equal(p.getName(), '麋角解');
         equal(jd.getSolarDay().toString(), '2025年12月26日');
-        equal(jd.getSolarTime().toString(), '2025年12月26日 20:49:39');
+        equal(jd.getSolarTime().toString(), '2025年12月26日 20:49:56');
     }
 
     @test
     test4() {
         equal(SolarTime.fromYmdHms(2025, 12, 26, 20, 49, 38).getPhenology().getName(), '蚯蚓结');
-        equal(SolarTime.fromYmdHms(2025, 12, 26, 20, 49, 39).getPhenology().getName(), '麋角解');
+        equal(SolarTime.fromYmdHms(2025, 12, 26, 20, 49, 56).getPhenology().getName(), '麋角解');
     }
 }

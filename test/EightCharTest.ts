@@ -236,8 +236,8 @@ class EightCharTest {
         equal(childLimit.getMonthCount(), 9);
         equal(childLimit.getDayCount(), 2);
         equal(childLimit.getHourCount(), 10);
-        equal(childLimit.getMinuteCount(), 6);
-        equal(childLimit.getEndTime().toString(), '2030年12月12日 06:57:00');
+        equal(childLimit.getMinuteCount(), 28);
+        equal(childLimit.getEndTime().toString(), '2030年12月12日 07:19:00');
     }
 
     /**
@@ -250,8 +250,8 @@ class EightCharTest {
         equal(childLimit.getMonthCount(), 9);
         equal(childLimit.getDayCount(), 10);
         equal(childLimit.getHourCount(), 1);
-        equal(childLimit.getMinuteCount(), 52);
-        equal(childLimit.getEndTime().toString(), '2020年3月21日 11:22:00');
+        equal(childLimit.getMinuteCount(), 42);
+        equal(childLimit.getEndTime().toString(), '2020年3月21日 11:12:00');
     }
 
     /**

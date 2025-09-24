@@ -511,22 +511,79 @@ export class God extends LoopTyme {
 }
 
 export class Phase extends LoopTyme {
-    static NAMES: string[] = ['朔月', '既朔月', '蛾眉新月', '蛾眉新月', '蛾眉月', '夕月', '上弦月', '上弦月', '九夜月', '宵月', '宵月', '宵月', '渐盈凸月', '小望月', '望月', '既望月', '立待月', '居待月', '寝待月', '更待月', '渐亏凸月', '下弦月', '下弦月', '有明月', '有明月', '蛾眉残月', '蛾眉残月', '残月', '晓月', '晦月'];
+    static NAMES: string[] = ['新月', '蛾眉月', '上弦月', '盈凸月', '满月', '亏凸月', '下弦月', '残月'];
 
-    protected constructor(indexOrName: number | string) {
+    protected lunarYear: number;
+    protected lunarMonth: number;
+
+    protected constructor(lunarYear: number | string, lunarMonth: number | string, indexOrName: number | string) {
         super(Phase.NAMES, indexOrName);
+        if (typeof indexOrName === 'number') {
+            const m: LunarMonth = LunarMonth.fromYm(lunarYear, lunarMonth).next(~~(indexOrName / this.getSize()));
+            this.lunarYear = m.getYear();
+            this.lunarMonth = m.getMonth();
+        } else {
+            this.lunarYear = Phase.numeric(lunarYear, 'lunar year');
+            this.lunarMonth = Phase.numeric(lunarMonth, 'lunar month');
+        }
     }
 
-    static fromIndex(index: number | string): Phase {
-        return new Phase(Phase.numeric(index, 'phase index'));
+    static fromIndex(lunarYear: number | string, lunarMonth: number | string, index: number | string): Phase {
+        return new Phase(lunarYear, lunarMonth, Phase.numeric(index, 'phase index'));
     }
 
-    static fromName(name: string): Phase {
-        return new Phase(name);
+    static fromName(lunarYear: number | string, lunarMonth: number | string, name: string): Phase {
+        return new Phase(lunarYear, lunarMonth, name);
     }
 
     next(n: number): Phase {
-        return Phase.fromIndex(this.nextIndex(n));
+        const size: number= this.getSize();
+        let i: number = this.getIndex() + n;
+        if (i < 0) {
+            i -= size;
+        }
+        i = ~~(i / size);
+        let m: LunarMonth = LunarMonth.fromYm(this.lunarYear, this.lunarMonth);
+        if (i != 0) {
+            m = m.next(i);
+        }
+        return Phase.fromIndex(m.getYear(), m.getMonth(), this.nextIndex(n));
+    }
+
+    protected getStartSolarTime(): SolarTime {
+        const n: number = Math.floor((this.lunarYear - 2000) * 365.2422 / 29.53058886);
+        let i: number = 0;
+        const d: SolarDay = LunarDay.fromYmd(this.lunarYear, this.lunarMonth, 1).getSolarDay();
+        while (true) {
+            const t: number = ShouXingUtil.msaLonT((n + i) * ShouXingUtil.PI_2) * 36525;
+            if (!JulianDay.fromJulianDay(t + JulianDay.J2000 + ShouXingUtil.ONE_THIRD - ShouXingUtil.dtT(t)).getSolarDay().isBefore(d)) {
+                break;
+            }
+            i++;
+        }
+        const r: number[] = [0, 90, 180, 270];
+        const t: number = ShouXingUtil.msaLonT((n + i + r[~~(this.getIndex() / 2)] / 360.0) * ShouXingUtil.PI_2) * 36525;
+        return JulianDay.fromJulianDay(t + JulianDay.J2000 + ShouXingUtil.ONE_THIRD - ShouXingUtil.dtT(t)).getSolarTime();
+    }
+
+    getSolarTime(): SolarTime {
+        const t: SolarTime = this.getStartSolarTime();
+        return this.getIndex() % 2 == 1 ? t.next(1) : t;
+    }
+
+    getSolarDay(): SolarDay {
+        const d: SolarDay = this.getStartSolarTime().getSolarDay();
+        return this.getIndex() % 2 == 1 ? d.next(1) : d;
+    }
+}
+
+export class PhaseDay extends AbstractCultureDay {
+    constructor(phase: Phase, dayIndex: number) {
+        super(phase, dayIndex);
+    }
+
+    getPhase(): Phase {
+        return this.culture as Phase;
     }
 }
 
@@ -1853,7 +1910,7 @@ export class LunarMonth extends AbstractTyme {
     }
 
     getSixtyCycle(): SixtyCycle {
-        return SixtyCycle.fromName(HeavenStem.fromIndex((this.year.getSixtyCycle().getHeavenStem().getIndex() + 1) * 2 + this.indexInYear).getName() + EarthBranch.fromIndex(this.indexInYear + 2).getName());
+        return SixtyCycle.fromName(HeavenStem.fromIndex(this.year.getSixtyCycle().getHeavenStem().getIndex() * 2 + this.month + 1).getName() + EarthBranch.fromIndex(this.month + 1).getName());
     }
 
     getNineStar(): NineStar {
@@ -2125,8 +2182,20 @@ export class LunarDay extends AbstractTyme {
         return FetusDay.fromLunarDay(this);
     }
 
+    getPhaseDay(): PhaseDay {
+        const today: SolarDay = this.getSolarDay();
+        const m: LunarMonth = this.month.next(1);
+        let p: Phase = Phase.fromIndex(m.getYear(), m.getMonth(), 0);
+        let d: SolarDay = p.getSolarDay();
+        while (p.getSolarDay().isAfter(today)) {
+            p = p.next(-1);
+            d = p.getSolarDay();
+        }
+        return new PhaseDay(p, today.subtract(d));
+    }
+
     getPhase(): Phase {
-        return Phase.fromIndex(this.day - 1);
+        return this.getPhaseDay().getPhase();
     }
 
     getSolarDay(): SolarDay {
@@ -2536,10 +2605,9 @@ export class SixtyCycleHour extends AbstractTyme {
     getNineStar(): NineStar {
         const solar: SolarDay = this.solarTime.getSolarDay();
         const dongZhi: SolarTerm = SolarTerm.fromIndex(solar.getYear(), 0);
-        const xiaZhi: SolarTerm = dongZhi.next(12);
         const earthBranchIndex: number = this.getIndexInDay() % 12;
         let index: number = [8, 5, 2][this.getDay().getEarthBranch().getIndex() % 3];
-        if (!solar.isBefore(dongZhi.getJulianDay().getSolarDay()) && solar.isBefore(xiaZhi.getJulianDay().getSolarDay())) {
+        if (!solar.isBefore(dongZhi.getJulianDay().getSolarDay()) && solar.isBefore(dongZhi.next(12).getJulianDay().getSolarDay())) {
             index = 8 + earthBranchIndex - index;
         } else {
             index -= earthBranchIndex;
@@ -2724,13 +2792,14 @@ export class LunarHour extends AbstractTyme {
     getNineStar(): NineStar {
         const solar: SolarDay = this.day.getSolarDay();
         const dongZhi: SolarTerm = SolarTerm.fromIndex(solar.getYear(), 0);
-        const asc: boolean = !solar.isBefore(dongZhi.getJulianDay().getSolarDay()) && solar.isBefore(dongZhi.next(12).getJulianDay().getSolarDay());
-        let start: number = [8, 5, 2][this.day.getSixtyCycle().getEarthBranch().getIndex() % 3];
-        if (asc) {
-            start = 8 - start;
-        }
         const earthBranchIndex: number = this.getIndexInDay() % 12;
-        return NineStar.fromIndex(start + (asc ? earthBranchIndex : -earthBranchIndex));
+        let index: number = [8, 5, 2][this.day.getSixtyCycle().getEarthBranch().getIndex() % 3];
+        if (!solar.isBefore(dongZhi.getJulianDay().getSolarDay()) && solar.isBefore(dongZhi.next(12).getJulianDay().getSolarDay())) {
+            index = 8 + earthBranchIndex - index;
+        } else {
+            index -= earthBranchIndex;
+        }
+        return NineStar.fromIndex(index);
     }
 
     getSolarTime(): SolarTime {
@@ -2823,18 +2892,17 @@ export class JulianDay extends AbstractTyme {
             d += 1 + c - ~~(c * 0.25);
         }
         d += 1524;
-        let year: number = ~~((d - 122.1) / 365.25);
-        d -= ~~(365.25 * year);
-        let month: number = ~~(d / 30.601);
-        d -= ~~(30.601 * month);
-        const day: number = d;
-        if (month > 13) {
-            month -= 12;
+        let y: number = ~~((d - 122.1) / 365.25);
+        d -= ~~(365.25 * y);
+        let m: number = ~~(d / 30.601);
+        d -= ~~(30.601 * m);
+        if (m > 13) {
+            m -= 12;
         } else {
-            year -= 1;
+            y -= 1;
         }
-        month -= 1;
-        year -= 4715;
+        m -= 1;
+        y -= 4715;
         f *= 24;
         const hour: number = ~~(f);
 
@@ -2845,7 +2913,7 @@ export class JulianDay extends AbstractTyme {
         f -= minute;
         f *= 60;
         const second: number = Math.round(f);
-        return second < 60 ? SolarTime.fromYmdHms(year, month, day, hour, minute, second) : SolarTime.fromYmdHms(year, month, day, hour, minute, second - 60).next(60);
+        return second < 60 ? SolarTime.fromYmdHms(y, m, d, hour, minute, second) : SolarTime.fromYmdHms(y, m, d, hour, minute, second - 60).next(60);
     }
 
     getWeek(): Week {
@@ -2897,10 +2965,18 @@ export class ShouXingUtil {
         2000, 63.87, 0.1, 0, 0,
         2005, 64.7, 0.21, 0, 0,
         2012, 66.8, 0.22, 0, 0,
-        2018, 73.6, 0.40, 0, 0,
-        2021, 78.1, 0.44, 0, 0,
-        2024, 83.1, 0.55, 0, 0,
-        2028, 98.6
+        // 2018, 69.0, 0.36, 0, 0,
+        // 使用skyfeild的DE440s△T预测数据拟合
+        2016, 68.1024, 0.5456, -0.0542, -0.001172,
+        2020, 69.3612, 0.0422, -0.0502, 0.006216,
+        2024, 69.1752, -0.0335, -0.0048, 0.000811,
+        2028, 69.0206, -0.0275, 0.0055, -0.000014,
+        2032, 68.9981, 0.0163, 0.0054, 0.000006,
+        2036, 69.1498, 0.0599, 0.0053, 0.000026,
+        2040, 69.4751, 0.1035, 0.0051, 0.000046,
+        2044, 69.9737, 0.1469, 0.0050, 0.000066,
+        2048, 70.6451, 0.1903, 0.0049, 0.000085,
+        2050, 71.0457
     ];
     private static XL0: number[] = [
         10000000000,
@@ -4221,6 +4297,21 @@ export class SolarDay extends AbstractTyme {
     getFestival(): SolarFestival | null {
         return SolarFestival.fromYmd(this.getYear(), this.getMonth(), this.day);
     }
+
+    getPhaseDay(): PhaseDay {
+        const month: LunarMonth = this.getLunarDay().getLunarMonth().next(1);
+        let p: Phase = Phase.fromIndex(month.getYear(), month.getMonth(), 0);
+        let d: SolarDay = p.getSolarDay();
+        while (d.isAfter(this)) {
+            p = p.next(-1);
+            d = p.getSolarDay();
+        }
+        return new PhaseDay(p, this.subtract(d));
+    }
+
+    getPhase(): Phase {
+        return this.getPhaseDay().getPhase();
+    }
 }
 
 export class SolarTime extends AbstractTyme {
@@ -4380,6 +4471,15 @@ export class SolarTime extends AbstractTyme {
 
     getSixtyCycleHour(): SixtyCycleHour {
         return SixtyCycleHour.fromSolarTime(this);
+    }
+
+    getPhase(): Phase {
+        const month: LunarMonth = this.getLunarHour().getLunarDay().getLunarMonth().next(1);
+        let p: Phase = Phase.fromIndex(month.getYear(), month.getMonth(), 0);
+        while (p.getSolarTime().isAfter(this)) {
+            p = p.next(-1);
+        }
+        return p;
     }
 }
 
