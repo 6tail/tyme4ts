@@ -521,7 +521,7 @@ export class Phase extends LoopTyme {
         if (typeof indexOrName === 'number') {
             const m: LunarMonth = LunarMonth.fromYm(lunarYear, lunarMonth).next(~~(indexOrName / this.getSize()));
             this.lunarYear = m.getYear();
-            this.lunarMonth = m.getMonth();
+            this.lunarMonth = m.getMonthWithLeap();
         } else {
             this.lunarYear = Phase.numeric(lunarYear, 'lunar year');
             this.lunarMonth = Phase.numeric(lunarMonth, 'lunar month');
@@ -547,23 +547,24 @@ export class Phase extends LoopTyme {
         if (i != 0) {
             m = m.next(i);
         }
-        return Phase.fromIndex(m.getYear(), m.getMonth(), this.nextIndex(n));
+        return Phase.fromIndex(m.getYear(), m.getMonthWithLeap(), this.nextIndex(n));
     }
 
     protected getStartSolarTime(): SolarTime {
         const n: number = Math.floor((this.lunarYear - 2000) * 365.2422 / 29.53058886);
         let i: number = 0;
+        const jd: number = JulianDay.J2000 + ShouXingUtil.ONE_THIRD;
         const d: SolarDay = LunarDay.fromYmd(this.lunarYear, this.lunarMonth, 1).getSolarDay();
         while (true) {
             const t: number = ShouXingUtil.msaLonT((n + i) * ShouXingUtil.PI_2) * 36525;
-            if (!JulianDay.fromJulianDay(t + JulianDay.J2000 + ShouXingUtil.ONE_THIRD - ShouXingUtil.dtT(t)).getSolarDay().isBefore(d)) {
+            if (!JulianDay.fromJulianDay(jd + t  - ShouXingUtil.dtT(t)).getSolarDay().isBefore(d)) {
                 break;
             }
             i++;
         }
         const r: number[] = [0, 90, 180, 270];
         const t: number = ShouXingUtil.msaLonT((n + i + r[~~(this.getIndex() / 2)] / 360.0) * ShouXingUtil.PI_2) * 36525;
-        return JulianDay.fromJulianDay(t + JulianDay.J2000 + ShouXingUtil.ONE_THIRD - ShouXingUtil.dtT(t)).getSolarTime();
+        return JulianDay.fromJulianDay(jd + t - ShouXingUtil.dtT(t)).getSolarTime();
     }
 
     getSolarTime(): SolarTime {
@@ -2185,9 +2186,9 @@ export class LunarDay extends AbstractTyme {
     getPhaseDay(): PhaseDay {
         const today: SolarDay = this.getSolarDay();
         const m: LunarMonth = this.month.next(1);
-        let p: Phase = Phase.fromIndex(m.getYear(), m.getMonth(), 0);
+        let p: Phase = Phase.fromIndex(m.getYear(), m.getMonthWithLeap(), 0);
         let d: SolarDay = p.getSolarDay();
-        while (p.getSolarDay().isAfter(today)) {
+        while (d.isAfter(today)) {
             p = p.next(-1);
             d = p.getSolarDay();
         }
@@ -3296,8 +3297,7 @@ export class ShouXingUtil {
         }
         v /= ShouXingUtil.XL0[0];
         const t2: number = t * t;
-        v += (-0.0728 - 2.7702 * t - 1.1019 * t2 - 0.0996 * t2 * t) / ShouXingUtil.SECOND_PER_RAD;
-        return v;
+        return v + (-0.0728 - 2.7702 * t - 1.1019 * t2 - 0.0996 * t2 * t) / ShouXingUtil.SECOND_PER_RAD;
     }
 
     static mLon(t: number, n: number): number {
@@ -3339,15 +3339,12 @@ export class ShouXingUtil {
             }
             v += c * tn;
         }
-        v /= ShouXingUtil.SECOND_PER_RAD;
-        return v;
+        return v / ShouXingUtil.SECOND_PER_RAD;
     }
 
     static gxcSunLon(t: number): number {
         const t2: number = t * t;
-        const v: number = -0.043126 + 628.301955 * t - 0.000002732 * t2;
-        const e: number = 0.016708634 - 0.000042037 * t - 0.0000001267 * t2;
-        return -20.49552 * (1 + e * Math.cos(v)) / ShouXingUtil.SECOND_PER_RAD;
+        return -20.49552 * (1 + (0.016708634 - 0.000042037 * t - 0.0000001267 * t2) * Math.cos(-0.043126 + 628.301955 * t - 0.000002732 * t2)) / ShouXingUtil.SECOND_PER_RAD;
     }
 
     static ev(t: number): number {
@@ -3392,9 +3389,8 @@ export class ShouXingUtil {
     }
 
     static mv(t: number): number {
-        let v: number = 8399.71 - 914 * Math.sin(0.7848 + 8328.691425 * t + 0.0001523 * t * t);
-        v -= 179 * Math.sin(2.543 + 15542.7543 * t) + 160 * Math.sin(0.1874 + 7214.0629 * t) + 62 * Math.sin(3.14 + 16657.3828 * t) + 34 * Math.sin(4.827 + 16866.9323 * t) + 22 * Math.sin(4.9 + 23871.4457 * t) + 12 * Math.sin(2.59 + 14914.4523 * t) + 7 * Math.sin(0.23 + 6585.7609 * t) + 5 * Math.sin(0.9 + 25195.624 * t) + 5 * Math.sin(2.32 - 7700.3895 * t) + 5 * Math.sin(3.88 + 8956.9934 * t) + 5 * Math.sin(0.49 + 7771.3771 * t);
-        return v;
+        const v: number = 8399.71 - 914 * Math.sin(0.7848 + 8328.691425 * t + 0.0001523 * t * t);
+        return v - (179 * Math.sin(2.543 + 15542.7543 * t) + 160 * Math.sin(0.1874 + 7214.0629 * t) + 62 * Math.sin(3.14 + 16657.3828 * t) + 34 * Math.sin(4.827 + 16866.9323 * t) + 22 * Math.sin(4.9 + 23871.4457 * t) + 12 * Math.sin(2.59 + 14914.4523 * t) + 7 * Math.sin(0.23 + 6585.7609 * t) + 5 * Math.sin(0.9 + 25195.624 * t) + 5 * Math.sin(2.32 - 7700.3895 * t) + 5 * Math.sin(3.88 + 8956.9934 * t) + 5 * Math.sin(0.49 + 7771.3771 * t));
     }
 
     static saLonT(w: number): number {
@@ -3402,9 +3398,7 @@ export class ShouXingUtil {
         t = (w - 1.75347 - Math.PI) / v;
         v = ShouXingUtil.ev(t);
         t += (w - ShouXingUtil.saLon(t, 10)) / v;
-        v = ShouXingUtil.ev(t);
-        t += (w - ShouXingUtil.saLon(t, -1)) / v;
-        return t;
+        return t + (w - ShouXingUtil.saLon(t, -1)) / ShouXingUtil.ev(t);
     }
 
     static msaLon(t: number, mn: number, sn: number): number {
@@ -3417,16 +3411,14 @@ export class ShouXingUtil {
         t += (w - ShouXingUtil.msaLon(t, 3, 3)) / v;
         v = ShouXingUtil.mv(t) - ShouXingUtil.ev(t);
         t += (w - ShouXingUtil.msaLon(t, 20, 10)) / v;
-        t += (w - ShouXingUtil.msaLon(t, -1, 60)) / v;
-        return t;
+        return t + (w - ShouXingUtil.msaLon(t, -1, 60)) / v;
     }
 
     static saLonT2(w: number): number {
         const v: number = 628.3319653318;
         let t: number = (w - 1.75347 - Math.PI) / v;
         t -= (0.000005297 * t * t + 0.0334166 * Math.cos(4.669257 + 628.307585 * t) + 0.0002061 * Math.cos(2.67823 + 628.307585 * t) * t) / v;
-        t += (w - ShouXingUtil.eLon(t, 8) - Math.PI + (20.5 + 17.2 * Math.sin(2.1824 - 33.75705 * t)) / ShouXingUtil.SECOND_PER_RAD) / v;
-        return t;
+        return t + (w - ShouXingUtil.eLon(t, 8) - Math.PI + (20.5 + 17.2 * Math.sin(2.1824 - 33.75705 * t)) / ShouXingUtil.SECOND_PER_RAD) / v;
     }
 
     static msaLonT2(w: number): number {
@@ -3437,8 +3429,7 @@ export class ShouXingUtil {
         t2 = t * t;
         const l: number = ShouXingUtil.mLon(t, 20) - (4.8950632 + 628.3319653318 * t + 0.000005297 * t2 + 0.0334166 * Math.cos(4.669257 + 628.307585 * t) + 0.0002061 * Math.cos(2.67823 + 628.307585 * t) * t + 0.000349 * Math.cos(4.6261 + 1256.61517 * t) - 20.5 / ShouXingUtil.SECOND_PER_RAD);
         v = 7771.38 - 914 * Math.sin(0.7848 + 8328.691425 * t + 0.0001523 * t2) - 179 * Math.sin(2.543 + 15542.7543 * t) - 160 * Math.sin(0.1874 + 7214.0629 * t);
-        t += (w - l) / v;
-        return t;
+        return t + (w - l) / v;
     }
 
     static qiHigh(w: number): number {
@@ -3501,12 +3492,11 @@ export class ShouXingUtil {
             }
             d -= 2451545;
         } else if (jd >= f2 && jd < f3) {
+            const n: number = ShouXingUtil.SB.charCodeAt(Math.floor((jd - f2) / 29.5306));
             d = Math.floor(ShouXingUtil.shuoLow(Math.floor((jd + pc - 2451551) / 29.5306) * ShouXingUtil.PI_2) + 0.5);
-            const from: number = Math.floor((jd - f2) / 29.5306);
-            const n: string = ShouXingUtil.SB.substring(from, from + 1);
-            if ('1' === n) {
+            if (49 === n) {
                 d += 1;
-            } else if ('2' === n) {
+            } else if (50 === n) {
                 d -= 1;
             }
         }
@@ -3538,11 +3528,10 @@ export class ShouXingUtil {
             d -= 2451545;
         } else if (jd >= f2 && jd < f3) {
             d = Math.floor(ShouXingUtil.qiLow(Math.floor((jd + pc - 2451259) / 365.2422 * 24) * Math.PI / 12) + 0.5);
-            const from: number = Math.floor((jd - f2) / 365.2422 * 24);
-            const n: string = ShouXingUtil.QB.substring(from, from + 1);
-            if ('1' === n) {
+            const n: number = ShouXingUtil.QB.charCodeAt(Math.floor((jd - f2) / 365.2422 * 24));
+            if (49 === n) {
                 d += 1;
-            } else if ('2' === n) {
+            } else if (50 === n) {
                 d -= 1;
             }
         }
@@ -3563,7 +3552,6 @@ export class ShouXingUtil {
         }
         return a - jd < -5 ? ShouXingUtil.qiAccurate(w + d) : a;
     }
-
 }
 
 export class SolarTerm extends LoopTyme {
@@ -4300,7 +4288,7 @@ export class SolarDay extends AbstractTyme {
 
     getPhaseDay(): PhaseDay {
         const month: LunarMonth = this.getLunarDay().getLunarMonth().next(1);
-        let p: Phase = Phase.fromIndex(month.getYear(), month.getMonth(), 0);
+        let p: Phase = Phase.fromIndex(month.getYear(), month.getMonthWithLeap(), 0);
         let d: SolarDay = p.getSolarDay();
         while (d.isAfter(this)) {
             p = p.next(-1);
@@ -4475,7 +4463,7 @@ export class SolarTime extends AbstractTyme {
 
     getPhase(): Phase {
         const month: LunarMonth = this.getLunarHour().getLunarDay().getLunarMonth().next(1);
-        let p: Phase = Phase.fromIndex(month.getYear(), month.getMonth(), 0);
+        let p: Phase = Phase.fromIndex(month.getYear(), month.getMonthWithLeap(), 0);
         while (p.getSolarTime().isAfter(this)) {
             p = p.next(-1);
         }
