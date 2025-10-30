@@ -2152,9 +2152,9 @@ export class LunarDay extends AbstractTyme {
     getNineStar(): NineStar {
         const d: SolarDay = this.getSolarDay();
         const dongZhi: SolarTerm = SolarTerm.fromIndex(d.getYear(), 0);
-        const dongZhiSolar: SolarDay = dongZhi.getJulianDay().getSolarDay();
-        const xiaZhiSolar: SolarDay = dongZhi.next(12).getJulianDay().getSolarDay();
-        const dongZhiSolar2: SolarDay = dongZhi.next(24).getJulianDay().getSolarDay();
+        const dongZhiSolar: SolarDay = dongZhi.getSolarDay();
+        const xiaZhiSolar: SolarDay = dongZhi.next(12).getSolarDay();
+        const dongZhiSolar2: SolarDay = dongZhi.next(24).getSolarDay();
         const dongZhiIndex: number = dongZhiSolar.getLunarDay().getSixtyCycle().getIndex();
         const xiaZhiIndex: number = xiaZhiSolar.getLunarDay().getSixtyCycle().getIndex();
         const dongZhiIndex2: number = dongZhiSolar2.getLunarDay().getSixtyCycle().getIndex();
@@ -2250,6 +2250,10 @@ export class LunarDay extends AbstractTyme {
 
     getMinorRen(): MinorRen {
         return this.getLunarMonth().getMinorRen().next(this.day - 1);
+    }
+
+    getThreePillars(): ThreePillars {
+        return this.getSixtyCycleDay().getThreePillars();
     }
 }
 
@@ -2352,7 +2356,7 @@ export class SixtyCycleMonth extends AbstractTyme {
     }
 
     getFirstDay(): SixtyCycleDay {
-        return SixtyCycleDay.fromSolarDay(SolarTerm.fromIndex(this.year.getYear(), 3 + this.getIndexInYear() * 2).getJulianDay().getSolarDay());
+        return SixtyCycleDay.fromSolarDay(SolarTerm.fromIndex(this.year.getYear(), 3 + this.getIndexInYear() * 2).getSolarDay());
     }
 
     getDays(): SixtyCycleDay[] {
@@ -2398,7 +2402,7 @@ export class SixtyCycleDay extends AbstractTyme {
 
     static fromSolarDay(solarDay: SolarDay): SixtyCycleDay {
         const solarYear: number = solarDay.getYear();
-        const springSolarDay: SolarDay = SolarTerm.fromIndex(solarYear, 3).getJulianDay().getSolarDay();
+        const springSolarDay: SolarDay = SolarTerm.fromIndex(solarYear, 3).getSolarDay();
         const lunarDay: LunarDay = solarDay.getLunarDay();
         let lunarYear: LunarYear = lunarDay.getLunarMonth().getLunarYear();
         if (lunarYear.getYear() == solarYear) {
@@ -2412,7 +2416,7 @@ export class SixtyCycleDay extends AbstractTyme {
         }
         const term: SolarTerm = solarDay.getTerm();
         let index: number = term.getIndex() - 3;
-        if (index < 0 && term.getJulianDay().getSolarDay().isAfter(springSolarDay)) {
+        if (index < 0 && term.getSolarDay().isAfter(springSolarDay)) {
             index += 24;
         }
         return new SixtyCycleDay(solarDay, new SixtyCycleMonth(SixtyCycleYear.fromYear(lunarYear.getYear()), LunarMonth.fromYm(solarYear, 1).getSixtyCycle().next(~~Math.floor(index * 0.5))), lunarDay.getSixtyCycle());
@@ -2461,9 +2465,9 @@ export class SixtyCycleDay extends AbstractTyme {
     getNineStar(): NineStar {
         const solar: SolarDay = this.getSolarDay();
         const dongZhi: SolarTerm = SolarTerm.fromIndex(solar.getYear(), 0);
-        const dongZhiSolar: SolarDay = dongZhi.getJulianDay().getSolarDay();
-        const xiaZhiSolar: SolarDay = dongZhi.next(12).getJulianDay().getSolarDay();
-        const dongZhiSolar2: SolarDay = dongZhi.next(24).getJulianDay().getSolarDay();
+        const dongZhiSolar: SolarDay = dongZhi.getSolarDay();
+        const xiaZhiSolar: SolarDay = dongZhi.next(12).getSolarDay();
+        const dongZhiSolar2: SolarDay = dongZhi.next(24).getSolarDay();
         const dongZhiIndex: number = dongZhiSolar.getLunarDay().getSixtyCycle().getIndex();
         const xiaZhiIndex: number = xiaZhiSolar.getLunarDay().getSixtyCycle().getIndex();
         const dongZhiIndex2: number = dongZhiSolar2.getLunarDay().getSixtyCycle().getIndex();
@@ -2518,6 +2522,10 @@ export class SixtyCycleDay extends AbstractTyme {
             l.push(h);
         }
         return l;
+    }
+
+    getThreePillars(): ThreePillars {
+        return new ThreePillars(this.getYear(), this.getMonth(), this.getSixtyCycle());
     }
 }
 
@@ -2626,6 +2634,76 @@ export class SixtyCycleHour extends AbstractTyme {
 
     getAvoids(): Taboo[] {
         return Taboo.getHourAvoids(this.getDay(), this.hour);
+    }
+}
+
+export class ThreePillars extends AbstractCulture {
+    protected year: SixtyCycle;
+    protected month: SixtyCycle;
+    protected day: SixtyCycle;
+
+    constructor(year: SixtyCycle | string, month: SixtyCycle | string, day: SixtyCycle | string) {
+        super();
+        this.year = year instanceof SixtyCycle ? year : SixtyCycle.fromName(year);
+        this.month = month instanceof SixtyCycle ? month : SixtyCycle.fromName(month);
+        this.day = day instanceof SixtyCycle ? day : SixtyCycle.fromName(day);
+    }
+
+    getYear(): SixtyCycle {
+        return this.year;
+    }
+
+    getMonth(): SixtyCycle {
+        return this.month;
+    }
+
+    getDay(): SixtyCycle {
+        return this.day;
+    }
+
+    getName(): string {
+        return `${this.year.toString()} ${this.month.toString()} ${this.day.toString()}`;
+    }
+
+    getSolarDays(startYear: number, endYear: number): SolarDay[] {
+        const l: SolarDay[] = [];
+        // 月地支距寅月的偏移值
+        let m: number = this.month.getEarthBranch().next(-2).getIndex();
+        // 月天干要一致
+        if (!HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + m).equals(this.month.getHeavenStem())) {
+            return l;
+        }
+        // 1年的立春是辛酉，序号57
+        let y: number = this.year.next(-57).getIndex() + 1;
+        // 节令偏移值
+        m *= 2;
+        const baseYear: number = startYear - 1;
+        if (baseYear > y) {
+            y += 60 * ~~(Math.ceil((baseYear - y) / 60.0));
+        }
+        while (y <= endYear) {
+            // 立春为寅月的开始
+            let term: SolarTerm = SolarTerm.fromIndex(y, 3);
+            // 节令推移，年干支和月干支就都匹配上了
+            if (m > 0) {
+                term = term.next(m);
+            }
+            let solarDay: SolarDay = term.getSolarDay();
+            if (solarDay.getYear() >= startYear) {
+                // 日干支和节令干支的偏移值
+                const d: number = this.day.next(-solarDay.getLunarDay().getSixtyCycle().getIndex()).getIndex();
+                if (d > 0) {
+                    // 从节令推移天数
+                    solarDay = solarDay.next(d);
+                }
+                // 验证一下
+                if (solarDay.getSixtyCycleDay().getThreePillars().equals(this)) {
+                    l.push(solarDay);
+                }
+            }
+            y += 60;
+        }
+        return l;
     }
 }
 
@@ -3473,7 +3551,7 @@ export class ShouXingUtil {
         let d: number = 0;
         const pc: number = 14;
         let i: number;
-        jd += 2451545;
+        jd += JulianDay.J2000;
         const f1: number = ShouXingUtil.SHUO_KB[0] - pc;
         const f2: number = ShouXingUtil.SHUO_KB[size - 1] - pc;
         const f3: number = 2436935;
@@ -3490,7 +3568,7 @@ export class ShouXingUtil {
             if (d === 1683460) {
                 d++;
             }
-            d -= 2451545;
+            d -= JulianDay.J2000;
         } else if (jd >= f2 && jd < f3) {
             const n: number = ShouXingUtil.SB.charCodeAt(Math.floor((jd - f2) / 29.5306));
             d = Math.floor(ShouXingUtil.shuoLow(Math.floor((jd + pc - 2451551) / 29.5306) * ShouXingUtil.PI_2) + 0.5);
@@ -3508,7 +3586,7 @@ export class ShouXingUtil {
         let d: number = 0;
         const pc: number = 7;
         let i: number;
-        jd += 2451545;
+        jd += JulianDay.J2000;
         const f1: number = ShouXingUtil.QI_KB[0] - pc;
         const f2: number = ShouXingUtil.QI_KB[size - 1] - pc;
         const f3: number = 2436935;
@@ -3525,7 +3603,7 @@ export class ShouXingUtil {
             if (d === 1683460) {
                 d++;
             }
-            d -= 2451545;
+            d -= JulianDay.J2000;
         } else if (jd >= f2 && jd < f3) {
             d = Math.floor(ShouXingUtil.qiLow(Math.floor((jd + pc - 2451259) / 365.2422 * 24) * Math.PI / 12) + 0.5);
             const n: number = ShouXingUtil.QB.charCodeAt(Math.floor((jd - f2) / 365.2422 * 24));
@@ -3601,6 +3679,10 @@ export class SolarTerm extends LoopTyme {
 
     getJulianDay(): JulianDay {
         return JulianDay.fromJulianDay(ShouXingUtil.qiAccurate2(this.cursoryJulianDay) + JulianDay.J2000);
+    }
+
+    getSolarDay(): SolarDay {
+        return JulianDay.fromJulianDay(this.cursoryJulianDay + JulianDay.J2000).getSolarDay();
     }
 
     getYear(): number {
@@ -4111,10 +4193,10 @@ export class SolarDay extends AbstractTyme {
             i = 0;
         }
         let term: SolarTerm = SolarTerm.fromIndex(y, i);
-        let day: SolarDay = term.getJulianDay().getSolarDay();
+        let day: SolarDay = term.getSolarDay();
         while (this.isBefore(day)) {
             term = term.next(-1);
-            day = term.getJulianDay().getSolarDay();
+            day = term.getSolarDay();
         }
         return new SolarTermDay(term, this.subtract(day));
     }
@@ -4144,7 +4226,7 @@ export class SolarDay extends AbstractTyme {
         // 夏至
         const xiaZhi: SolarTerm = SolarTerm.fromIndex(this.getYear(), 12);
         // 第1个庚日
-        let start: SolarDay = xiaZhi.getJulianDay().getSolarDay();
+        let start: SolarDay = xiaZhi.getSolarDay();
         // 第3个庚日，即初伏第1天
         start = start.next(start.getLunarDay().getSixtyCycle().getHeavenStem().stepsTo(6) + 20);
         let days: number = this.subtract(start);
@@ -4165,7 +4247,7 @@ export class SolarDay extends AbstractTyme {
         start = start.next(10);
         days = this.subtract(start);
         // 立秋
-        if (xiaZhi.next(3).getJulianDay().getSolarDay().isAfter(start)) {
+        if (xiaZhi.next(3).getSolarDay().isAfter(start)) {
             if (days < 10) {
                 return new DogDay(Dog.fromIndex(1), days + 10);
             }
@@ -4181,12 +4263,12 @@ export class SolarDay extends AbstractTyme {
     getPlumRainDay(): PlumRainDay | null {
         // 芒种
         const grainInEar: SolarTerm = SolarTerm.fromIndex(this.getYear(), 11);
-        let start: SolarDay = grainInEar.getJulianDay().getSolarDay();
+        let start: SolarDay = grainInEar.getSolarDay();
         // 芒种后的第1个丙日
         start = start.next(start.getLunarDay().getSixtyCycle().getHeavenStem().stepsTo(2));
 
         // 小暑
-        let end: SolarDay = grainInEar.next(2).getJulianDay().getSolarDay();
+        let end: SolarDay = grainInEar.next(2).getSolarDay();
         // 小暑后的第1个未日
         end = end.next(end.getLunarDay().getSixtyCycle().getEarthBranch().stepsTo(7));
 
@@ -4202,7 +4284,7 @@ export class SolarDay extends AbstractTyme {
         if (term.isQi()) {
             term = term.next(-1);
         }
-        let dayIndex: number = this.subtract(term.getJulianDay().getSolarDay());
+        let dayIndex: number = this.subtract(term.getSolarDay());
         const startIndex: number = (term.getIndex() - 1) * 3;
         const data: string = '93705542220504xx1513904541632524533533105544806564xx7573304542018584xx95'.substring(startIndex, startIndex + 6);
         let days: number = 0;
@@ -4236,9 +4318,9 @@ export class SolarDay extends AbstractTyme {
 
     getNineDay(): NineDay | null {
         const year: number = this.getYear();
-        let start: SolarDay = SolarTerm.fromIndex(year + 1, 0).getJulianDay().getSolarDay();
+        let start: SolarDay = SolarTerm.fromIndex(year + 1, 0).getSolarDay();
         if (this.isBefore(start)) {
-            start = SolarTerm.fromIndex(year, 0).getJulianDay().getSolarDay();
+            start = SolarTerm.fromIndex(year, 0).getSolarDay();
         }
         const end: SolarDay = start.next(81);
         if (this.isBefore(start) || !this.isBefore(end)) {
@@ -4693,7 +4775,7 @@ export class LunarFestival extends AbstractTyme {
                     return new LunarFestival(FestivalType.DAY, LunarDay.fromYmd(year, parseInt(data.substring(4, 6), 10), parseInt(data.substring(6), 10)), null, data);
                 case 1:
                     const solarTerm: SolarTerm = SolarTerm.fromIndex(year, parseInt(data.substring(4), 10));
-                    return new LunarFestival(FestivalType.TERM, solarTerm.getJulianDay().getSolarDay().getLunarDay(), solarTerm, data);
+                    return new LunarFestival(FestivalType.TERM, solarTerm.getSolarDay().getLunarDay(), solarTerm, data);
                 case 2:
                     return new LunarFestival(FestivalType.EVE, LunarDay.fromYmd(year + 1, 1, 1).next(-1), null, data);
                 default:
@@ -4713,7 +4795,7 @@ export class LunarFestival extends AbstractTyme {
         while (matcher = reg.exec(LunarFestival.DATA)) {
             const data: string = matcher[0];
             const solarTerm: SolarTerm = SolarTerm.fromIndex(year, parseInt(data.substring(4), 10));
-            const lunarDay: LunarDay = solarTerm.getJulianDay().getSolarDay().getLunarDay();
+            const lunarDay: LunarDay = solarTerm.getSolarDay().getLunarDay();
             if (lunarDay.getYear() === year && lunarDay.getMonth() === month && lunarDay.getDay() === day) {
                 return new LunarFestival(FestivalType.TERM, lunarDay, solarTerm, data);
             }
@@ -4761,29 +4843,25 @@ export class LunarFestival extends AbstractTyme {
 }
 
 export class EightChar extends AbstractCulture {
-    protected year: SixtyCycle;
-    protected month: SixtyCycle;
-    protected day: SixtyCycle;
+    protected threePillars: ThreePillars;
     protected hour: SixtyCycle;
 
     constructor(year: SixtyCycle | string, month: SixtyCycle | string, day: SixtyCycle | string, hour: SixtyCycle | string) {
         super();
-        this.year = year instanceof SixtyCycle ? year : SixtyCycle.fromName(year);
-        this.month = month instanceof SixtyCycle ? month : SixtyCycle.fromName(month);
-        this.day = day instanceof SixtyCycle ? day : SixtyCycle.fromName(day);
+        this.threePillars = new ThreePillars(year, month, day);
         this.hour = hour instanceof SixtyCycle ? hour : SixtyCycle.fromName(hour);
     }
 
     getYear(): SixtyCycle {
-        return this.year;
+        return this.threePillars.getYear();
     }
 
     getMonth(): SixtyCycle {
-        return this.month;
+        return this.threePillars.getMonth();
     }
 
     getDay(): SixtyCycle {
-        return this.day;
+        return this.threePillars.getDay();
     }
 
     getHour(): SixtyCycle {
@@ -4791,15 +4869,17 @@ export class EightChar extends AbstractCulture {
     }
 
     getFetalOrigin(): SixtyCycle {
-        return SixtyCycle.fromName(this.month.getHeavenStem().next(1).getName() + this.month.getEarthBranch().next(3).getName());
+        const m: SixtyCycle = this.getMonth();
+        return SixtyCycle.fromName(m.getHeavenStem().next(1).getName() + m.getEarthBranch().next(3).getName());
     }
 
     getFetalBreath(): SixtyCycle {
-        return SixtyCycle.fromName(this.day.getHeavenStem().next(5).getName() + EarthBranch.fromIndex(13 - this.day.getEarthBranch().getIndex()).getName());
+        const d: SixtyCycle = this.getDay();
+        return SixtyCycle.fromName(d.getHeavenStem().next(5).getName() + EarthBranch.fromIndex(13 - d.getEarthBranch().getIndex()).getName());
     }
 
     getOwnSign(): SixtyCycle {
-        let m: number = this.month.getEarthBranch().getIndex() - 1;
+        let m: number = this.getMonth().getEarthBranch().getIndex() - 1;
         if (m < 1) {
             m += 12;
         }
@@ -4809,11 +4889,11 @@ export class EightChar extends AbstractCulture {
         }
         let offset: number = m + h;
         offset = (offset >= 14 ? 26 : 14) - offset;
-        return SixtyCycle.fromName(HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + offset - 1).getName() + EarthBranch.fromIndex(offset + 1).getName());
+        return SixtyCycle.fromName(HeavenStem.fromIndex((this.getYear().getHeavenStem().getIndex() + 1) * 2 + offset - 1).getName() + EarthBranch.fromIndex(offset + 1).getName());
     }
 
     getBodySign(): SixtyCycle {
-        let offset: number = this.month.getEarthBranch().getIndex() - 1;
+        let offset: number = this.getMonth().getEarthBranch().getIndex() - 1;
         if (offset < 1) {
             offset += 12;
         }
@@ -4821,30 +4901,33 @@ export class EightChar extends AbstractCulture {
         if (offset > 12) {
             offset -= 12;
         }
-        return SixtyCycle.fromName(HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + offset - 1).getName() + EarthBranch.fromIndex(offset + 1).getName());
+        return SixtyCycle.fromName(HeavenStem.fromIndex((this.getYear().getHeavenStem().getIndex() + 1) * 2 + offset - 1).getName() + EarthBranch.fromIndex(offset + 1).getName());
     }
 
     /**
      * @deprecated
      */
     getDuty(): Duty {
-        return Duty.fromIndex(this.day.getEarthBranch().getIndex() - this.month.getEarthBranch().getIndex());
+        return Duty.fromIndex(this.getDay().getEarthBranch().getIndex() - this.getMonth().getEarthBranch().getIndex());
     }
 
     getName(): string {
-        return `${this.year.toString()} ${this.month.toString()} ${this.day.toString()} ${this.hour.toString()}`;
+        return `${this.threePillars.toString()} ${this.hour.toString()}`;
     }
 
     getSolarTimes(startYear: number, endYear: number): SolarTime[] {
         const l: SolarTime[] = [];
+        const year: SixtyCycle = this.getYear();
+        const month: SixtyCycle = this.getMonth();
+        const day: SixtyCycle = this.getDay();
         // 月地支距寅月的偏移值
-        let m: number = this.month.getEarthBranch().next(-2).getIndex();
+        let m: number = month.getEarthBranch().next(-2).getIndex();
         // 月天干要一致
-        if (!HeavenStem.fromIndex((this.year.getHeavenStem().getIndex() + 1) * 2 + m).equals(this.month.getHeavenStem())) {
+        if (!HeavenStem.fromIndex((year.getHeavenStem().getIndex() + 1) * 2 + m).equals(month.getHeavenStem())) {
             return l;
         }
         // 1年的立春是辛酉，序号57
-        let y: number = this.year.next(-57).getIndex() + 1;
+        let y: number = year.next(-57).getIndex() + 1;
         // 节令偏移值
         m *= 2;
         // 时辰地支转时刻
@@ -4866,7 +4949,7 @@ export class EightChar extends AbstractCulture {
             if (solarTime.getYear() >= startYear) {
                 // 日干支和节令干支的偏移值
                 let solarDay: SolarDay = solarTime.getSolarDay();
-                const d: number = this.day.next(-solarDay.getLunarDay().getSixtyCycle().getIndex()).getIndex();
+                const d: number = day.next(-solarDay.getLunarDay().getSixtyCycle().getIndex()).getIndex();
                 if (d > 0) {
                     // 从节令推移天数
                     solarDay = solarDay.next(d);
