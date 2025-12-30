@@ -629,4 +629,17 @@ class EightCharTest {
     test52() {
         equal(SolarTime.fromYmdHms(1034, 10, 2, 20, 0, 0).getLunarHour().getEightChar().toString(), '甲戌 癸酉 甲戌 甲戌');
     }
+
+    @test
+    test53() {
+        equal(SolarTime.fromYmdHms(1981, 9, 5, 0, 0, 0).getLunarHour().toString(), '农历辛酉年八月初八戊子时');
+        equal(SolarTime.fromYmdHms(1981, 9, 5, 0, 0, 0).getLunarHour().getEightChar().toString(), '辛酉 丙申 丙戌 戊子');
+        equal(ChildLimit.fromSolarTime(SolarTime.fromYmdHms(1981, 9, 5, 0, 0, 0), Gender.MAN).getEightChar().toString(), '辛酉 丙申 丙戌 戊子');
+    }
+
+    @test
+    test54() {
+        equal(ChildLimit.fromSolarTime(SolarTime.fromYmdHms(198, 11, 26, 15, 13, 59), Gender.MAN).getEightChar().toString(), '戊寅 癸亥 庚申 甲申');
+        equal(ChildLimit.fromSolarTime(SolarTime.fromYmdHms(1981, 1, 26, 15, 13, 59), Gender.MAN).getEightChar().toString(), '庚申 己丑 甲辰 壬申');
+    }
 }

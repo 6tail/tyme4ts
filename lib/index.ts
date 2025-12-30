@@ -67,6 +67,110 @@ export abstract class AbstractTyme extends AbstractCulture implements Tyme {
     abstract next(n: number): Tyme | null;
 }
 
+export abstract class YearUnit extends AbstractTyme {
+    protected year: number;
+
+    protected constructor(year: number) {
+        super();
+        this.year = year;
+    }
+
+    getYear(): number {
+        return this.year;
+    }
+}
+
+export abstract class MonthUnit extends YearUnit {
+    protected month: number;
+
+    protected constructor(year: number, month: number) {
+        super(year);
+        this.month = month;
+    }
+
+    getMonth(): number {
+        return this.month;
+    }
+}
+
+export abstract class DayUnit extends MonthUnit {
+    protected day: number;
+
+    protected constructor(year: number, month: number, day: number) {
+        super(year, month);
+        this.day = day;
+    }
+
+    getDay(): number {
+        return this.day;
+    }
+}
+
+export abstract class WeekUnit extends MonthUnit {
+    protected index: number;
+    protected start: number;
+
+    protected constructor(year: number, month: number, index: number, start: number) {
+        super(year, month);
+        this.index = index;
+        this.start = start;
+    }
+
+    getIndex(): number {
+        return this.index;
+    }
+
+    getStart(): number {
+        return this.start;
+    }
+
+    static validate(_year: number, _month: number, index: number, start: number): void {
+        if (index < 0 || index > 5) {
+            throw new Error(`illegal week index: ${index}`);
+        }
+        if (start < 0 || start > 6) {
+            throw new Error(`illegal week start: ${start}`);
+        }
+    }
+}
+
+export abstract class SecondUnit extends DayUnit {
+    protected hour: number;
+    protected minute: number;
+    protected second: number;
+
+    protected constructor(year: number, month: number, day: number, hour: number, minute: number, second: number) {
+        super(year, month, day);
+        this.hour = hour;
+        this.minute = minute;
+        this.second = second;
+    }
+
+    getHour(): number {
+        return this.hour;
+    }
+
+    getMinute(): number {
+        return this.minute;
+    }
+
+    getSecond(): number {
+        return this.second;
+    }
+
+    static validate(_year: number, _month: number, _day: number, hour: number, minute: number, second: number): void {
+        if (hour < 0 || hour > 23) {
+            throw new Error(`illegal hour: ${hour}`);
+        }
+        if (minute < 0 || minute > 59) {
+            throw new Error(`illegal minute: ${minute}`);
+        }
+        if (second < 0 || second > 59) {
+            throw new Error(`illegal second: ${second}`);
+        }
+    }
+}
+
 export abstract class AbstractCultureDay extends AbstractCulture {
     protected culture: AbstractCulture;
     protected dayIndex: number;
@@ -1559,10 +1663,9 @@ export class Ecliptic extends LoopTyme {
     }
 }
 
-export class LunarYear extends AbstractTyme {
+export class LunarYear extends YearUnit {
     protected static isInit: boolean = false;
     protected static LEAP: number[][] = [];
-    protected year: number;
 
     protected static init(): void {
         if (LunarYear.isInit) {
@@ -1605,21 +1708,20 @@ export class LunarYear extends AbstractTyme {
     }
 
     protected constructor(year: number | string) {
-        super();
         LunarYear.init();
         const y: number = LunarYear.numeric(year, 'lunar year');
-        if (y < -1 || y > 9999) {
+        LunarYear.validate(y);
+        super(y);
+    }
+
+    static validate(year: number): void {
+        if (year < -1 || year > 9999) {
             throw new Error(`illegal lunar year: ${year}`);
         }
-        this.year = y;
     }
 
     static fromYear(year: number | string): LunarYear {
         return new LunarYear(year);
-    }
-
-    getYear(): number {
-        return this.year;
     }
 
     getDayCount(): number {
@@ -1640,15 +1742,16 @@ export class LunarYear extends AbstractTyme {
     }
 
     next(n: number): LunarYear {
-        return LunarYear.fromYear(this.year + n);
+        return LunarYear.fromYear(this.getYear() + n);
     }
 
     getLeapMonth(): number {
-        if (this.year === -1) {
+        const y: number = this.getYear();
+        if (y === -1) {
             return 11;
         }
         for (let i: number = 0, j: number = LunarYear.LEAP.length; i < j; i++) {
-            if (LunarYear.LEAP[i].indexOf(this.year) > -1) {
+            if (LunarYear.LEAP[i].indexOf(y) > -1) {
                 return i + 1;
             }
         }
@@ -1656,11 +1759,11 @@ export class LunarYear extends AbstractTyme {
     }
 
     getSixtyCycle(): SixtyCycle {
-        return SixtyCycle.fromIndex(this.year - 4);
+        return SixtyCycle.fromIndex(this.getYear() - 4);
     }
 
     getTwenty(): Twenty {
-        return Twenty.fromIndex(Math.floor((this.year - 1864) / 20));
+        return Twenty.fromIndex(Math.floor((this.getYear() - 1864) / 20));
     }
 
     getNineStar(): NineStar {
@@ -1672,13 +1775,14 @@ export class LunarYear extends AbstractTyme {
     }
 
     getFirstMonth(): LunarMonth {
-        return LunarMonth.fromYm(this.year, 1);
+        return LunarMonth.fromYm(this.getYear(), 1);
     }
 
     getMonths(): LunarMonth[] {
         const l: LunarMonth[] = [];
+        const y: number = this.getYear();
         let m: LunarMonth = this.getFirstMonth();
-        while (m.getYear() === this.year) {
+        while (m.getYear() === y) {
             l.push(m);
             m = m.next(1);
         }
@@ -1686,7 +1790,7 @@ export class LunarYear extends AbstractTyme {
     }
 
     getKitchenGodSteed(): KitchenGodSteed {
-        return KitchenGodSteed.fromLunarYear(this.year);
+        return KitchenGodSteed.fromLunarYear(this.getYear());
     }
 }
 
@@ -1726,120 +1830,81 @@ export class FetusMonth extends LoopTyme {
     }
 }
 
-export class LunarMonth extends AbstractTyme {
-    static cache: Record<string, number[]> = {};
+export class LunarMonth extends MonthUnit {
     static NAMES: string[] = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
-
-    protected year: LunarYear;
-    protected month: number;
     protected leap: boolean;
-    protected dayCount: number;
-    protected indexInYear: number;
-    protected firstJulianDay: JulianDay;
 
-    public constructor(year: number | string, month: number | string, cache?: number[]) {
-        super();
-        if (cache) {
-            const m: number = cache[1];
-            this.year = LunarYear.fromYear(cache[0]);
-            this.month = Math.abs(m);
-            this.leap = m < 0;
-            this.dayCount = cache[2];
-            this.indexInYear = cache[3];
-            this.firstJulianDay = JulianDay.fromJulianDay(cache[4]);
-        } else {
-            const t: number = LunarMonth.numeric(month, 'lunar month');
-            if (t === 0 || t > 12 || t < -12) {
-                throw new Error(`illegal lunar month: ${month}`);
-            }
-            const currentYear: LunarYear = LunarYear.fromYear(year);
-            const y: number = currentYear.getYear();
-            const currentLeapMonth: number = currentYear.getLeapMonth();
-            const leap: boolean = t < 0;
-            const m: number = Math.abs(t);
-            if (leap && m != currentLeapMonth) {
-                throw new Error(`illegal leap month ${m} in lunar year ${year}`);
-            }
+    constructor(year: number | string, month: number | string) {
+        const y: number = LunarMonth.numeric(year, 'lunar year');
+        const m: number = LunarMonth.numeric(month, 'lunar month');
+        LunarMonth.validate(y, m);
+        super(y, Math.abs(m));
+        this.leap = m < 0;
+    }
 
-            // 冬至
-            const dongZhiJd: number = SolarTerm.fromIndex(y, 0).getCursoryJulianDay();
-
-            // 冬至前的初一，今年首朔的日月黄经差
-            let w: number = ShouXingUtil.calcShuo(dongZhiJd);
-            if (w > dongZhiJd) {
-                w -= 29.53;
-            }
-
-            // 正常情况正月初一为第3个朔日，但有些特殊的
-            let offset: number = 2;
-            if (y > 8 && y < 24) {
-                offset = 1;
-            } else if (LunarYear.fromYear(y - 1).getLeapMonth() > 10 && y != 239 && y != 240) {
-                offset = 3;
-            }
-
-            // 位于当年的索引
-            let index: number = m - 1;
-            if (leap || (currentLeapMonth > 0 && m > currentLeapMonth)) {
-                index += 1;
-            }
-            this.indexInYear = index;
-
-            // 本月初一
-            w += 29.5306 * (offset + index);
-            const firstDay: number = ShouXingUtil.calcShuo(w);
-            this.firstJulianDay = JulianDay.fromJulianDay(JulianDay.J2000 + firstDay);
-            // 本月天数 = 下月初一 - 本月初一
-            this.dayCount = ~~(ShouXingUtil.calcShuo(w + 29.5306) - firstDay);
-            this.year = currentYear;
-            this.month = m;
-            this.leap = leap;
+    static validate(year: number, month: number): void {
+        if (month == 0 || month > 12 || month < -12) {
+            throw new Error(`illegal lunar month: ${month}`);
+        }
+        if (month < 0 && -month != LunarYear.fromYear(year).getLeapMonth()) {
+            throw new Error(`illegal leap month ${-month} in lunar year ${year}`);
         }
     }
 
     static fromYm(year: number | string, month: number | string): LunarMonth {
-        let m: LunarMonth;
-        const key: string = `${year}${month}`;
-        const cache: number[] = LunarMonth.cache[key];
-        if (cache) {
-            m = new LunarMonth(0, 0, cache);
-        } else {
-            m = new LunarMonth(year, month);
-            LunarMonth.cache[key] = [m.getYear(), m.getMonthWithLeap(), m.getDayCount(), m.getIndexInYear(), m.getFirstJulianDay().getDay()];
+        return new LunarMonth(year, month);
+    }
+
+    protected getNewMoon(): number {
+        const y: number = this.getYear();
+        const dongZhiJd: number = SolarTerm.fromIndex(y, 0).getCursoryJulianDay();
+        let w: number = ShouXingUtil.calcShuo(dongZhiJd);
+        if (w > dongZhiJd) {
+            w -= 29.53;
         }
-        return m;
+        let offset: number = 2;
+        if (y > 8 && y < 24) {
+            offset = 1;
+        } else if (LunarYear.fromYear(y - 1).getLeapMonth() > 10 && y != 239 && y != 240) {
+            offset = 3;
+        }
+        return w + 29.5306 * (offset + this.getIndexInYear());
     }
 
     getLunarYear(): LunarYear {
-        return this.year;
-    }
-
-    getYear(): number {
-        return this.year.getYear();
-    }
-
-    getMonth(): number {
-        return this.month;
+        return LunarYear.fromYear(this.getYear());
     }
 
     getMonthWithLeap(): number {
-        return this.leap ? -this.month : this.month;
+        const m: number = this.getMonth();
+        return this.isLeap() ? -m : m;
     }
 
     getDayCount(): number {
-        return this.dayCount;
+        const w: number = this.getNewMoon();
+        return ~~(ShouXingUtil.calcShuo(w + 29.5306) - ShouXingUtil.calcShuo(w));
     }
 
     getIndexInYear(): number {
-        return this.indexInYear;
+        const m: number = this.getMonth();
+        let index: number = m - 1;
+        if (this.isLeap()) {
+            index += 1;
+        } else {
+            const leapMonth: number = LunarYear.fromYear(this.getYear()).getLeapMonth();
+            if (leapMonth > 0 && m > leapMonth) {
+                index += 1;
+            }
+        }
+        return index;
     }
 
     getSeason(): LunarSeason {
-        return LunarSeason.fromIndex(this.month - 1);
+        return LunarSeason.fromIndex(this.getMonth() - 1);
     }
 
     getFirstJulianDay(): JulianDay {
-        return this.firstJulianDay;
+        return JulianDay.fromJulianDay(JulianDay.J2000 + ShouXingUtil.calcShuo(this.getNewMoon()));
     }
 
     isLeap(): boolean {
@@ -1847,23 +1912,23 @@ export class LunarMonth extends AbstractTyme {
     }
 
     getWeekCount(start: number): number {
-        return Math.ceil((this.indexOf(this.firstJulianDay.getWeek().getIndex() - start, 7) + this.getDayCount()) / 7);
+        return Math.ceil((this.indexOf(this.getFirstJulianDay().getWeek().getIndex() - start, 7) + this.getDayCount()) / 7);
     }
 
     getName(): string {
-        return (this.leap ? '闰' : '') + LunarMonth.NAMES[this.month - 1];
+        return (this.isLeap() ? '闰' : '') + LunarMonth.NAMES[this.getMonth() - 1];
     }
 
     toString(): string {
-        return this.year.toString() + this.getName();
+        return this.getLunarYear().toString() + this.getName();
     }
 
     next(n: number): LunarMonth {
         if (n === 0) {
             return LunarMonth.fromYm(this.getYear(), this.getMonthWithLeap());
         }
-        let m: number = this.indexInYear + 1 + n;
-        let y: LunarYear = this.year;
+        let m: number = this.getIndexInYear() + 1 + n;
+        let y: LunarYear = this.getLunarYear();
         if (n > 0) {
             let monthCount: number = y.getMonthCount();
             while (m > monthCount) {
@@ -1900,6 +1965,10 @@ export class LunarMonth extends AbstractTyme {
         return l;
     }
 
+    getFirstDay(): LunarDay {
+        return LunarDay.fromYmd(this.getYear(), this.getMonthWithLeap(), 1);
+    }
+
     getWeeks(start: number): LunarWeek[] {
         const y: number = this.getYear();
         const m: number = this.getMonthWithLeap();
@@ -1911,7 +1980,8 @@ export class LunarMonth extends AbstractTyme {
     }
 
     getSixtyCycle(): SixtyCycle {
-        return SixtyCycle.fromName(HeavenStem.fromIndex(this.year.getSixtyCycle().getHeavenStem().getIndex() * 2 + this.month + 1).getName() + EarthBranch.fromIndex(this.month + 1).getName());
+        const m: number = this.getMonth();
+        return SixtyCycle.fromName(HeavenStem.fromIndex(this.getLunarYear().getSixtyCycle().getHeavenStem().getIndex() * 2 + m + 1).getName() + EarthBranch.fromIndex(m + 1).getName());
     }
 
     getNineStar(): NineStar {
@@ -1919,7 +1989,7 @@ export class LunarMonth extends AbstractTyme {
         if (index < 2) {
             index += 3;
         }
-        return NineStar.fromIndex(27 - this.year.getSixtyCycle().getEarthBranch().getIndex() % 3 * 3 - index);
+        return NineStar.fromIndex(27 - this.getLunarYear().getSixtyCycle().getEarthBranch().getIndex() % 3 * 3 - index);
     }
 
     getJupiterDirection(): Direction {
@@ -1933,30 +2003,28 @@ export class LunarMonth extends AbstractTyme {
     }
 
     getMinorRen(): MinorRen {
-        return MinorRen.fromIndex((this.month - 1) % 6);
+        return MinorRen.fromIndex((this.getMonth() - 1) % 6);
     }
 }
 
-export class LunarWeek extends AbstractTyme {
+export class LunarWeek extends WeekUnit {
     static NAMES: string[] = ['第一周', '第二周', '第三周', '第四周', '第五周', '第六周'];
-    protected month: LunarMonth;
-    protected index: number;
-    protected start: Week;
 
     protected constructor(year: number | string, month: number | string, index: number | string, start: number | string) {
-        super();
-        const i: number = LunarWeek.numeric(index, 'lunar week index');
-        if (i < 0 || i > 5) {
-            throw new Error(`illegal lunar week index: ${index}`);
-        }
-        const t: Week = Week.fromIndex(start);
+        const y: number = SolarWeek.numeric(year, 'lunar year');
+        const m: number = SolarWeek.numeric(month, 'lunar month');
+        const i: number = SolarWeek.numeric(index, 'lunar week index');
+        const s: number = SolarWeek.numeric(start, 'week index');
+        LunarWeek.validate(y, m, i, s);
+        super(y, m, i, s);
+    }
+
+    static validate(year: number, month: number, index: number, start: number): void {
+        WeekUnit.validate(year, month, index, start);
         const m: LunarMonth = LunarMonth.fromYm(year, month);
-        if (i >= m.getWeekCount(t.getIndex())) {
+        if (index >= m.getWeekCount(start)) {
             throw new Error(`illegal lunar week index: ${index} in month: ${m.toString()}`);
         }
-        this.month = m;
-        this.index = i;
-        this.start = t;
     }
 
     static fromYm(year: number | string, month: number | string, index: number | string, start: number | string): LunarWeek {
@@ -1964,53 +2032,37 @@ export class LunarWeek extends AbstractTyme {
     }
 
     getLunarMonth(): LunarMonth {
-        return this.month;
-    }
-
-    getYear(): number {
-        return this.month.getYear();
-    }
-
-    getMonth(): number {
-        return this.month.getMonthWithLeap();
-    }
-
-    getIndex(): number {
-        return this.index;
-    }
-
-    getStart(): Week {
-        return this.start;
+        return LunarMonth.fromYm(this.getYear(), this.getMonth());
     }
 
     getName(): string {
-        return LunarWeek.NAMES[this.index];
+        return LunarWeek.NAMES[this.getIndex()];
     }
 
     toString(): string {
-        return this.month.toString() + this.getName();
+        return this.getLunarMonth().toString() + this.getName();
     }
 
     next(n: number): LunarWeek {
-        const startIndex: number = this.start.getIndex();
+        const startIndex: number = this.getStart();
         if (n === 0) {
-            return LunarWeek.fromYm(this.getYear(), this.getMonth(), this.index, startIndex);
+            return LunarWeek.fromYm(this.getYear(), this.getMonth(), this.getIndex(), startIndex);
         }
-        let d: number = this.index + n;
-        let m: LunarMonth = this.month;
+        let d: number = this.getIndex() + n;
+        let m: LunarMonth = this.getLunarMonth();
         if (n > 0) {
             let weekCount: number = m.getWeekCount(startIndex);
             while (d >= weekCount) {
                 d -= weekCount;
                 m = m.next(1);
-                if (!LunarDay.fromYmd(m.getYear(), m.getMonthWithLeap(), 1).getWeek().equals(this.start)) {
+                if (m.getFirstDay().getWeek().getIndex() !== startIndex) {
                     d += 1;
                 }
                 weekCount = m.getWeekCount(startIndex);
             }
         } else {
             while (d < 0) {
-                if (!LunarDay.fromYmd(m.getYear(), m.getMonthWithLeap(), 1).getWeek().equals(this.start)) {
+                if (m.getFirstDay().getWeek().getIndex() !== startIndex) {
                     d -= 1;
                 }
                 m = m.next(-1);
@@ -2022,7 +2074,7 @@ export class LunarWeek extends AbstractTyme {
 
     getFirstDay(): LunarDay {
         const firstDay: LunarDay = LunarDay.fromYmd(this.getYear(), this.getMonth(), 1);
-        return firstDay.next(this.index * 7 - this.indexOf(firstDay.getWeek().getIndex() - this.start.getIndex(), 7));
+        return firstDay.next(this.getIndex() * 7 - this.indexOf(firstDay.getWeek().getIndex() - this.getStart(), 7));
     }
 
     getDays(): LunarDay[] {
@@ -2040,22 +2092,25 @@ export class LunarWeek extends AbstractTyme {
     }
 }
 
-export class LunarDay extends AbstractTyme {
+export class LunarDay extends DayUnit {
     static NAMES: string[] = ['初一', '初二', '初三', '初四', '初五', '初六', '初七', '初八', '初九', '初十', '十一', '十二', '十三', '十四', '十五', '十六', '十七', '十八', '十九', '二十', '廿一', '廿二', '廿三', '廿四', '廿五', '廿六', '廿七', '廿八', '廿九', '三十'];
-    protected month: LunarMonth;
-    protected day: number;
-    protected solarDay: SolarDay | undefined;
-    protected sixtyCycleDay: SixtyCycleDay | undefined;
 
     protected constructor(year: number | string, month: number | string, day: number | string) {
-        super();
-        const m: LunarMonth = LunarMonth.fromYm(year, month);
+        const y: number = LunarDay.numeric(year, 'lunar year');
+        const m: number = LunarDay.numeric(month, 'lunar month');
         const d: number = LunarDay.numeric(day, 'lunar day');
-        if (d < 1 || d > m.getDayCount()) {
+        LunarDay.validate(y, m, d);
+        super(y, m, d);
+    }
+
+    static validate(year: number, month: number, day: number): void {
+        if (day < 1) {
+            throw new Error(`illegal day ${day}`);
+        }
+        const m: LunarMonth = LunarMonth.fromYm(year, month);
+        if (day > m.getDayCount()) {
             throw new Error(`illegal day ${day} in ${m.toString()}`);
         }
-        this.month = m;
-        this.day = d;
     }
 
     static fromYmd(year: number | string, month: number | string, day: number | string): LunarDay {
@@ -2063,27 +2118,15 @@ export class LunarDay extends AbstractTyme {
     }
 
     getLunarMonth(): LunarMonth {
-        return this.month;
-    }
-
-    getYear(): number {
-        return this.month.getYear();
-    }
-
-    getMonth(): number {
-        return this.month.getMonthWithLeap();
-    }
-
-    getDay(): number {
-        return this.day;
+        return LunarMonth.fromYm(this.getYear(), this.getMonth());
     }
 
     getName(): string {
-        return LunarDay.NAMES[this.day - 1];
+        return LunarDay.NAMES[this.getDay() - 1];
     }
 
     toString(): string {
-        return this.month.toString() + this.getName();
+        return this.getLunarMonth().toString() + this.getName();
     }
 
     next(n: number): LunarDay {
@@ -2101,7 +2144,7 @@ export class LunarDay extends AbstractTyme {
         if (aMonth !== bMonth) {
             return Math.abs(aMonth) < Math.abs(bMonth);
         }
-        return this.day < target.getDay();
+        return this.getDay() < target.getDay();
     }
 
     isAfter(target: LunarDay): boolean {
@@ -2115,7 +2158,7 @@ export class LunarDay extends AbstractTyme {
         if (aMonth != bMonth) {
             return Math.abs(aMonth) >= Math.abs(bMonth);
         }
-        return this.day > target.getDay();
+        return this.getDay() > target.getDay();
     }
 
     getWeek(): Week {
@@ -2137,7 +2180,7 @@ export class LunarDay extends AbstractTyme {
     }
 
     getSixtyCycle(): SixtyCycle {
-        const offset: number = ~~(this.month.getFirstJulianDay().next(this.day - 12).getDay());
+        const offset: number = ~~(this.getLunarMonth().getFirstJulianDay().next(this.getDay() - 12).getDay());
         return SixtyCycle.fromName(HeavenStem.fromIndex(offset).getName() + EarthBranch.fromIndex(offset).getName());
     }
 
@@ -2176,7 +2219,7 @@ export class LunarDay extends AbstractTyme {
 
     getJupiterDirection(): Direction {
         const index: number = this.getSixtyCycle().getIndex();
-        return index % 12 < 6 ? Element.fromIndex(~~(index / 12)).getDirection() : this.month.getLunarYear().getJupiterDirection();
+        return index % 12 < 6 ? Element.fromIndex(~~(index / 12)).getDirection() : this.getLunarMonth().getLunarYear().getJupiterDirection();
     }
 
     getFetusDay(): FetusDay {
@@ -2185,7 +2228,7 @@ export class LunarDay extends AbstractTyme {
 
     getPhaseDay(): PhaseDay {
         const today: SolarDay = this.getSolarDay();
-        const m: LunarMonth = this.month.next(1);
+        const m: LunarMonth = this.getLunarMonth().next(1);
         let p: Phase = Phase.fromIndex(m.getYear(), m.getMonthWithLeap(), 0);
         let d: SolarDay = p.getSolarDay();
         while (d.isAfter(today)) {
@@ -2200,17 +2243,11 @@ export class LunarDay extends AbstractTyme {
     }
 
     getSolarDay(): SolarDay {
-        if (!this.solarDay) {
-            this.solarDay = this.month.getFirstJulianDay().next(this.day - 1).getSolarDay();
-        }
-        return this.solarDay;
+        return this.getLunarMonth().getFirstJulianDay().next(this.getDay() - 1).getSolarDay();
     }
 
     getSixtyCycleDay(): SixtyCycleDay {
-        if (!this.sixtyCycleDay) {
-            this.sixtyCycleDay = this.getSolarDay().getSixtyCycleDay();
-        }
-        return this.sixtyCycleDay;
+        return this.getSolarDay().getSixtyCycleDay();
     }
 
     getTwentyEightStar(): TwentyEightStar {
@@ -2218,11 +2255,11 @@ export class LunarDay extends AbstractTyme {
     }
 
     getFestival(): LunarFestival | null {
-        return LunarFestival.fromYmd(this.getYear(), this.getMonth(), this.day);
+        return LunarFestival.fromYmd(this.getYear(), this.getMonth(), this.getDay());
     }
 
     getSixStar(): SixStar {
-        return SixStar.fromIndex((this.month.getMonth() + this.day - 2) % 6);
+        return SixStar.fromIndex((Math.abs(this.getMonth()) + this.getDay() - 2) % 6);
     }
 
     getGods(): God[] {
@@ -2241,15 +2278,16 @@ export class LunarDay extends AbstractTyme {
         const l: LunarHour[] = [];
         const y: number = this.getYear();
         const m: number = this.getMonth();
-        l.push(LunarHour.fromYmdHms(y, m, this.day, 0, 0, 0));
+        const d: number = this.getDay();
+        l.push(LunarHour.fromYmdHms(y, m, d, 0, 0, 0));
         for (let i: number = 0; i < 24; i += 2) {
-            l.push(LunarHour.fromYmdHms(y, m, this.day, i + 1, 0, 0));
+            l.push(LunarHour.fromYmdHms(y, m, d, i + 1, 0, 0));
         }
         return l;
     }
 
     getMinorRen(): MinorRen {
-        return this.getLunarMonth().getMinorRen().next(this.day - 1);
+        return this.getLunarMonth().getMinorRen().next(this.getDay() - 1);
     }
 
     getThreePillars(): ThreePillars {
@@ -2310,7 +2348,7 @@ export class SixtyCycleYear extends AbstractTyme {
         const l: SixtyCycleMonth[] = [];
         const m: SixtyCycleMonth = this.getFirstMonth();
         l.push(m);
-        for (let i = 1; i < 12; i++) {
+        for (let i: number = 1; i < 12; i++) {
             l.push(m.next(i));
         }
         return l;
@@ -2517,7 +2555,7 @@ export class SixtyCycleDay extends AbstractTyme {
         const d: SolarDay = this.solarDay.next(-1);
         let h: SixtyCycleHour = SixtyCycleHour.fromSolarTime(SolarTime.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), 23, 0, 0));
         l.push(h);
-        for (let i = 0; i < 11; i++) {
+        for (let i: number = 0; i < 11; i++) {
             h = h.next(7200);
             l.push(h);
         }
@@ -2724,33 +2762,23 @@ export class LunarSect2EightCharProvider implements EightCharProvider {
     }
 }
 
-export class LunarHour extends AbstractTyme {
+export class LunarHour extends SecondUnit {
     static provider: EightCharProvider = new DefaultEightCharProvider();
-    protected day: LunarDay;
-    protected hour: number;
-    protected minute: number;
-    protected second: number;
-    protected solarTime: SolarTime | undefined;
-    protected sixtyCycleHour: SixtyCycleHour | undefined;
 
     protected constructor(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string) {
-        super();
+        const y: number = LunarHour.numeric(year, 'lunar year');
+        const m: number = LunarHour.numeric(month, 'lunar month');
+        const d: number = LunarHour.numeric(day, 'lunar day');
         const h: number = LunarHour.numeric(hour, 'hour');
-        if (h < 0 || h > 23) {
-            throw new Error(`illegal hour: ${hour}`);
-        }
-        const m: number = LunarHour.numeric(minute, 'minute');
-        if (m < 0 || m > 59) {
-            throw new Error(`illegal minute: ${minute}`);
-        }
+        const n: number = LunarHour.numeric(minute, 'minute');
         const s: number = LunarHour.numeric(second, 'second');
-        if (s < 0 || s > 59) {
-            throw new Error(`illegal second: ${second}`);
-        }
-        this.day = LunarDay.fromYmd(year, month, day);
-        this.hour = h;
-        this.minute = m;
-        this.second = s;
+        LunarHour.validate(y, m, d, h, n, s);
+        super(y, m, d, h, n, s);
+    }
+
+    static validate(year: number, month: number, day: number, hour: number, minute: number, second: number): void {
+        SecondUnit.validate(year, month, day, hour, minute, second);
+        LunarDay.validate(year, month, day);
     }
 
     static fromYmdHms(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string): LunarHour {
@@ -2758,31 +2786,7 @@ export class LunarHour extends AbstractTyme {
     }
 
     getLunarDay(): LunarDay {
-        return this.day;
-    }
-
-    getYear(): number {
-        return this.day.getYear();
-    }
-
-    getMonth(): number {
-        return this.day.getMonth();
-    }
-
-    getDay(): number {
-        return this.day.getDay();
-    }
-
-    getHour(): number {
-        return this.hour;
-    }
-
-    getMinute(): number {
-        return this.minute;
-    }
-
-    getSecond(): number {
-        return this.second;
+        return LunarDay.fromYmd(this.getYear(), this.getMonth(), this.getDay());
     }
 
     getName(): string {
@@ -2790,48 +2794,63 @@ export class LunarHour extends AbstractTyme {
     }
 
     toString(): string {
-        return `${this.day.toString()}${this.getSixtyCycle().getName()}时`;
+        return `${this.getLunarDay().toString()}${this.getSixtyCycle().getName()}时`;
     }
 
     getIndexInDay(): number {
-        return ~~((this.hour + 1) / 2);
+        return ~~((this.getHour() + 1) / 2);
     }
 
     next(n: number): LunarHour {
+        const h: number = this.getHour();
+        const m: number = this.getMinute();
+        const s: number = this.getSecond();
         if (n == 0) {
-            return LunarHour.fromYmdHms(this.getYear(), this.getMonth(), this.getDay(), this.hour, this.minute, this.second);
+            return LunarHour.fromYmdHms(this.getYear(), this.getMonth(), this.getDay(), h, m, s);
         }
-        const h: number = this.hour + n * 2;
-        const diff: number = h < 0 ? -1 : 1;
-        let hour: number = Math.abs(h);
-        let days: number = ~~(hour / 24) * diff;
-        hour = (hour % 24) * diff;
-        if (hour < 0) {
-            hour += 24;
+        const t: number = h + n * 2;
+        const diff: number = t < 0 ? -1 : 1;
+        let r: number = Math.abs(t);
+        let days: number = ~~(r / 24) * diff;
+        r = (r % 24) * diff;
+        if (r < 0) {
+            r += 24;
             days--;
         }
-        const d: LunarDay = this.day.next(days);
-        return LunarHour.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), hour, this.minute, this.second);
+        const d: LunarDay = this.getLunarDay().next(days);
+        return LunarHour.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), r, m, s);
     }
 
     isBefore(target: LunarHour): boolean {
-        if (!this.day.equals(target.getLunarDay())) {
-            return this.day.isBefore(target.getLunarDay());
+        const aDay: LunarDay = this.getLunarDay();
+        const bDay: LunarDay = target.getLunarDay();
+        if (!aDay.equals(bDay)) {
+            return aDay.isBefore(bDay);
         }
-        if (this.hour !== target.getHour()) {
-            return this.hour < target.getHour();
+        const aHour: number = this.getHour();
+        const bHour: number = target.getHour();
+        if (aHour !== bHour) {
+            return aHour < bHour;
         }
-        return this.minute !== target.getMinute() ? this.minute < target.getMinute() : this.second < target.getSecond();
+        const aMinute: number = this.getMinute();
+        const bMinute: number = target.getMinute();
+        return aMinute !== bMinute ? aMinute < bMinute : this.getSecond() < target.getSecond();
     }
 
     isAfter(target: LunarHour): boolean {
-        if (!this.day.equals(target.getLunarDay())) {
-            return this.day.isAfter(target.getLunarDay());
+        const aDay: LunarDay = this.getLunarDay();
+        const bDay: LunarDay = target.getLunarDay();
+        if (!aDay.equals(bDay)) {
+            return aDay.isAfter(bDay);
         }
-        if (this.hour !== target.getHour()) {
-            return this.hour > target.getHour();
+        const aHour: number = this.getHour();
+        const bHour: number = target.getHour();
+        if (aHour !== bHour) {
+            return aHour > bHour;
         }
-        return this.minute !== target.getMinute() ? this.minute > target.getMinute() : this.second > target.getSecond();
+        const aMinute: number = this.getMinute();
+        const bMinute: number = target.getMinute();
+        return aMinute !== bMinute ? aMinute > bMinute : this.getSecond() > target.getSecond();
     }
 
     /**
@@ -2857,8 +2876,8 @@ export class LunarHour extends AbstractTyme {
 
     getSixtyCycle(): SixtyCycle {
         const earthBranchIndex: number = this.getIndexInDay() % 12;
-        let d: SixtyCycle = this.day.getSixtyCycle();
-        if (this.hour >= 23) {
+        let d: SixtyCycle = this.getLunarDay().getSixtyCycle();
+        if (this.getHour() >= 23) {
             d = d.next(1);
         }
         return SixtyCycle.fromName(HeavenStem.fromIndex(d.getHeavenStem().getIndex() % 5 * 2 + earthBranchIndex).getName() + EarthBranch.fromIndex(earthBranchIndex).getName());
@@ -2869,10 +2888,11 @@ export class LunarHour extends AbstractTyme {
     }
 
     getNineStar(): NineStar {
-        const solar: SolarDay = this.day.getSolarDay();
+        const d: LunarDay = this.getLunarDay();
+        const solar: SolarDay = d.getSolarDay();
         const dongZhi: SolarTerm = SolarTerm.fromIndex(solar.getYear(), 0);
         const earthBranchIndex: number = this.getIndexInDay() % 12;
-        let index: number = [8, 5, 2][this.day.getSixtyCycle().getEarthBranch().getIndex() % 3];
+        let index: number = [8, 5, 2][d.getSixtyCycle().getEarthBranch().getIndex() % 3];
         if (!solar.isBefore(dongZhi.getJulianDay().getSolarDay()) && solar.isBefore(dongZhi.next(12).getJulianDay().getSolarDay())) {
             index = 8 + earthBranchIndex - index;
         } else {
@@ -2882,18 +2902,12 @@ export class LunarHour extends AbstractTyme {
     }
 
     getSolarTime(): SolarTime {
-        if (!this.solarTime) {
-            const d: SolarDay = this.day.getSolarDay();
-            this.solarTime = SolarTime.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), this.hour, this.minute, this.second);
-        }
-        return this.solarTime;
+        const d: SolarDay = this.getLunarDay().getSolarDay();
+        return SolarTime.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), this.getHour(), this.getMinute(), this.getSecond());
     }
 
     getSixtyCycleHour(): SixtyCycleHour {
-        if (!this.sixtyCycleHour) {
-            this.sixtyCycleHour = this.getSolarTime().getSixtyCycleHour();
-        }
-        return this.sixtyCycleHour;
+        return this.getSolarTime().getSixtyCycleHour();
     }
 
     getEightChar(): EightChar {
@@ -3472,8 +3486,8 @@ export class ShouXingUtil {
     }
 
     static saLonT(w: number): number {
-        let t: number, v: number = 628.3319653318;
-        t = (w - 1.75347 - Math.PI) / v;
+        let v: number = 628.3319653318;
+        let t: number = (w - 1.75347 - Math.PI) / v;
         v = ShouXingUtil.ev(t);
         t += (w - ShouXingUtil.saLon(t, 10)) / v;
         return t + (w - ShouXingUtil.saLon(t, -1)) / ShouXingUtil.ev(t);
@@ -3484,8 +3498,8 @@ export class ShouXingUtil {
     }
 
     static msaLonT(w: number): number {
-        let t: number, v: number = 7771.37714500204;
-        t = (w + 1.08472) / v;
+        let v: number = 7771.37714500204;
+        let t: number = (w + 1.08472) / v;
         t += (w - ShouXingUtil.msaLon(t, 3, 3)) / v;
         v = ShouXingUtil.mv(t) - ShouXingUtil.ev(t);
         t += (w - ShouXingUtil.msaLon(t, 20, 10)) / v;
@@ -3550,7 +3564,6 @@ export class ShouXingUtil {
         const size: number = ShouXingUtil.SHUO_KB.length;
         let d: number = 0;
         const pc: number = 14;
-        let i: number;
         jd += JulianDay.J2000;
         const f1: number = ShouXingUtil.SHUO_KB[0] - pc;
         const f2: number = ShouXingUtil.SHUO_KB[size - 1] - pc;
@@ -3558,6 +3571,7 @@ export class ShouXingUtil {
         if (jd < f1 || jd >= f3) {
             d = Math.floor(ShouXingUtil.shuoHigh(Math.floor((jd + pc - 2451551) / 29.5306) * ShouXingUtil.PI_2) + 0.5);
         } else if (jd >= f1 && jd < f2) {
+            let i: number;
             for (i = 0; i < size; i += 2) {
                 if (jd + pc < ShouXingUtil.SHUO_KB[i + 2]) {
                     break;
@@ -3640,7 +3654,7 @@ export class SolarTerm extends LoopTyme {
 
     protected constructor(year: number | string, indexOrName: number | string) {
         super(SolarTerm.NAMES, indexOrName);
-        let y: number = SolarTerm.numeric(year, 'lunar year');
+        let y: number = SolarTerm.numeric(year, 'solar term year');
         if (typeof indexOrName === 'number') {
             const size: number = SolarTerm.NAMES.length;
             y = ~~((y * size + indexOrName) / size);
@@ -3704,90 +3718,96 @@ export class SolarTermDay extends AbstractCultureDay {
     }
 }
 
-export class SolarYear extends AbstractTyme {
-    protected year: number;
+export class SolarYear extends YearUnit {
 
     protected constructor(year: number | string) {
-        super();
         const y: number = SolarYear.numeric(year, 'solar year');
-        if (y < 1 || y > 9999) {
+        SolarYear.validate(y);
+        super(y);
+    }
+
+    static validate(year: number): void {
+        if (year < 1 || year > 9999) {
             throw new Error(`illegal solar year: ${year}`);
         }
-        this.year = y;
     }
 
     static fromYear(year: number | string): SolarYear {
         return new SolarYear(year);
     }
 
-    getYear(): number {
-        return this.year;
-    }
-
     getDayCount(): number {
-        if (1582 === this.year) {
+        if (1582 === this.getYear()) {
             return 355;
         }
         return this.isLeap() ? 366 : 365;
     }
 
     isLeap(): boolean {
-        if (this.year < 1600) {
-            return this.year % 4 === 0;
+        const y: number = this.getYear();
+        if (y < 1600) {
+            return y % 4 === 0;
         }
-        return (this.year % 4 === 0 && this.year % 100 !== 0) || (this.year % 400 === 0);
+        return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
     }
 
     getName(): string {
-        return `${this.year}年`
+        return `${this.getYear()}年`
     }
 
     next(n: number): SolarYear {
-        return SolarYear.fromYear(this.year + n);
+        return SolarYear.fromYear(this.getYear() + n);
     }
 
     getMonths(): SolarMonth[] {
         const l: SolarMonth[] = [];
+        const y: number = this.getYear();
         for (let i: number = 1; i < 13; i++) {
-            l.push(SolarMonth.fromYm(this.year, i));
+            l.push(SolarMonth.fromYm(y, i));
         }
         return l;
     }
 
     getSeasons(): SolarSeason[] {
         const l: SolarSeason[] = [];
+        const y: number = this.getYear();
         for (let i: number = 0; i < 4; i++) {
-            l.push(SolarSeason.fromIndex(this.year, i));
+            l.push(SolarSeason.fromIndex(y, i));
         }
         return l;
     }
 
     getHalfYears(): SolarHalfYear[] {
         const l: SolarHalfYear[] = [];
+        const y: number = this.getYear();
         for (let i: number = 0; i < 2; i++) {
-            l.push(SolarHalfYear.fromIndex(this.year, i));
+            l.push(SolarHalfYear.fromIndex(y, i));
         }
         return l;
     }
 
     getRabByungYear(): RabByungYear {
-        return RabByungYear.fromYear(this.year);
+        return RabByungYear.fromYear(this.getYear());
     }
 }
 
-export class SolarHalfYear extends AbstractTyme {
+export class SolarHalfYear extends YearUnit {
     static NAMES: string[] = ['上半年', '下半年'];
-    protected year: SolarYear;
     protected index: number;
 
     protected constructor(year: number | string, index: number | string) {
-        super();
+        const y: number = SolarHalfYear.numeric(year, 'solar year');
         const i: number = SolarHalfYear.numeric(index, 'solar half year index');
-        if (i < 0 || i > 1) {
+        SolarHalfYear.validate(y, i);
+        super(y);
+        this.index = i;
+    }
+
+    static validate(year: number, index: number): void {
+        if (index < 0 || index > 1) {
             throw new Error(`illegal solar half year index: ${index}`);
         }
-        this.year = SolarYear.fromYear(year);
-        this.index = i;
+        SolarYear.validate(year);
     }
 
     static fromIndex(year: number | string, index: number | string): SolarHalfYear {
@@ -3795,11 +3815,7 @@ export class SolarHalfYear extends AbstractTyme {
     }
 
     getSolarYear(): SolarYear {
-        return this.year;
-    }
-
-    getYear(): number {
-        return this.year.getYear();
+        return SolarYear.fromYear(this.getYear());
     }
 
     getIndex(): number {
@@ -3811,7 +3827,7 @@ export class SolarHalfYear extends AbstractTyme {
     }
 
     toString(): string {
-        return this.year.toString() + this.getName();
+        return this.getSolarYear().toString() + this.getName();
     }
 
     next(n: number): SolarHalfYear {
@@ -3821,7 +3837,7 @@ export class SolarHalfYear extends AbstractTyme {
 
     getMonths(): SolarMonth[] {
         const l: SolarMonth[] = [];
-        const y: number = this.year.getYear();
+        const y: number = this.getYear();
         for (let i: number = 1; i < 7; i++) {
             l.push(SolarMonth.fromYm(y, this.index * 6 + i));
         }
@@ -3830,7 +3846,7 @@ export class SolarHalfYear extends AbstractTyme {
 
     getSeasons(): SolarSeason[] {
         const l: SolarSeason[] = [];
-        const y: number = this.year.getYear();
+        const y: number = this.getYear();
         for (let i: number = 0; i < 2; i++) {
             l.push(SolarSeason.fromIndex(y, this.index * 2 + i));
         }
@@ -3838,19 +3854,23 @@ export class SolarHalfYear extends AbstractTyme {
     }
 }
 
-export class SolarSeason extends AbstractTyme {
+export class SolarSeason extends YearUnit {
     static NAMES: string[] = ['一季度', '二季度', '三季度', '四季度'];
-    protected year: SolarYear;
     protected index: number;
 
     protected constructor(year: number | string, index: number | string) {
-        super();
+        const y: number = SolarSeason.numeric(year, 'solar year');
         const i: number = SolarSeason.numeric(index, 'solar season index');
-        if (i < 0 || i > 3) {
+        SolarSeason.validate(y, i);
+        super(y);
+        this.index = i;
+    }
+
+    static validate(year: number, index: number): void {
+        if (index < 0 || index > 3) {
             throw new Error(`illegal solar season index: ${index}`);
         }
-        this.year = SolarYear.fromYear(year);
-        this.index = i;
+        SolarYear.validate(year);
     }
 
     static fromIndex(year: number | string, index: number | string): SolarSeason {
@@ -3858,11 +3878,7 @@ export class SolarSeason extends AbstractTyme {
     }
 
     getSolarYear(): SolarYear {
-        return this.year;
-    }
-
-    getYear(): number {
-        return this.year.getYear();
+        return SolarYear.fromYear(this.getYear());
     }
 
     getIndex(): number {
@@ -3874,7 +3890,7 @@ export class SolarSeason extends AbstractTyme {
     }
 
     toString(): string {
-        return this.year.toString() + this.getName();
+        return this.getSolarYear().toString() + this.getName();
     }
 
     next(n: number): SolarSeason {
@@ -3884,7 +3900,7 @@ export class SolarSeason extends AbstractTyme {
 
     getMonths(): SolarMonth[] {
         const l: SolarMonth[] = [];
-        const y: number = this.year.getYear();
+        const y: number = this.getYear();
         for (let i: number = 1; i < 4; i++) {
             l.push(SolarMonth.fromYm(y, this.index * 3 + i));
         }
@@ -3892,20 +3908,22 @@ export class SolarSeason extends AbstractTyme {
     }
 }
 
-export class SolarMonth extends AbstractTyme {
+export class SolarMonth extends MonthUnit {
     static NAMES: string[] = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
     static DAYS: number[] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    protected year: SolarYear;
-    protected month: number;
 
     protected constructor(year: number | string, month: number | string) {
-        super();
+        const y: number = SolarYear.numeric(year, 'solar year');
         const m: number = SolarMonth.numeric(month, 'solar month');
-        if (m < 1 || m > 12) {
+        SolarMonth.validate(y, m);
+        super(y, m);
+    }
+
+    static validate(year: number, month: number): void {
+        if (month < 1 || month > 12) {
             throw new Error(`illegal solar month: ${month}`);
         }
-        this.year = SolarYear.fromYear(year);
-        this.month = m;
+        SolarYear.validate(year);
     }
 
     static fromYm(year: number | string, month: number | string): SolarMonth {
@@ -3913,31 +3931,24 @@ export class SolarMonth extends AbstractTyme {
     }
 
     getSolarYear(): SolarYear {
-        return this.year;
-    }
-
-    getYear(): number {
-        return this.year.getYear();
-    }
-
-    getMonth(): number {
-        return this.month;
+        return SolarYear.fromYear(this.getYear());
     }
 
     getDayCount(): number {
-        if (1582 === this.getYear() && 10 === this.month) {
+        const m: number = this.getMonth();
+        if (1582 === this.getYear() && 10 === m) {
             return 21;
         }
         let d: number = SolarMonth.DAYS[this.getIndexInYear()];
         //公历闰年2月多一天
-        if (2 === this.month && this.year.isLeap()) {
+        if (2 === m && this.getSolarYear().isLeap()) {
             d++;
         }
         return d;
     }
 
     getIndexInYear(): number {
-        return this.month - 1;
+        return this.getMonth() - 1;
     }
 
     getSeason(): SolarSeason {
@@ -3945,7 +3956,7 @@ export class SolarMonth extends AbstractTyme {
     }
 
     getWeekCount(start: number): number {
-        return Math.ceil((this.indexOf(SolarDay.fromYmd(this.getYear(), this.month, 1).getWeek().getIndex() - start, 7) + this.getDayCount()) / 7);
+        return Math.ceil((this.indexOf(SolarDay.fromYmd(this.getYear(), this.getMonth(), 1).getWeek().getIndex() - start, 7) + this.getDayCount()) / 7);
     }
 
     getName(): string {
@@ -3953,19 +3964,20 @@ export class SolarMonth extends AbstractTyme {
     }
 
     toString(): string {
-        return this.year.toString() + this.getName();
+        return this.getSolarYear().toString() + this.getName();
     }
 
     next(n: number): SolarMonth {
-        const i: number = this.month - 1 + n;
+        const i: number = this.getMonth() - 1 + n;
         return SolarMonth.fromYm(~~((this.getYear() * 12 + i) / 12), this.indexOf(i, 12) + 1);
     }
 
     getWeeks(start: number): SolarWeek[] {
         const l: SolarWeek[] = [];
         const y: number = this.getYear();
+        const m: number = this.getMonth();
         for (let i: number = 0, j: number = this.getWeekCount(start); i < j; i++) {
-            l.push(SolarWeek.fromYm(y, this.month, i, start));
+            l.push(SolarWeek.fromYm(y, m, i, start));
         }
         return l;
     }
@@ -3973,33 +3985,36 @@ export class SolarMonth extends AbstractTyme {
     getDays(): SolarDay[] {
         const l: SolarDay[] = [];
         const y: number = this.getYear();
+        const m: number = this.getMonth();
         for (let i: number = 1, j: number = this.getDayCount(); i <= j; i++) {
-            l.push(SolarDay.fromYmd(y, this.month, i));
+            l.push(SolarDay.fromYmd(y, m, i));
         }
         return l;
     }
+
+    getFirstDay(): SolarDay {
+        return SolarDay.fromYmd(this.getYear(), this.getMonth(), 1);
+    }
 }
 
-export class SolarWeek extends AbstractTyme {
+export class SolarWeek extends WeekUnit {
     static NAMES: string[] = ['第一周', '第二周', '第三周', '第四周', '第五周', '第六周'];
-    protected month: SolarMonth;
-    protected index: number;
-    protected start: Week;
 
     protected constructor(year: number | string, month: number | string, index: number | string, start: number | string) {
-        super();
+        const y: number = SolarWeek.numeric(year, 'solar year');
+        const m: number = SolarWeek.numeric(month, 'solar month');
         const i: number = SolarWeek.numeric(index, 'solar week index');
-        if (i < 0 || i > 5) {
-            throw new Error(`illegal solar week index: ${index}`);
-        }
-        const t: Week = Week.fromIndex(start);
+        const s: number = SolarWeek.numeric(start, 'week index');
+        SolarWeek.validate(y, m, i, s);
+        super(y, m, i, s);
+    }
+
+    static validate(year: number, month: number, index: number, start: number): void {
+        WeekUnit.validate(year, month, index, start);
         const m: SolarMonth = SolarMonth.fromYm(year, month);
-        if (i >= m.getWeekCount(t.getIndex())) {
+        if (index >= m.getWeekCount(start)) {
             throw new Error(`illegal solar week index: ${index} in month: ${m.toString()}`);
         }
-        this.month = m;
-        this.index = i;
-        this.start = t;
     }
 
     static fromYm(year: number | string, month: number | string, index: number | string, start: number | string): SolarWeek {
@@ -4007,19 +4022,7 @@ export class SolarWeek extends AbstractTyme {
     }
 
     getSolarMonth(): SolarMonth {
-        return this.month;
-    }
-
-    getYear(): number {
-        return this.month.getYear();
-    }
-
-    getMonth(): number {
-        return this.month.getMonth();
-    }
-
-    getIndex(): number {
-        return this.index;
+        return SolarMonth.fromYm(this.getYear(), this.getMonth());
     }
 
     getIndexInYear(): number {
@@ -4027,7 +4030,7 @@ export class SolarWeek extends AbstractTyme {
         // 本周第1天
         const firstDay: SolarDay = this.getFirstDay();
         // 今年第1周
-        let w: SolarWeek = SolarWeek.fromYm(this.getYear(), 1, 0, this.start.getIndex());
+        let w: SolarWeek = SolarWeek.fromYm(this.getYear(), 1, 0, this.getStart());
         while (!w.getFirstDay().equals(firstDay)) {
             w = w.next(1);
             i++;
@@ -4035,29 +4038,25 @@ export class SolarWeek extends AbstractTyme {
         return i;
     }
 
-    getStart(): Week {
-        return this.start;
-    }
-
     getName(): string {
-        return SolarWeek.NAMES[this.index];
+        return SolarWeek.NAMES[this.getIndex()];
     }
 
     toString(): string {
-        return this.month.toString() + this.getName();
+        return this.getSolarMonth().toString() + this.getName();
     }
 
     next(n: number): SolarWeek {
-        const startIndex: number = this.start.getIndex();
-        let d: number = this.index;
-        let m: SolarMonth = this.month;
+        const startIndex: number = this.getStart();
+        let d: number = this.getIndex();
+        let m: SolarMonth = this.getSolarMonth();
         if (n > 0) {
             d += n;
             let weekCount: number = m.getWeekCount(startIndex);
             while (d >= weekCount) {
                 d -= weekCount;
                 m = m.next(1);
-                if (!SolarDay.fromYmd(m.getYear(), m.getMonth(), 1).getWeek().equals(this.start)) {
+                if (m.getFirstDay().getWeek().getIndex() !== startIndex) {
                     d += 1;
                 }
                 weekCount = m.getWeekCount(startIndex);
@@ -4065,7 +4064,7 @@ export class SolarWeek extends AbstractTyme {
         } else if (n < 0) {
             d += n;
             while (d < 0) {
-                if (!SolarDay.fromYmd(m.getYear(), m.getMonth(), 1).getWeek().equals(this.start)) {
+                if (m.getFirstDay().getWeek().getIndex() !== startIndex) {
                     d -= 1;
                 }
                 m = m.next(-1);
@@ -4077,7 +4076,7 @@ export class SolarWeek extends AbstractTyme {
 
     getFirstDay(): SolarDay {
         const firstDay: SolarDay = SolarDay.fromYmd(this.getYear(), this.getMonth(), 1);
-        return firstDay.next(this.index * 7 - this.indexOf(firstDay.getWeek().getIndex() - this.start.getIndex(), 7));
+        return firstDay.next(this.getIndex() * 7 - this.indexOf(firstDay.getWeek().getIndex() - this.getStart(), 7));
     }
 
     getDays(): SolarDay[] {
@@ -4095,27 +4094,28 @@ export class SolarWeek extends AbstractTyme {
     }
 }
 
-export class SolarDay extends AbstractTyme {
+export class SolarDay extends DayUnit {
     static NAMES: string[] = ['1日', '2日', '3日', '4日', '5日', '6日', '7日', '8日', '9日', '10日', '11日', '12日', '13日', '14日', '15日', '16日', '17日', '18日', '19日', '20日', '21日', '22日', '23日', '24日', '25日', '26日', '27日', '28日', '29日', '30日', '31日'];
-    protected month: SolarMonth;
-    protected day: number;
 
     protected constructor(year: number | string, month: number | string, day: number | string) {
-        super();
+        const y: number = SolarDay.numeric(year, 'solar year');
+        const m: number = SolarDay.numeric(month, 'solar month');
         const d: number = SolarDay.numeric(day, 'solar day');
-        if (d < 1) {
+        SolarDay.validate(y, m, d);
+        super(y, m, d);
+    }
+
+    static validate(year: number, month: number, day: number): void {
+        if (day < 1) {
             throw new Error(`illegal solar day: ${year}-${month}-${day}`);
         }
-        const m: SolarMonth = SolarMonth.fromYm(year, month);
-        if (1582 === m.getYear() && 10 === m.getMonth()) {
-            if ((d > 4 && d < 15) || d > 31) {
+        if (1582 === year && 10 === month) {
+            if ((day > 4 && day < 15) || day > 31) {
                 throw new Error(`illegal solar day: ${year}-${month}-${day}`);
             }
-        } else if (d > m.getDayCount()) {
+        } else if (day > SolarMonth.fromYm(year, month).getDayCount()) {
             throw new Error(`illegal solar day: ${year}-${month}-${day}`);
         }
-        this.month = m;
-        this.day = d;
     }
 
     static fromYmd(year: number | string, month: number | string, day: number | string): SolarDay {
@@ -4123,19 +4123,7 @@ export class SolarDay extends AbstractTyme {
     }
 
     getSolarMonth(): SolarMonth {
-        return this.month;
-    }
-
-    getYear(): number {
-        return this.month.getYear();
-    }
-
-    getMonth(): number {
-        return this.month.getMonth();
-    }
-
-    getDay(): number {
-        return this.day;
+        return SolarMonth.fromYm(this.getYear(), this.getMonth());
     }
 
     getWeek(): Week {
@@ -4143,16 +4131,16 @@ export class SolarDay extends AbstractTyme {
     }
 
     getConstellation(): Constellation {
-        const y: number = this.getMonth() * 100 + this.day;
+        const y: number = this.getMonth() * 100 + this.getDay();
         return Constellation.fromIndex(y > 1221 || y < 120 ? 9 : y < 219 ? 10 : y < 321 ? 11 : y < 420 ? 0 : y < 521 ? 1 : y < 622 ? 2 : y < 723 ? 3 : y < 823 ? 4 : y < 923 ? 5 : y < 1024 ? 6 : y < 1123 ? 7 : 8);
     }
 
     getName(): string {
-        return SolarDay.NAMES[this.day - 1];
+        return SolarDay.NAMES[this.getDay() - 1];
     }
 
     toString(): string {
-        return this.month.toString() + this.getName();
+        return this.getSolarMonth().toString() + this.getName();
     }
 
     next(n: number): SolarDay {
@@ -4167,7 +4155,7 @@ export class SolarDay extends AbstractTyme {
         }
         const aMonth: number = this.getMonth();
         const bMonth: number = target.getMonth();
-        return aMonth !== bMonth ? aMonth < bMonth : this.day < target.getDay();
+        return aMonth !== bMonth ? aMonth < bMonth : this.getDay() < target.getDay();
     }
 
     isAfter(target: SolarDay): boolean {
@@ -4178,7 +4166,7 @@ export class SolarDay extends AbstractTyme {
         }
         const aMonth: number = this.getMonth();
         const bMonth: number = target.getMonth();
-        return aMonth !== bMonth ? aMonth > bMonth : this.day > target.getDay();
+        return aMonth !== bMonth ? aMonth > bMonth : this.getDay() > target.getDay();
     }
 
     getTerm(): SolarTerm {
@@ -4204,7 +4192,7 @@ export class SolarDay extends AbstractTyme {
     getSolarWeek(start: number): SolarWeek {
         const y: number = this.getYear();
         const m: number = this.getMonth();
-        return SolarWeek.fromYm(y, m, Math.ceil((this.day + SolarDay.fromYmd(y, m, 1).getWeek().next(-start).getIndex()) / 7.0) - 1, start);
+        return SolarWeek.fromYm(y, m, Math.ceil((this.getDay() + SolarDay.fromYmd(y, m, 1).getWeek().next(-start).getIndex()) / 7.0) - 1, start);
     }
 
     getPhenologyDay(): PhenologyDay {
@@ -4339,7 +4327,7 @@ export class SolarDay extends AbstractTyme {
     }
 
     getJulianDay(): JulianDay {
-        return JulianDay.fromYmdHms(this.getYear(), this.getMonth(), this.day, 0, 0, 0);
+        return JulianDay.fromYmdHms(this.getYear(), this.getMonth(), this.getDay(), 0, 0, 0);
     }
 
     getLunarDay(): LunarDay {
@@ -4361,11 +4349,11 @@ export class SolarDay extends AbstractTyme {
     }
 
     getLegalHoliday(): LegalHoliday | null {
-        return LegalHoliday.fromYmd(this.getYear(), this.getMonth(), this.day);
+        return LegalHoliday.fromYmd(this.getYear(), this.getMonth(), this.getDay());
     }
 
     getFestival(): SolarFestival | null {
-        return SolarFestival.fromYmd(this.getYear(), this.getMonth(), this.day);
+        return SolarFestival.fromYmd(this.getYear(), this.getMonth(), this.getDay());
     }
 
     getPhaseDay(): PhaseDay {
@@ -4384,30 +4372,21 @@ export class SolarDay extends AbstractTyme {
     }
 }
 
-export class SolarTime extends AbstractTyme {
-    protected day: SolarDay;
-    protected hour: number;
-    protected minute: number;
-    protected second: number;
-
+export class SolarTime extends SecondUnit {
     protected constructor(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string) {
-        super();
+        const y: number = SolarTime.numeric(year, 'solar year');
+        const m: number = SolarTime.numeric(month, 'solar month');
+        const d: number = SolarTime.numeric(day, 'solar day');
         const h: number = SolarTime.numeric(hour, 'hour');
-        if (h < 0 || h > 23) {
-            throw new Error(`illegal hour: ${hour}`);
-        }
-        const m: number = SolarTime.numeric(minute, 'minute');
-        if (m < 0 || m > 59) {
-            throw new Error(`illegal minute: ${minute}`);
-        }
+        const n: number = SolarTime.numeric(minute, 'minute');
         const s: number = SolarTime.numeric(second, 'second');
-        if (s < 0 || s > 59) {
-            throw new Error(`illegal second: ${second}`);
-        }
-        this.day = SolarDay.fromYmd(year, month, day);
-        this.hour = h;
-        this.minute = m;
-        this.second = s;
+        SolarTime.validate(y, m, d, h, n, s);
+        super(y, m, d, h, n, s);
+    }
+
+    static validate(year: number, month: number, day: number, hour: number, minute: number, second: number): void {
+        SecondUnit.validate(year, month, day, hour, minute, second);
+        SolarDay.validate(year, month, day);
     }
 
     static fromYmdHms(year: number | string, month: number | string, day: number | string, hour: number | string, minute: number | string, second: number | string): SolarTime {
@@ -4415,31 +4394,7 @@ export class SolarTime extends AbstractTyme {
     }
 
     getSolarDay(): SolarDay {
-        return this.day;
-    }
-
-    getYear(): number {
-        return this.day.getYear();
-    }
-
-    getMonth(): number {
-        return this.day.getMonth();
-    }
-
-    getDay(): number {
-        return this.day.getDay();
-    }
-
-    getHour(): number {
-        return this.hour;
-    }
-
-    getMinute(): number {
-        return this.minute;
-    }
-
-    getSecond(): number {
-        return this.second;
+        return SolarDay.fromYmd(this.getYear(), this.getMonth(), this.getDay());
     }
 
     getName(): string {
@@ -4450,21 +4405,24 @@ export class SolarTime extends AbstractTyme {
     }
 
     toString(): string {
-        return `${this.day.toString()} ${this.getName()}`;
+        return `${this.getSolarDay().toString()} ${this.getName()}`;
     }
 
     next(n: number): SolarTime {
+        const h: number = this.getHour();
+        const m: number = this.getMinute();
+        const s: number = this.getSecond();
         if (n == 0) {
-            return SolarTime.fromYmdHms(this.getYear(), this.getMonth(), this.getDay(), this.hour, this.minute, this.second);
+            return SolarTime.fromYmdHms(this.getYear(), this.getMonth(), this.getDay(), h, m, s);
         }
-        let ts: number = this.second + n;
-        let tm: number = this.minute + ~~(ts / 60);
+        let ts: number = s + n;
+        let tm: number = m + ~~(ts / 60);
         ts %= 60;
         if (ts < 0) {
             ts += 60;
             tm -= 1;
         }
-        let th: number = this.hour + ~~(tm / 60);
+        let th: number = h + ~~(tm / 60);
         tm %= 60;
         if (tm < 0) {
             tm += 60;
@@ -4477,28 +4435,40 @@ export class SolarTime extends AbstractTyme {
             td -= 1;
         }
 
-        const d: SolarDay = this.day.next(td);
+        const d: SolarDay = this.getSolarDay().next(td);
         return SolarTime.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), th, tm, ts);
     }
 
     isBefore(target: SolarTime): boolean {
-        if (!this.day.equals(target.getSolarDay())) {
-            return this.day.isBefore(target.getSolarDay());
+        const aDay: SolarDay = this.getSolarDay();
+        const bDay: SolarDay = target.getSolarDay();
+        if (!aDay.equals(bDay)) {
+            return aDay.isBefore(bDay);
         }
-        if (this.hour !== target.getHour()) {
-            return this.hour < target.getHour();
+        const aHour: number = this.getHour();
+        const bHour: number = target.getHour();
+        if (aHour !== bHour) {
+            return aHour < bHour;
         }
-        return this.minute !== target.getMinute() ? this.minute < target.getMinute() : this.second < target.getSecond();
+        const aMinute: number = this.getMinute();
+        const bMinute: number = target.getMinute();
+        return aMinute !== bMinute ? aMinute < bMinute : this.getSecond() < target.getSecond();
     }
 
     isAfter(target: SolarTime): boolean {
-        if (!this.day.equals(target.getSolarDay())) {
-            return this.day.isAfter(target.getSolarDay());
+        const aDay: SolarDay = this.getSolarDay();
+        const bDay: SolarDay = target.getSolarDay();
+        if (!aDay.equals(bDay)) {
+            return aDay.isAfter(bDay);
         }
-        if (this.hour !== target.getHour()) {
-            return this.hour > target.getHour();
+        const aHour: number = this.getHour();
+        const bHour: number = target.getHour();
+        if (aHour !== bHour) {
+            return aHour > bHour;
         }
-        return this.minute !== target.getMinute() ? this.minute > target.getMinute() : this.second > target.getSecond();
+        const aMinute: number = this.getMinute();
+        const bMinute: number = target.getMinute();
+        return aMinute !== bMinute ? aMinute > bMinute : this.getSecond() > target.getSecond();
     }
 
     getTerm(): SolarTerm {
@@ -4518,12 +4488,12 @@ export class SolarTime extends AbstractTyme {
     }
 
     getJulianDay(): JulianDay {
-        return JulianDay.fromYmdHms(this.day.getYear(), this.day.getMonth(), this.day.getDay(), this.hour, this.minute, this.second);
+        return JulianDay.fromYmdHms(this.getYear(), this.getMonth(), this.getDay(), this.getHour(), this.getMinute(), this.getSecond());
     }
 
     subtract(target: SolarTime): number {
-        let days: number = this.day.subtract(target.getSolarDay());
-        const cs: number = this.hour * 3600 + this.minute * 60 + this.second;
+        let days: number = this.getSolarDay().subtract(target.getSolarDay());
+        const cs: number = this.getHour() * 3600 + this.getMinute() * 60 + this.getSecond();
         const ts: number = target.getHour() * 3600 + target.getMinute() * 60 + target.getSecond();
         let seconds: number = cs - ts;
         if (seconds < 0) {
@@ -4535,8 +4505,8 @@ export class SolarTime extends AbstractTyme {
     }
 
     getLunarHour(): LunarHour {
-        const d: LunarDay = this.day.getLunarDay();
-        return LunarHour.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), this.hour, this.minute, this.second);
+        const d: LunarDay = this.getSolarDay().getLunarDay();
+        return LunarHour.fromYmdHms(d.getYear(), d.getMonth(), d.getDay(), this.getHour(), this.getMinute(), this.getSecond());
     }
 
     getSixtyCycleHour(): SixtyCycleHour {
@@ -4681,7 +4651,7 @@ export class SolarFestival extends AbstractTyme {
 
     static fromIndex(year: number, index: number): SolarFestival | null {
         if (index < 0 || index >= SolarFestival.NAMES.length) {
-            throw new Error(`illegal index: ${index}`);
+            return null;
         }
         const is: string = (index < 10 ? '0' : '') + index;
         const matcher: RegExpExecArray | null = new RegExp(`@${is}\\d+`, 'g').exec(SolarFestival.DATA);
@@ -4763,7 +4733,7 @@ export class LunarFestival extends AbstractTyme {
 
     static fromIndex(year: number, index: number): LunarFestival | null {
         if (index < 0 || index >= LunarFestival.NAMES.length) {
-            throw new Error(`illegal index: ${index}`);
+            return null;
         }
         const is: string = (index < 10 ? '0' : '') + index;
         const matcher: RegExpExecArray | null = new RegExp(`@${is}\\d+`, 'g').exec(LunarFestival.DATA);
@@ -5486,7 +5456,7 @@ export class RabByungYear extends AbstractTyme {
     }
 
     static fromElementZodiac(rabByungIndex: number | string, element: RabByungElement, zodiac: Zodiac): RabByungYear {
-        for (let i = 0; i < 60; i++) {
+        for (let i: number = 0; i < 60; i++) {
             const sixtyCycle: SixtyCycle = SixtyCycle.fromIndex(i);
             if (sixtyCycle.getEarthBranch().getZodiac().equals(zodiac) && sixtyCycle.getHeavenStem().getElement().getIndex() == element.getIndex()) {
                 return new RabByungYear(rabByungIndex, sixtyCycle);
@@ -5570,7 +5540,7 @@ export class RabByungYear extends AbstractTyme {
     getMonths(): RabByungMonth[] {
         const l: RabByungMonth[] = [];
         const leapMonth: number = this.getLeapMonth();
-        for (let i = 1; i < 13; i++) {
+        for (let i: number = 1; i < 13; i++) {
             l.push(new RabByungMonth(this, i));
             if (i === leapMonth) {
                 l.push(new RabByungMonth(this, -i));
@@ -5599,12 +5569,12 @@ export class RabByungMonth extends AbstractTyme {
         let y: number = 1950;
         let m: number = 11;
         const years: string[] = '2c>,182[>1:2TA4ZI=n1E2Bk1J2Ff3Mk503Oc62g=,172^>1:2XA1>2UE2Bo1I2Fj3Lo62Fb3Mf5,03N^72b=1:2]A1>2ZF1B2VI2Em1K2Fe,2Lh1R3Na603P\\:172Y>1;2UB2=m2Dq1J2Eh,2Kl1Q3Me603Pa:172^>1;2YA2=p1C2UI,2Dk2Jp3QEc3Mi603Pf:3L[72b?1:2]A1<2UB2XH,2Cn1I2Ei1L2Ie1Q3Na703Q\\:2`@1;2XA,4\\H;m1B2TI2Em1L2Ij1Q3Nf603Q`903QW:,2[@1;2TB2XI1E4TMAh2Io3RFe3Mj603Pc803Q[;,2^?1;2WA2>q1E2Bm1I2Fi1M2Hc3Of70,3P^82a>1:2[A1>2WE1B2TI2Fm1L2Hf3Ni6,03Oa703PZ:3`A62V>4]F;q1B4YJ>l2Eq1L2Gi3Ml5,03Nd603Q_9172[>1;2XB2>p1E2VK2Fl,1K2Fc3Mh603Pc9172`>1;2\\B1>2UD2=j2En,1J2Fg3Mm62Ib3Pj;3M_703R[:2`B1=2YB2=n,1C2TI2Fk1L2Ig1P3Nd703Q_:152X<2[A,2<q1B2WI2Ep1L2Il1Q3Ni703Qc9152[:2^@,1;2WB2>o1E2Bk1I2Fh1M2Ib3Pf803R^9,2a?1;2ZA1>2UE2Bp1I2Fl1M2If3Oi80,3Pa803QY:2^A1>2ZE1B4WJ>j2Fp1M2Hi1N2H`,3Od703Q]:162Y>1;2VB2?o1E4VM@h2Gl1M,2Hd3Ng603Qa9172^>1;2ZB1?2UE2@l2Fo1L,2Gg3Mk62H`3Pf:172c?3QY;2_B1>2YD2?o1E,2TK2Fj1M2Ie1P3Mb703R^;172X=2\\C1>,2TD2WJ2Fn1L2Ij1P3Ng703Rb:162[<2_B1=,2VC2>m1E4TMAh2Io3QFe3Nl82Ja3Qf:152_;0,3RU<2ZB1>2TE2Bn1I2Fj1M2Je3Pk:2K^3Ra:,03RY;2]A1>2XE1B2TI2Fo1M2Ii1P2Ka3Qd8,03R]:3bB62W>4]F:q1B2?n1F4VNAh2Il1O2Jd,3Pg803Q`:162\\=1;2XB1?2TF2Bl2Ho1N,2Ig3Nk703Qd9162`>1;2]B1?2XE2Ao1G2TM,2Hj1M2Id1P3M_603R\\;172W>2\\E1@2TE,2?i2Gm1M2Ih1P3Md603Ra;172[=28q1?2WD,2?m2Fq1M2Il1P3Mi72I^3Re:162_<172W=,2ZC2?q1E2Bk1I2Fh1M2Jd1Q3M^52b;16,2Y<2]B1>2VE2Bp1I2Fm1M2Jh1Q2Lb3Re:15,2\\;3aC62U>2[E1B4WJ>k1F4TNBg2Jl1P2Le3Qh9,03R`:172Z=1:2VB2?q1F2Bk2Ip1P2Jg,1P2J_3Qc:162^=1;2[B1?2WF2Bo1H2Bg2Ij,1O2Jc3Qg:3L\\62c>3QY;3aC72V?2[F1A2TG2Bj,2Hm1N2Jg1P3Mb603R_;182Z>1:2T@2WF2Am,2Gp1M2Ik1P3Mg603Rc;172^>192W?2ZE,2@p1F2Bj2Io3QEe1M2Jb1Q3M]72b=182Z>,2]D1?2VE2Bn1I2Fk1M2Jg1Q3Ma62e<172]=,172U>2YE1B2UI2Fp1N2Jk1Q3Me503M\\6,2`<172Y>3_F:2TB2?n1F2Cj2Jo3QDc2Lh1R,3L_52c;172]=1:2XB1?2UF2Cn1I2Eg2Kk1P,2Lb3Rf;162a=1:2]B1?2ZF1B2TH2Dj2Jm,1O2Kf1Q3M`603Q\\;182Y?2;q1A2WH2Cm,2Hq1O2Ji1P3Me603Qa;182]>1:2WA2[G2Ap,1G2Bi2Im1P3Mi72I_3Qf;3N\\72Eh1:2Z?29o,1@2UF2Bm1I2Fh1M2Je1Q3N`72f?3PY92]>19,2U?2YF2Bq1I2Fm1M2Jj1Q3Nd603O]72`=,182X?4]F:o1B4WI=k1F4UNCi2Jn3REc3Mh503N`6,2c<182\\>1:2VA2?q1F2Cm1J2Fg2Lk1R3Mc5,2f<172`=1:2[A1?2XF2Cq1I2Ek2Kn1R,2Lf1R3N_62d>3PZ:3aC72W?2;p1B2WI2Dn1J,2De2Ki1Q3Mc603Q_:182\\?1;2VB2<m2Cq1I,2Dh2Jl1P3Mg603Qd;182`?1;2ZA2<p1B,2UH2Cl1I2Ef3Mm82Jc1Q3N_703QY:2]@1;2UA,2XG2Bp1I2Fk1M2Jh1Q3Nc703Q]92`?1:,2X@4\\G:n1B2VI2Fp1M2Jl1R3Ng603P`82d>,192[?1;2UA2>o1F2Ck1J2Gg3Mk603Oc70,3OZ82_>1:2YA1?2VF2Cp1J2Fj1M2Gc3Nf5,03O^72b>1:2^B1?4[G;n1C2VJ2Fn1L2Gf,3Mi503Nb603Q]:172Y?1<2UB2>m2Eq1K2Fi,2Kl1R3Mf603Qa:182^?1;2YB2>q1D2VJ,2Dl1J2Fe3Mj603Qg;3N]72c@3QX;2]A1=2VB,2YI2Co1J2Fi1M2Je1Q3Nb703R]:2aA1<2XA,2<n1C2UI2Fn1M2Jj1Q3Nf703Q`903RX:,2[@1<2TB4YJ>l1E4UNBi1J2Ge3Mk703Pc803Q[9,2^?1;2XB2>q1E2Cn1J2Gj1M2Ic3Of70,3P^82b?1;2\\A1>2XF1C2UJ2Fm1M2Hf3Ni6,03Oa703Q[:3aB72W>1<2TC2?m2Fq1L2Gi3Ml5,03Ne703Q_:172\\>1<2XB2?q1E2WL2Fl,1L2Gd3Ni603Qd:172a?1;2\\B1>2VD2>k,2Eo1K2Gh1M2Ic1Q3N`703R\\;3aC62U=2YC2>o,1D2TJ2Fl1M2Jh1Q3Ne703R`:162Y<2\\B,1=2TC4XJ=j2Fp1M2Jm3QFc3Ni803Qc:152\\;2_A,1<2WB2>o1E2Bl1J2Gh1N2Jc3Qg903R^:,2b@1;2[B1>2VE2Cq1J2Gl1N2Jf3Pj80,3Qa803RZ;2_B1>4[F:o1C4XK?k2Fp1M2Ii1O2Ia,3Pd703R^:172Y>1<2VC2?p1F2Ai2Hl1M,2Hd3Oh703Qb:172^>1<2[C1?2UE2Al2Go,1L2Hg3Nl82Ia3Qg;3M]72e@3RZ;3`C72T>2YD2@o1E,2TK2Gk1M2Jf1Q3Nb703R^;172Y=2\\D1>,2TD4XK>i2Fo1M2Jj1Q3Ng703Rb;172\\<2`C1=,2WC2?n1F4VNBi1J2Gf1N2Kb3Rf:162_;15,2V<2ZB1?2TE2Bn1J2Gk1N2Kf1Q2L^3Rb:,152Z;2^B1>2YE1B2UJ2Go1N2Ji1P2Kb3Qd9,03R];172X>1;2TC2@n1G2Bi2Im1O2Jd,3Ph803Ra:172\\>1;2YC1@2UF2Bl2Hp1N,2Ig3Ol82J`3Qe:172a>1;4^C7q1?2XF2Ao1G2UN,2Hj1N2Jd1Q3N`703R];182X>2]F1@2TF,2@j2Gn1M2Jq1Q3Ne703Ra;172\\>192T?,2WE2@m1F4TMAf2Im3QEc3Nj82J`3Rf;172_=182W>,2ZD2?q1F2Bl1I2Gj1N2Ke1R3M_62b<17,2Z=2]C1?2WE2Bq1I2Gn1N2Ki1Q3Mb52e;16,2]<172V>4[F:o1B4XK?l1G4UOCh2Jl1Q2Le3Rh:,152`;172Z>1;2WB2@q1G2Cl2Ip1P2K_'.split(',', -1);
-        for (let x = 0, z = years.length; x < z; x++) {
+        for (let x: number = 0, z: number = years.length; x < z; x++) {
             let ys: string = years[x];
             while (ys) {
                 const len: number = ys.charCodeAt(0) - 48;
                 const data: number[] = [];
-                for (let i = 0; i < len; i++) {
+                for (let i: number = 0; i < len; i++) {
                     data.push(ys.charCodeAt(i + 1) - 83);
                 }
                 RabByungMonth.DAYS[(y * 13 + m) + ''] = data;
@@ -5736,7 +5706,7 @@ export class RabByungMonth extends AbstractTyme {
     getLeapDays(): number[] {
         const l: number[] = [];
         const days: number[] = this.getSpecialDays();
-        for (let i = 0, j = days.length; i < j; i++) {
+        for (let i: number = 0, j: number = days.length; i < j; i++) {
             const d: number = days[i];
             if (d > 0) {
                 l.push(d);
@@ -5748,7 +5718,7 @@ export class RabByungMonth extends AbstractTyme {
     getMissDays(): number[] {
         const l: number[] = [];
         const days: number[] = this.getSpecialDays();
-        for (let i = 0, j = days.length; i < j; i++) {
+        for (let i: number = 0, j: number = days.length; i < j; i++) {
             const d: number = days[i];
             if (d < 0) {
                 l.push(-d);
@@ -5811,7 +5781,7 @@ export class RabByungDay extends AbstractTyme {
         }
         let day: number = days + 1;
         const specialDays: number[] = m.getSpecialDays();
-        for (let i = 0, j = specialDays.length; i < j; i++) {
+        for (let i: number = 0, j: number = specialDays.length; i < j; i++) {
             const d: number = specialDays[i];
             if (d < 0) {
                 if (day >= -d) {
@@ -5878,7 +5848,7 @@ export class RabByungDay extends AbstractTyme {
         }
         let t: number = this.day;
         const specialDays: number[] = m.getSpecialDays();
-        for (let i = 0, j = specialDays.length; i < j; i++) {
+        for (let i: number = 0, j: number = specialDays.length; i < j; i++) {
             const d: number = specialDays[i];
             if (d < 0) {
                 if (t > -d) {
