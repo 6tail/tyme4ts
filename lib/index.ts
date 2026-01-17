@@ -2439,25 +2439,11 @@ export class SixtyCycleDay extends AbstractTyme {
     }
 
     static fromSolarDay(solarDay: SolarDay): SixtyCycleDay {
-        const solarYear: number = solarDay.getYear();
-        const springSolarDay: SolarDay = SolarTerm.fromIndex(solarYear, 3).getSolarDay();
-        const lunarDay: LunarDay = solarDay.getLunarDay();
-        let lunarYear: LunarYear = lunarDay.getLunarMonth().getLunarYear();
-        if (lunarYear.getYear() == solarYear) {
-            if (solarDay.isBefore(springSolarDay)) {
-                lunarYear = lunarYear.next(-1);
-            }
-        } else if (lunarYear.getYear() < solarYear) {
-            if (!solarDay.isBefore(springSolarDay)) {
-                lunarYear = lunarYear.next(1);
-            }
-        }
         const term: SolarTerm = solarDay.getTerm();
-        let index: number = term.getIndex() - 3;
-        if (index < 0 && term.getSolarDay().isAfter(springSolarDay)) {
-            index += 24;
-        }
-        return new SixtyCycleDay(solarDay, new SixtyCycleMonth(SixtyCycleYear.fromYear(lunarYear.getYear()), LunarMonth.fromYm(solarYear, 1).getSixtyCycle().next(~~Math.floor(index * 0.5))), lunarDay.getSixtyCycle());
+        const index: number = term.getIndex();
+        const offset: number = index < 3 ? (index === 0 ? -2 : -1) : Math.floor((index - 3) / 2);
+        const month: SixtyCycleMonth = SixtyCycleYear.fromYear(term.getYear()).getFirstMonth().next(offset);
+        return new SixtyCycleDay(solarDay, month, SixtyCycle.fromIndex(solarDay.subtract(SolarDay.fromYmd(2000, 1, 7))));
     }
 
     getSolarDay(): SolarDay {
@@ -4180,7 +4166,7 @@ export class SolarDay extends DayUnit {
             y += 1;
             i = 0;
         }
-        let term: SolarTerm = SolarTerm.fromIndex(y, i);
+        let term: SolarTerm = SolarTerm.fromIndex(y, i + 1);
         let day: SolarDay = term.getSolarDay();
         while (this.isBefore(day)) {
             term = term.next(-1);
