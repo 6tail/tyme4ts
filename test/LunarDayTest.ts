@@ -1,5 +1,5 @@
 import {suite, test} from '@testdeck/mocha';
-import {LunarDay} from '../lib';
+import {LunarDay, SolarDay} from '../lib';
 import {equal} from 'assert';
 
 @suite
@@ -167,5 +167,20 @@ class LunarDayTest {
     test28() {
         const lunar: LunarDay = LunarDay.fromYmd(2024, 3, 5);
         equal(lunar.getMinorRen().getName(), '大安');
+    }
+
+    @test
+    test29() {
+        // 正月初一
+        equal(LunarDay.fromYmd(2026, 1, 1).getLunarMonth().getLunarYear().getSixtyCycle().getEarthBranch().getZodiac().getName(), '马');
+
+        // 十二月廿九
+        equal(LunarDay.fromYmd(2025, 12, 29).getLunarMonth().getLunarYear().getSixtyCycle().getEarthBranch().getZodiac().getName(), '蛇');
+
+        // 2026年2月17日
+        equal(SolarDay.fromYmd(2026, 2, 17).getLunarDay().getLunarMonth().getLunarYear().getSixtyCycle().getEarthBranch().getZodiac().getName(), '马');
+
+        // 2026年2月16日
+        equal(SolarDay.fromYmd(2026, 2, 16).getLunarDay().getLunarMonth().getLunarYear().getSixtyCycle().getEarthBranch().getZodiac().getName(), '蛇');
     }
 }

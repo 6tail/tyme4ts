@@ -39,4 +39,25 @@ class LunarFestivalTest {
         ok(f);
         equal(f.toString(), '农历乙巳年十一月初二 冬至节');
     }
+
+    @test
+    test7() {
+        const ITERATIONS = 10;
+
+        console.log('Starting benchmark...');
+
+        let start = performance.now();
+        let matchCount = 0;
+        for (let i = 0; i < ITERATIONS; i++) {
+            const year = 2024 + i;
+            for (let m = 1; m <= 12; m++) {
+                for (let d = 1; d <= 29; d++) {
+                    const festival = LunarFestival.fromYmd(year, m, d);
+                    if (festival) matchCount++;
+                }
+            }
+        }
+        let end = performance.now();
+        console.log(`Total time: ${(end - start).toFixed(2)}ms`);
+    }
 }

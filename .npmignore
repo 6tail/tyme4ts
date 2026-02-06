@@ -13,3 +13,4 @@ eslint.config.mjs
 package-lock.json
 tsconfig.json
 .DS_Store
+build-js.js
