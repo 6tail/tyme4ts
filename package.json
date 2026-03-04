@@ -1,6 +1,6 @@
 {
   "name": "tyme4ts",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Tyme是一个非常强大的日历工具库，可以看作 Lunar 的升级版，拥有更优的设计和扩展性，支持公历、农历、藏历、星座、干支、生肖、节气、法定假日等。",
   "main": "./dist/lib/index.cjs",
   "module": "./dist/lib/index.mjs",
@@ -20,7 +20,10 @@
     "js": "unbuild && node build-js.js"
   },
   "homepage": "https://github.com/6tail/tyme4ts",
-  "repository": "https://github.com/6tail/tyme4ts.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/6tail/tyme4ts.git"
+  },
   "keywords": [
     "公历",
     "农历",
@@ -43,7 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
     "typescript-eslint": "^8.21.0",
-    "eslint": "^9.19.0",
+    "eslint": "^9.26.0",
     "mocha": "^11.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
