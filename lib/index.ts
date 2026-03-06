@@ -254,6 +254,12 @@ export abstract class LoopTyme extends AbstractTyme {
         const n: number = this.getSize();
         return -((this.index - targetIndex + n) % n);
     }
+
+    stepsCloseTo(targetIndex: number): number {
+        const d1: number = this.stepsTo(targetIndex);
+        const d2: number = this.stepsBackTo(targetIndex);
+        return d1 <= Math.abs(d2) ? d1 : d2;
+    }
 }
 
 export class Animal extends LoopTyme {
@@ -2207,27 +2213,21 @@ export class LunarDay extends DayUnit {
 
     getNineStar(): NineStar {
         const d: SolarDay = this.getSolarDay();
-        const dongZhi: SolarTerm = SolarTerm.fromIndex(d.getYear(), 0);
-        const dongZhiSolar: SolarDay = dongZhi.getSolarDay();
-        const xiaZhiSolar: SolarDay = dongZhi.next(12).getSolarDay();
-        const dongZhiSolar2: SolarDay = dongZhi.next(24).getSolarDay();
-        const dongZhiIndex: number = dongZhiSolar.getLunarDay().getSixtyCycle().getIndex();
-        const xiaZhiIndex: number = xiaZhiSolar.getLunarDay().getSixtyCycle().getIndex();
-        const dongZhiIndex2: number = dongZhiSolar2.getLunarDay().getSixtyCycle().getIndex();
-        const solarShunBai: SolarDay = dongZhiSolar.next(dongZhiIndex > 29 ? 60 - dongZhiIndex : -dongZhiIndex);
-        const solarShunBai2: SolarDay = dongZhiSolar2.next(dongZhiIndex2 > 29 ? 60 - dongZhiIndex2 : -dongZhiIndex2);
-        const solarNiZi: SolarDay = xiaZhiSolar.next(xiaZhiIndex > 29 ? 60 - xiaZhiIndex : -xiaZhiIndex);
-        let offset: number = 0;
-        if (!d.isBefore(solarShunBai) && d.isBefore(solarNiZi)) {
-            offset = d.subtract(solarShunBai);
-        } else if (!d.isBefore(solarNiZi) && d.isBefore(solarShunBai2)) {
-            offset = 8 - d.subtract(solarNiZi);
-        } else if (!d.isBefore(solarShunBai2)) {
-            offset = d.subtract(solarShunBai2);
-        } else if (d.isBefore(solarShunBai)) {
-            offset = 8 + solarShunBai.subtract(d);
+        const y: number = d.getYear();
+        const winterSolstice: SolarDay = SolarTerm.fromIndex(y, 0).getSolarDay();
+        const summerSolstice: SolarDay = SolarTerm.fromIndex(y, 12).getSolarDay();
+        const nextWinterSolstice: SolarDay = SolarTerm.fromIndex(y + 1, 0).getSolarDay();
+        const w: SolarDay = winterSolstice.next(winterSolstice.getLunarDay().getSixtyCycle().stepsCloseTo(0));
+        const s: SolarDay = summerSolstice.next(summerSolstice.getLunarDay().getSixtyCycle().stepsCloseTo(0));
+        const n: SolarDay = nextWinterSolstice.next(nextWinterSolstice.getLunarDay().getSixtyCycle().stepsCloseTo(0));
+        if (d.isBefore(w)) {
+            return NineStar.fromIndex(w.subtract(d) - 1);
+        } else if (d.isBefore(s)) {
+            return NineStar.fromIndex(d.subtract(w));
+        } else if (d.isBefore(n)) {
+            return NineStar.fromIndex(n.subtract(d) - 1);
         }
-        return NineStar.fromIndex(offset);
+        return NineStar.fromIndex(d.subtract(n));
     }
 
     getJupiterDirection(): Direction {
@@ -2499,28 +2499,21 @@ export class SixtyCycleDay extends AbstractTyme {
     }
 
     getNineStar(): NineStar {
-        const solar: SolarDay = this.getSolarDay();
-        const dongZhi: SolarTerm = SolarTerm.fromIndex(solar.getYear(), 0);
-        const dongZhiSolar: SolarDay = dongZhi.getSolarDay();
-        const xiaZhiSolar: SolarDay = dongZhi.next(12).getSolarDay();
-        const dongZhiSolar2: SolarDay = dongZhi.next(24).getSolarDay();
-        const dongZhiIndex: number = dongZhiSolar.getLunarDay().getSixtyCycle().getIndex();
-        const xiaZhiIndex: number = xiaZhiSolar.getLunarDay().getSixtyCycle().getIndex();
-        const dongZhiIndex2: number = dongZhiSolar2.getLunarDay().getSixtyCycle().getIndex();
-        const solarShunBai: SolarDay = dongZhiSolar.next(dongZhiIndex > 29 ? 60 - dongZhiIndex : -dongZhiIndex);
-        const solarShunBai2: SolarDay = dongZhiSolar2.next(dongZhiIndex2 > 29 ? 60 - dongZhiIndex2 : -dongZhiIndex2);
-        const solarNiZi: SolarDay = xiaZhiSolar.next(xiaZhiIndex > 29 ? 60 - xiaZhiIndex : -xiaZhiIndex);
-        let offset: number = 0;
-        if (!solar.isBefore(solarShunBai) && solar.isBefore(solarNiZi)) {
-            offset = solar.subtract(solarShunBai);
-        } else if (!solar.isBefore(solarNiZi) && solar.isBefore(solarShunBai2)) {
-            offset = 8 - solar.subtract(solarNiZi);
-        } else if (!solar.isBefore(solarShunBai2)) {
-            offset = solar.subtract(solarShunBai2);
-        } else if (solar.isBefore(solarShunBai)) {
-            offset = 8 + solarShunBai.subtract(solar);
+        const y: number = this.solarDay.getYear();
+        const winterSolstice: SolarDay = SolarTerm.fromIndex(y, 0).getSolarDay();
+        const summerSolstice: SolarDay = SolarTerm.fromIndex(y, 12).getSolarDay();
+        const nextWinterSolstice: SolarDay = SolarTerm.fromIndex(y + 1, 0).getSolarDay();
+        const w: SolarDay = winterSolstice.next(winterSolstice.getLunarDay().getSixtyCycle().stepsCloseTo(0));
+        const s: SolarDay = summerSolstice.next(summerSolstice.getLunarDay().getSixtyCycle().stepsCloseTo(0));
+        const n: SolarDay = nextWinterSolstice.next(nextWinterSolstice.getLunarDay().getSixtyCycle().stepsCloseTo(0));
+        if (this.solarDay.isBefore(w)) {
+            return NineStar.fromIndex(w.subtract(this.solarDay) - 1);
+        } else if (this.solarDay.isBefore(s)) {
+            return NineStar.fromIndex(this.solarDay.subtract(w));
+        } else if (this.solarDay.isBefore(n)) {
+            return NineStar.fromIndex(n.subtract(this.solarDay) - 1);
         }
-        return NineStar.fromIndex(offset);
+        return NineStar.fromIndex(this.solarDay.subtract(n));
     }
 
     getJupiterDirection(): Direction {
