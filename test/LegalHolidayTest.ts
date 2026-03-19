@@ -31,7 +31,7 @@ class LegalHolidayTest {
     test3() {
         const d = LegalHoliday.fromYmd(2001, 12, 29);
         ok(d);
-        equal(d.toString(), '2001年12月29日 元旦节(班)');
+        equal(d.toString(), '2001年12月29日 元旦(班)');
 
         ifError(d.next(-1));
     }

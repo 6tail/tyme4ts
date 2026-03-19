@@ -11,11 +11,11 @@ class SolarFestivalTest {
 
         const f1 = f.next(13);
         ok(f1);
-        equal(f1.toString(), '2024年5月1日 五一劳动节');
+        equal(f1.toString(), '2024年5月1日 劳动节');
 
         const f2 = f.next(-3);
         ok(f2);
-        equal(f2.toString(), '2022年8月1日 八一建军节');
+        equal(f2.toString(), '2022年8月1日 建军节');
     }
 
     @test
@@ -25,7 +25,7 @@ class SolarFestivalTest {
 
         const f1 = f.next(-9);
         ok(f1);
-        equal(f1.toString(), '2022年3月8日 三八妇女节');
+        equal(f1.toString(), '2022年3月8日 妇女节');
     }
 
     @test
@@ -39,7 +39,7 @@ class SolarFestivalTest {
     test5() {
         const f = SolarDay.fromYmd(2021, 5, 4).getFestival();
         ok(f);
-        equal(f.toString(), '2021年5月4日 五四青年节');
+        equal(f.toString(), '2021年5月4日 青年节');
     }
 
     @test
