@@ -78,14 +78,14 @@ class SolarTermTest {
 
     @test
     test5() {
-        equal(SolarTerm.fromName(2024, "小寒").getJulianDay().getSolarTime().toString(), '2024年1月6日 04:49:22');
-        equal(SolarTerm.fromName(2024, "小寒").getSolarDay().toString(), '2024年1月6日');
+        equal(SolarTerm.fromName(2024, '小寒').getJulianDay().getSolarTime().toString(), '2024年1月6日 04:49:22');
+        equal(SolarTerm.fromName(2024, '小寒').getSolarDay().toString(), '2024年1月6日');
     }
 
     @test
     test6() {
-        equal(SolarTerm.fromName(1034, "寒露").getSolarDay().toString(), '1034年10月1日');
-        equal(SolarTerm.fromName(1034, "寒露").getJulianDay().getSolarDay().toString(), '1034年10月3日');
-        equal(SolarTerm.fromName(1034, "寒露").getJulianDay().getSolarTime().toString(), '1034年10月3日 06:02:28');
+        equal(SolarTerm.fromName(1034, '寒露').getSolarDay().toString(), '1034年10月1日');
+        equal(SolarTerm.fromName(1034, '寒露').getJulianDay().getSolarDay().toString(), '1034年10月3日');
+        equal(SolarTerm.fromName(1034, '寒露').getJulianDay().getSolarTime().toString(), '1034年10月3日 06:02:28');
     }
 }
