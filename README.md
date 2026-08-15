@@ -36,7 +36,7 @@ Tyme是一个非常强大的日历工具库，可以看作 [Lunar](https://6tail
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=6tail/tyme4ts&type=Date)](https://star-history.com/#6tail/tyme4ts&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=6tail/tyme4ts&type=Date)](https://star-history.dera.page/#6tail/tyme4ts&Date)
 
 ## 致谢
 1. 感谢许剑伟老师分享的寿星天文历，本项目节气算法引自 [https://github.com/sxwnl/sxwnl](https://github.com/sxwnl/sxwnl "https://github.com/sxwnl/sxwnl")
