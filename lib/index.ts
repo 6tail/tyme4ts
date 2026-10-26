@@ -297,11 +297,17 @@ export abstract class AbstractMonth extends MonthUnit {
         return `${this.getAbstractYear()}${this.getName()}`;
     }
 
-    abstract getDayCount(): number;
+    getDayCount(): number {
+        throw new Error('unsupported operation');
+    }
 
-    abstract getFirstDay(): AbstractDay;
+    getFirstDay(): AbstractDay {
+        throw new Error('unsupported operation');
+    }
 
-    abstract getAbstractYear(): AbstractYear;
+    getAbstractYear(): AbstractYear {
+        throw new Error('unsupported operation');
+    }
 
     abstract next(n: number): AbstractMonth;
 }
@@ -386,17 +392,7 @@ export abstract class AbstractLeapMonth extends AbstractMonth {
             ty = y.getYear();
             tm = leap ? -m : m;
         }
-        return new (class extends AbstractLeapMonth {
-            getDayCount(): number {
-                return 0;
-            }
-            getFirstDay(): AbstractDay {
-                throw new Error('unsupported operation');
-            }
-            getAbstractYear(): AbstractYear {
-                throw new Error('unsupported operation');
-            }
-        })(ty, tm);
+        return new (class extends AbstractLeapMonth {})(ty, tm);
     }
 }
 
@@ -411,7 +407,9 @@ export abstract class AbstractWeek extends WeekUnit {
     /**
      * 抽象月
      */
-    abstract getAbstractMonth(): AbstractMonth;
+    getAbstractMonth(): AbstractMonth {
+        throw new Error('unsupported operation');
+    }
 
     next(n: number): AbstractWeek {
         let d: number = this.index + n;
@@ -435,11 +433,7 @@ export abstract class AbstractWeek extends WeekUnit {
                 d += m.getWeekCount(this.start);
             }
         }
-        return new (class extends AbstractWeek {
-            getAbstractMonth(): AbstractMonth {
-                throw new Error('unsupported operation');
-            }
-        })(m.getYear(), m.getMonthValue(), d, this.start);
+        return new (class extends AbstractWeek {})(m.getYear(), m.getMonthValue(), d, this.start);
     }
 
     toString(): string {
@@ -2083,6 +2077,7 @@ export class FetusMonth extends LoopTyme {
 
 export class LunarMonth extends AbstractLeapMonth {
     static NAMES: string[] = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
+    protected static NEW_MOON_CACHE: number[][] = [];
 
     constructor(year: number | string, month: number | string) {
         const y: number = LunarMonth.numeric(year, 'lunar year');
@@ -2105,19 +2100,30 @@ export class LunarMonth extends AbstractLeapMonth {
     }
 
     protected getNewMoon(): number {
+        const m: number = this.getIndexInYear();
         const y: number = this.year;
-        const dongZhiJd: number = SolarTerm.fromIndex(y, 0).getCursoryJulianDay();
-        let w: number = ShouXingUtil.calcShuo(dongZhiJd);
-        if (w > dongZhiJd) {
-            w -= 29.53;
+        let months: number[] = LunarMonth.NEW_MOON_CACHE[y];
+        if (!months) {
+            months = Array(13).fill(NaN);
+            LunarMonth.NEW_MOON_CACHE[y] = months;
         }
-        let offset: number = 2;
-        if (y > 8 && y < 24) {
-            offset = 1;
-        } else if (LunarYear.fromYear(y - 1).getLeapMonth() > 10 && y != 239 && y != 240) {
-            offset = 3;
+        let v: number = months[m];
+        if (Number.isNaN(v)) {
+            const dongZhiJd: number = SolarTerm.fromIndex(y, 0).getCursoryJulianDay();
+            let w: number = ShouXingUtil.calcShuo(dongZhiJd);
+            if (w > dongZhiJd) {
+                w -= 29.53;
+            }
+            let offset: number = 2;
+            if (y > 8 && y < 24) {
+                offset = 1;
+            } else if (LunarYear.fromYear(y - 1).getLeapMonth() > 10 && y != 239 && y != 240) {
+                offset = 3;
+            }
+            v = w + 29.5306 * (offset + m);
+            months[m] = v;
         }
-        return w + 29.5306 * (offset + this.getIndexInYear());
+        return v;
     }
 
     getLunarYear(): LunarYear {
@@ -3000,10 +3006,22 @@ export class JulianDay extends AbstractTyme {
     }
 
     getSolarDay(): SolarDay {
-        return this.getSolarTime().getSolarDay();
+        const u: SecondUnit = this.getSecondUnit(false);
+        return SolarDay.fromYmd(u.getYear(), u.getMonth(), u.getDay());
     }
 
     getSolarTime(): SolarTime {
+        const u: SecondUnit = this.getSecondUnit(true);
+        const y: number = u.getYear();
+        const m: number = u.getMonth();
+        const d: number = u.getDay();
+        const hour: number = u.getHour();
+        const minute: number = u.getMinute();
+        const second: number = u.getSecond();
+        return second < 60 ? SolarTime.fromYmdHms(y, m, d, hour, minute, second) : SolarTime.fromYmdHms(y, m, d, hour, minute, second - 60).next(60);
+    }
+
+    protected getSecondUnit(withTime: boolean): SecondUnit {
         let d: number = ~~(this.day + 0.5);
         let f: number = this.day + 0.5 - d;
 
@@ -3023,17 +3041,22 @@ export class JulianDay extends AbstractTyme {
         }
         m -= 1;
         y -= 4715;
-        f *= 24;
-        const hour: number = ~~(f);
+        let hour: number = 0;
+        let minute: number = 0;
+        let second: number = 0;
+        if (withTime) {
+            f *= 24;
+            hour = ~~(f);
 
-        f -= hour;
-        f *= 60;
-        const minute: number = ~~(f);
+            f -= hour;
+            f *= 60;
+            minute = ~~(f);
 
-        f -= minute;
-        f *= 60;
-        const second: number = Math.round(f);
-        return second < 60 ? SolarTime.fromYmdHms(y, m, d, hour, minute, second) : SolarTime.fromYmdHms(y, m, d, hour, minute, second - 60).next(60);
+            f -= minute;
+            f *= 60;
+            second = Math.round(f);
+        }
+        return new (class extends SecondUnit {})(y, m, d, hour, minute, second);
     }
 
     getWeek(): Week {
@@ -3050,6 +3073,9 @@ export class ShouXingUtil {
     static ONE_THIRD: number = 1.0 / 3;
     static SECOND_PER_DAY: number = 86400;
     static SECOND_PER_RAD: number = 648000 / Math.PI;
+
+    private static QI_CACHE: [number, number][] = [];
+    private static SHUO_CACHE: [number, number][] = [];
 
     private static NUT_B: number[] = [
         2.1824, -33.75705, 36e-6, -1720, 920,
@@ -3630,11 +3656,39 @@ export class ShouXingUtil {
     }
 
     static calcShuo(jd: number): number {
-        return ShouXingUtil.calc(false, jd, ShouXingUtil.SHUO_KB, 14, ShouXingUtil.SB);
+        const item: [number, number] | undefined = ShouXingUtil.SHUO_CACHE.find(([k]) => k === jd);
+        if (item) {
+            return item[1];
+        }
+        const v: number = ShouXingUtil.calc(false, jd, ShouXingUtil.SHUO_KB, 14, ShouXingUtil.SB);
+        const i: number = ShouXingUtil.SHUO_CACHE.findIndex(([k]) => k === jd);
+        if (i >= 0) {
+            ShouXingUtil.SHUO_CACHE[i][1] = v;
+        } else {
+            if (ShouXingUtil.SHUO_CACHE.length >= 13) {
+                ShouXingUtil.SHUO_CACHE.shift();
+            }
+            ShouXingUtil.SHUO_CACHE.push([jd, v]);
+        }
+        return v;
     }
 
     static calcQi(jd: number): number {
-        return ShouXingUtil.calc(true, jd, ShouXingUtil.QI_KB, 7, ShouXingUtil.QB);
+        const item: [number, number] | undefined = ShouXingUtil.QI_CACHE.find(([k]) => k === jd);
+        if (item) {
+            return item[1];
+        }
+        const v: number = ShouXingUtil.calc(true, jd, ShouXingUtil.QI_KB, 7, ShouXingUtil.QB);
+        const i: number = ShouXingUtil.QI_CACHE.findIndex(([k]) => k === jd);
+        if (i >= 0) {
+            ShouXingUtil.QI_CACHE[i][1] = v;
+        } else {
+            if (ShouXingUtil.QI_CACHE.length >= 13) {
+                ShouXingUtil.QI_CACHE.shift();
+            }
+            ShouXingUtil.QI_CACHE.push([jd, v]);
+        }
+        return v;
     }
 
     static qiAccurate(w: number): number {
@@ -4924,7 +4978,7 @@ export class LunarSect2ChildLimitProvider extends AbstractChildLimitProvider {
         const day: number = ~~(minutes / 12);
         minutes %= 12;
         const hour: number = minutes * 2;
-        return new (class extends SecondUnit{})(year, month, day, hour, 0, 0);
+        return new (class extends SecondUnit {})(year, month, day, hour, 0, 0);
     }
 
     getInfo(birthTime: SolarTime, term: SolarTerm): ChildLimitInfo {
